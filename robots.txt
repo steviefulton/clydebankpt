@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
 Sitemap: https://clydebankpt.com/sitemap.xml
-Disallow: /mobile-test.html
