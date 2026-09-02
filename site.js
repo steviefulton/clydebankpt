@@ -137,3 +137,17 @@
   var seen = false;
   window.addEventListener('scroll', function(){ if (!seen && window.scrollY > document.body.scrollHeight * 0.6) { seen = true; send('scroll_60', {page: location.pathname}); } }, {passive: true});
 })();
+
+(function(){
+  var els = document.querySelectorAll('.cd[data-start]'); if (!els.length) return;
+  function tick(){
+    var now = Date.now();
+    els.forEach(function(el){
+      var t = new Date(el.getAttribute('data-start')).getTime(); var d = t - now;
+      if (d <= 0) { el.textContent = 'Started this week. Message Stevie to join late. '; return; }
+      var days = Math.floor(d / 86400000), hrs = Math.floor((d % 86400000) / 3600000);
+      el.textContent = (days > 0 ? days + (days === 1 ? ' day ' : ' days ') + hrs + 'h to go. ' : hrs + ' hours to go. ');
+    });
+  }
+  tick(); setInterval(tick, 60000);
+})();
