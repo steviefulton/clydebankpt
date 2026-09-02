@@ -602,3 +602,8 @@ table.track input{min-width:70px}
 }
 .mobile-menu{z-index:60}
 body.menu-open .nav{z-index:61}
+@media (max-width:760px){
+.mobile-hide,section.who,section#answers,section#areas,.hero-aside,.hero .facts,.hero .rebrand{display:none!important}
+section#about .prose p:nth-child(n+3){display:none}
+.ig-grid .ig-item{display:contents}
+}
