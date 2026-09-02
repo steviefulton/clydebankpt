@@ -586,3 +586,19 @@ table.track input{min-width:70px}
 .files li{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
 .members-link{margin-top:14px;font-size:.9rem}
 .linklike{background:none;border:0;padding:0;color:var(--red);text-decoration:underline;font:inherit;cursor:pointer}
+.quicknav{display:none}
+@media (max-width:760px){
+.ticker{display:none}
+.quicknav{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:12px clamp(16px,4vw,44px);background:var(--bg-2);border-bottom:1px solid var(--line);position:relative;z-index:1}
+.quicknav::-webkit-scrollbar{display:none}
+.quicknav a{flex:0 0 auto;padding:10px 14px;border:1px solid var(--line-strong);border-radius:999px;background:var(--panel);color:var(--text);text-decoration:none;font-weight:700;font-size:.92rem;white-space:nowrap}
+.quicknav a:nth-child(4){border-color:var(--red);color:var(--red)}
+.clips{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:6px;grid-template-columns:none}
+.clip{flex:0 0 72%;scroll-snap-align:start}
+.clip:last-child{display:block}
+.crew{grid-template-columns:1fr 1fr;gap:8px}
+.callbar{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px}
+.callbar .btn{padding-left:8px;padding-right:8px;font-size:.95rem}
+}
+.mobile-menu{z-index:60}
+body.menu-open .nav{z-index:61}

@@ -4,6 +4,7 @@
   var burger = document.querySelector('.burger');
   var menu = document.getElementById('mobile-menu');
   if (burger && menu) {
+    if (menu.parentNode !== document.body) { document.body.appendChild(menu); }
     burger.addEventListener('click', function(){
       var open = menu.classList.toggle('open');
       burger.setAttribute('aria-expanded', open ? 'true' : 'false');
