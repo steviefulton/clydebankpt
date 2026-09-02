@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Sanctuary Fitness//clydebankpt.com//EN
+BEGIN:VEVENT
+UID:hiit-tuesday@clydebankpt.com
+DTSTAMP:20260902T120000Z
+DTSTART;TZID=Europe/London:20260908T060000
+DTEND;TZID=Europe/London:20260908T070000
+RRULE:FREQ=WEEKLY;BYDAY=TU
+SUMMARY:HIIT class at Sanctuary Fitness
+LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81 2DR
+DESCRIPTION:60-minute coached class. Included in the 8-Week Package. WhatsApp 07376 941421. https://clydebankpt.com/timetable/
+URL:https://clydebankpt.com/timetable/
+END:VEVENT
+END:VCALENDAR
