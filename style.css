@@ -607,3 +607,8 @@ body.menu-open .nav{z-index:61}
 section#about .prose p:nth-child(n+3){display:none}
 .ig-grid .ig-item{display:contents}
 }
+.voucher{border:2px dashed var(--red);border-radius:14px;padding:22px;background:var(--panel);display:grid;gap:12px}
+.v-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.v-brand{font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.v-code{font-family:"Big Shoulders Display",Impact,sans-serif;font-weight:800;font-size:1.8rem;letter-spacing:.08em;color:var(--red);border:1px solid var(--red);padding:4px 12px;border-radius:6px}
+.faq-page h2{margin-top:26px}
