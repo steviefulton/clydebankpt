@@ -33,12 +33,12 @@ LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81
 URL:https://clydebankpt.com/timetable/
 END:VEVENT
 BEGIN:VEVENT
-UID:barbells-dumbbells-wednesday-all@clydebankpt.com
+UID:barbell-dumbbell-wednesday-all@clydebankpt.com
 DTSTAMP:20260902T120000Z
 DTSTART;TZID=Europe/London:20260909T060000
 DTEND;TZID=Europe/London:20260909T070000
 RRULE:FREQ=WEEKLY;BYDAY=WE
-SUMMARY:Barbells & Dumbbells class at Sanctuary Fitness
+SUMMARY:Barbell & Dumbbell class at Sanctuary Fitness
 LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81 2DR
 URL:https://clydebankpt.com/timetable/
 END:VEVENT
@@ -63,7 +63,7 @@ LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81
 URL:https://clydebankpt.com/timetable/
 END:VEVENT
 BEGIN:VEVENT
-UID:full-body-saturday-all@clydebankpt.com
+UID:full-body-workout-saturday-all@clydebankpt.com
 DTSTAMP:20260902T120000Z
 DTSTART;TZID=Europe/London:20260912T090000
 DTEND;TZID=Europe/London:20260912T100000

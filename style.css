@@ -252,12 +252,6 @@ body{padding-bottom:72px}
 }
 .watermark{position:absolute;left:-2vw;bottom:-.18em;font-family:"Big Shoulders Display",sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(9rem,26vw,24rem);line-height:1;color:transparent;-webkit-text-stroke:1px var(--line-strong);opacity:.35;pointer-events:none;user-select:none;white-space:nowrap;z-index:0}
 .hero .wrap{z-index:1}
-.ticker{position:relative;z-index:1;overflow:hidden;border-bottom:1px solid var(--line);background:var(--bg-2);padding:14px 0;margin-top:-1px}
-.ticker-track{display:flex;gap:44px;width:max-content;animation:ticker 40s linear infinite;font-family:"Big Shoulders Display",sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:1.15rem;color:var(--text-2)}
-.ticker-track span{display:inline-flex;align-items:center;gap:44px}
-.ticker-track span::after{content:"";width:8px;height:8px;background:var(--red);transform:rotate(45deg)}
-@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-@media (prefers-reduced-motion: reduce){.ticker-track{animation:none;flex-wrap:wrap;width:auto}}
 .motto-band{background:#0B0B0D;color:#F4F1EC;padding:clamp(56px,8vw,96px) 0;position:relative;overflow:hidden}
 .motto-band::before{content:"";position:absolute;inset:0;background:radial-gradient(50% 60% at 15% 50%, rgba(226,38,46,.22), transparent 70%)}
 .motto-band .wrap{position:relative}
@@ -314,8 +308,6 @@ body{padding-bottom:72px}
 .ig-grid{grid-template-columns:1fr}
 .cta-band h2{font-size:clamp(1.8rem,9vw,2.6rem)}
 .sec-head h2{font-size:clamp(2rem,10vw,3rem)}
-.ticker-track{font-size:1rem;gap:28px}
-.ticker-track span{gap:28px}
 }
 html,body{max-width:100%;overflow-x:clip}
 .wrap{min-width:0}
@@ -398,7 +390,6 @@ body.menu-open{overflow:hidden}
 @media (min-width:961px){.mobile-menu{display:none!important}}
 @media (max-width:600px){
 input,select,textarea{font-size:16px}
-.ticker-track{animation-duration:70s}
 .burger{padding:10px 14px;min-height:44px}
 .tt-filter{min-height:44px}
 .faq summary{min-height:44px;font-size:1.3rem}
@@ -491,7 +482,7 @@ table.compare td.us::before{content:"Sanctuary Fitness"}
 .totop.show{opacity:1;pointer-events:auto}
 @media (min-width:961px){.totop{bottom:96px;right:30px}}
 @media print{
-.nav,.callbar,.float-wa,.totop,.ticker,.studio,#instagram,.cta-band,form,.mobile-menu,.tt-filters,.tt-today,.ics-wrap{display:none!important}
+.nav,.callbar,.float-wa,.totop,.studio,#instagram,.cta-band,form,.mobile-menu,.tt-filters,.tt-today,.ics-wrap{display:none!important}
 .tt-panel{display:block!important}.tt-panel[hidden]{display:block!important}
 .tt-grid-wrap{display:block}.tt-grid-wrap summary{display:none}.tt-grid-wrap .table-wrap{display:block}
 body{background:#fff;color:#000}
@@ -588,7 +579,6 @@ table.track input{min-width:70px}
 .linklike{background:none;border:0;padding:0;color:var(--red);text-decoration:underline;font:inherit;cursor:pointer}
 .quicknav{display:none}
 @media (max-width:760px){
-.ticker{display:none}
 .quicknav{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:12px clamp(16px,4vw,44px);background:var(--bg-2);border-bottom:1px solid var(--line);position:relative;z-index:1}
 .quicknav::-webkit-scrollbar{display:none}
 .quicknav a{flex:0 0 auto;padding:10px 14px;border:1px solid var(--line-strong);border-radius:999px;background:var(--panel);color:var(--text);text-decoration:none;font-weight:700;font-size:.92rem;white-space:nowrap}
@@ -626,3 +616,4 @@ input.filter:focus{outline:2px solid var(--focus);outline-offset:1px}
 .parq input[type=text],.parq input[type=tel],.parq input[type=date],.parq textarea{font:inherit;padding:12px 14px;border-radius:10px;border:1px solid rgba(128,128,128,.4);background:var(--bg-2,transparent);color:inherit;width:100%;box-sizing:border-box}.parq fieldset.pq{border:1px solid rgba(128,128,128,.3);border-radius:12px;padding:12px 16px;margin:10px 0}.parq fieldset.pq legend{padding:0 6px;font-weight:600}.parq fieldset.pq label{margin-right:18px}
 .score-out{margin:22px 0;padding:18px 20px;border-radius:14px;border:1px solid rgba(128,128,128,.3)}.score-out .big{font-size:1.6rem;font-weight:800;margin:0 0 6px}input.alc{width:70px;font:inherit;padding:6px 8px;border-radius:8px;border:1px solid rgba(128,128,128,.4);background:var(--bg-2,transparent);color:inherit}
 .habit-grid{display:grid;gap:10px;max-width:520px;margin:12px 0}.habit{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;border:1px solid rgba(128,128,128,.3);font-weight:600}.habit input{width:22px;height:22px;accent-color:#e2262e}
+.hero-intro{max-width:62ch;color:var(--text-2,inherit);font-size:1.05rem;line-height:1.55;margin:18px 0 4px}.cta-band .cta-copy{max-width:62ch;margin:10px 0 18px;opacity:.92}
