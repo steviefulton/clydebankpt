@@ -213,3 +213,21 @@
   }
   ins.forEach(function(i){ i.addEventListener('input',upd); i.addEventListener('change',upd); }); upd();
 })();
+
+// Daily habit ticks on the tracker page, kept on the phone for seven days.
+(function(){
+  var g=document.querySelector('.habit-grid'); if(!g) return;
+  var names=g.getAttribute('data-habits').split('|'), KEY='sf_habits_v1', today=new Date().toISOString().slice(0,10), data={};
+  try{ data=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ data={}; }
+  Object.keys(data).forEach(function(d){ if((new Date(today)-new Date(d))/86400000>7) delete data[d]; });
+  var day=data[today]||{};
+  names.forEach(function(n,i){
+    var l=document.createElement('label'); l.className='habit'; var c=document.createElement('input'); c.type='checkbox'; c.checked=!!day[i];
+    c.addEventListener('change',function(){ day[i]=c.checked; data[today]=day; try{ localStorage.setItem(KEY,JSON.stringify(data)); }catch(e){} week(); });
+    l.appendChild(c); l.appendChild(document.createTextNode(' '+n)); g.appendChild(l);
+  });
+  var w=document.getElementById('habit-week');
+  function week(){ var days=Object.keys(data).length, ticks=0; Object.keys(data).forEach(function(d){ Object.keys(data[d]).forEach(function(k){ if(data[d][k]) ticks++; }); });
+    w.textContent=days?('Last '+days+' day'+(days===1?'':'s')+': '+ticks+' of '+(days*names.length)+' ticks.'):'Nothing ticked yet this week.'; }
+  week();
+})();
