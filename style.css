@@ -612,3 +612,5 @@ section#about .prose p:nth-child(n+3){display:none}
 .v-brand{font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .v-code{font-family:"Big Shoulders Display",Impact,sans-serif;font-weight:800;font-size:1.8rem;letter-spacing:.08em;color:var(--red);border:1px solid var(--red);padding:4px 12px;border-radius:6px}
 .faq-page h2{margin-top:26px}
+table.protein{min-width:0}
+table.protein td:last-child{font-weight:700;color:var(--red);white-space:nowrap}
