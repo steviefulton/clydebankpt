@@ -615,3 +615,9 @@ section#about .prose p:nth-child(n+3){display:none}
 table.protein{min-width:0}
 table.protein td:last-child{font-weight:700;color:var(--red);white-space:nowrap}
 table.protein td:first-child{color:var(--text);font-weight:500}
+.prefs{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.pref{background:none;border:1px solid var(--line-strong);color:var(--text-2);border-radius:999px;padding:6px 12px;font:inherit;font-size:.85rem;cursor:pointer}
+.pref:hover{border-color:var(--red);color:var(--text)}
+html.big-text{font-size:118%}
+input.filter{width:100%;max-width:520px;margin:0 0 18px;padding:12px 14px;border:1px solid var(--line-strong);border-radius:10px;background:var(--panel);color:var(--text);font:inherit;font-size:1rem}
+input.filter:focus{outline:2px solid var(--focus);outline-offset:1px}

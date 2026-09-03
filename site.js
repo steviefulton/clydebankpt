@@ -151,3 +151,15 @@
   }
   tick(); setInterval(tick, 60000);
 })();
+
+(function(){
+  var root=document.documentElement;
+  try{ var th=localStorage.getItem('sf_theme'); if(th) root.setAttribute('data-theme',th); if(localStorage.getItem('sf_text')==='big') root.classList.add('big-text'); }catch(e){}
+  document.querySelectorAll('.pref').forEach(function(b){ b.addEventListener('click',function(){
+    if(b.dataset.pref==='theme'){ var cur=root.getAttribute('data-theme'); var dark=cur?cur==='dark':!window.matchMedia('(prefers-color-scheme: light)').matches; var next=dark?'light':'dark'; root.setAttribute('data-theme',next); try{localStorage.setItem('sf_theme',next);}catch(e){} }
+    else { root.classList.toggle('big-text'); try{localStorage.setItem('sf_text',root.classList.contains('big-text')?'big':'');}catch(e){} }
+  }); });
+  var f=document.querySelector('input.filter'); if(!f) return;
+  var items=[].slice.call(document.querySelectorAll('.guide-card, .faq-page details, .faq details'));
+  f.addEventListener('input',function(){ var q=f.value.trim().toLowerCase(); items.forEach(function(el){ el.hidden=q.length>1 && el.textContent.toLowerCase().indexOf(q)<0; }); });
+})();
