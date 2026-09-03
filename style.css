@@ -614,3 +614,4 @@ section#about .prose p:nth-child(n+3){display:none}
 .faq-page h2{margin-top:26px}
 table.protein{min-width:0}
 table.protein td:last-child{font-weight:700;color:var(--red);white-space:nowrap}
+table.protein td:first-child{color:var(--text);font-weight:500}
