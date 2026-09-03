@@ -625,3 +625,5 @@ input.filter:focus{outline:2px solid var(--focus);outline-offset:1px}
 .pc-overlay img{display:block;width:100%;height:auto}.pc-overlay img+img{position:absolute;inset:0;object-fit:contain}
 .sl-list{display:grid;gap:8px}.sl-list label{display:flex;gap:10px;align-items:baseline;cursor:pointer}.sl-list .muted{color:var(--muted);font-size:.85rem}
 .sl-text{line-height:1.6}
+a.area{display:block;text-decoration:none;color:inherit}a.area:hover h3{color:var(--red)}
+.area-all{margin-top:20px;color:var(--muted);font-size:.9rem;line-height:1.8}.area-all a{color:inherit;text-decoration:underline;text-underline-offset:3px}
