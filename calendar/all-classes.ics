@@ -1,0 +1,75 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Sanctuary Fitness//clydebankpt.com//EN
+X-WR-CALNAME:Sanctuary Fitness classes
+BEGIN:VEVENT
+UID:hiit-monday-all@clydebankpt.com
+DTSTAMP:20260902T120000Z
+DTSTART;TZID=Europe/London:20260907T174000
+DTEND;TZID=Europe/London:20260907T184000
+RRULE:FREQ=WEEKLY;BYDAY=MO
+SUMMARY:HIIT class at Sanctuary Fitness
+LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81 2DR
+URL:https://clydebankpt.com/timetable/
+END:VEVENT
+BEGIN:VEVENT
+UID:hiit-tuesday-all@clydebankpt.com
+DTSTAMP:20260902T120000Z
+DTSTART;TZID=Europe/London:20260908T060000
+DTEND;TZID=Europe/London:20260908T070000
+RRULE:FREQ=WEEKLY;BYDAY=TU
+SUMMARY:HIIT class at Sanctuary Fitness
+LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81 2DR
+URL:https://clydebankpt.com/timetable/
+END:VEVENT
+BEGIN:VEVENT
+UID:barbell-dumbbell-tuesday-all@clydebankpt.com
+DTSTAMP:20260902T120000Z
+DTSTART;TZID=Europe/London:20260908T174000
+DTEND;TZID=Europe/London:20260908T184000
+RRULE:FREQ=WEEKLY;BYDAY=TU
+SUMMARY:Barbell & Dumbbell class at Sanctuary Fitness
+LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81 2DR
+URL:https://clydebankpt.com/timetable/
+END:VEVENT
+BEGIN:VEVENT
+UID:barbells-dumbbells-wednesday-all@clydebankpt.com
+DTSTAMP:20260902T120000Z
+DTSTART;TZID=Europe/London:20260909T060000
+DTEND;TZID=Europe/London:20260909T070000
+RRULE:FREQ=WEEKLY;BYDAY=WE
+SUMMARY:Barbells & Dumbbells class at Sanctuary Fitness
+LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81 2DR
+URL:https://clydebankpt.com/timetable/
+END:VEVENT
+BEGIN:VEVENT
+UID:functional-fitness-wednesday-all@clydebankpt.com
+DTSTAMP:20260902T120000Z
+DTSTART;TZID=Europe/London:20260909T174000
+DTEND;TZID=Europe/London:20260909T184000
+RRULE:FREQ=WEEKLY;BYDAY=WE
+SUMMARY:Functional Fitness class at Sanctuary Fitness
+LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81 2DR
+URL:https://clydebankpt.com/timetable/
+END:VEVENT
+BEGIN:VEVENT
+UID:functional-fitness-friday-all@clydebankpt.com
+DTSTAMP:20260902T120000Z
+DTSTART;TZID=Europe/London:20260911T060000
+DTEND;TZID=Europe/London:20260911T070000
+RRULE:FREQ=WEEKLY;BYDAY=FR
+SUMMARY:Functional Fitness class at Sanctuary Fitness
+LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81 2DR
+URL:https://clydebankpt.com/timetable/
+END:VEVENT
+BEGIN:VEVENT
+UID:full-body-saturday-all@clydebankpt.com
+DTSTAMP:20260902T120000Z
+DTSTART;TZID=Europe/London:20260912T090000
+DTEND;TZID=Europe/London:20260912T100000
+RRULE:FREQ=WEEKLY;BYDAY=SA
+SUMMARY:Full Body Workout class at Sanctuary Fitness
+LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81 2DR
+URL:https://clydebankpt.com/timetable/
+END:VEVENT
+END:VCALENDAR
