@@ -263,3 +263,5 @@
   cp.addEventListener('click', function(){ var t=build(); if(!t) return; try{ navigator.clipboard.writeText(t).then(function(){ cp.textContent='Copied'; setTimeout(function(){ cp.textContent='Copy the list'; },1500); }); }catch(e){} });
 })();
 
+// Offline copy of the pages people open most (roadmap B102/B103). Network first; the worker only answers when the network fails.
+if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ navigator.serviceWorker.register('/sw.js').catch(function(){}); }); }
