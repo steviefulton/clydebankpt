@@ -161,5 +161,5 @@
   }); });
   var f=document.querySelector('input.filter'); if(!f) return;
   var items=[].slice.call(document.querySelectorAll('.guide-card, .faq-page details, .faq details'));
-  f.addEventListener('input',function(){ var q=f.value.trim().toLowerCase(); items.forEach(function(el){ el.hidden=q.length>1 && el.textContent.toLowerCase().indexOf(q)<0; }); });
+  f.addEventListener('input',function(){ var q=f.value.trim().toLowerCase(); items.forEach(function(el){ var hide=q.length>1 && el.textContent.toLowerCase().indexOf(q)<0; el.style.display=hide?'none':''; }); });
 })();
