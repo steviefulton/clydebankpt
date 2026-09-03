@@ -99,13 +99,16 @@
 (function(){
   var el = document.getElementById('tt-status');
   if (!el) return;
-  var sched = {1:[[1040,1100]],2:[[360,420],[420,660],[960,1020],[1040,1100]],3:[[360,420],[420,660],[960,1020],[1040,1100]],4:[[360,660],[1020,1140]],5:[[360,660]],6:[[420,600]]};
+  var sched = {"1":[[1060,1120,"HIIT","class"]],"2":[[360,420,"HIIT","class"],[420,480,"Personal Training","pt"],[480,540,"Personal Training","pt"],[540,600,"Personal Training","pt"],[600,660,"Personal Training","pt"],[960,1020,"Personal Training","pt"],[1060,1120,"Barbell & Dumbbell","class"]],"3":[[360,420,"Barbell & Dumbbell","class"],[420,480,"Personal Training","pt"],[480,540,"Personal Training","pt"],[540,600,"Personal Training","pt"],[600,660,"Personal Training","pt"],[960,1020,"Personal Training","pt"],[1060,1120,"Functional Fitness","class"]],"4":[[360,420,"Personal Training","pt"],[420,480,"Personal Training","pt"],[480,540,"Personal Training","pt"],[540,600,"Personal Training","pt"],[600,660,"Personal Training","pt"],[1020,1080,"Personal Training","pt"],[1080,1140,"Personal Training","pt"]],"5":[[360,420,"Functional Fitness","class"],[420,480,"Personal Training","pt"],[480,540,"Personal Training","pt"],[540,600,"Personal Training","pt"],[600,660,"Personal Training","pt"]],"6":[[420,480,"Personal Training","pt"],[480,540,"Personal Training","pt"],[540,600,"Full Body Workout","class"]]}; // generated from data/site.json at build time
+  var dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   var now = new Date(); var d = now.getDay(); var m = now.getHours()*60 + now.getMinutes();
-  var slots = sched[d] || []; var open = false; var next = null;
-  slots.forEach(function(s){ if (m >= s[0] && m < s[1]) open = true; if (!next && s[0] > m) next = s[0]; });
+  var slots = sched[d] || []; var open = null; var next = null; var nextDay = null;
+  slots.forEach(function(s){ if (!open && m >= s[0] && m < s[1]) open = s; if (!next && s[0] > m) next = s; });
+  if (!open && !next) { for (var i = 1; i <= 7 && !next; i++) { var dd = (d + i) % 7; if ((sched[dd] || []).length) { next = sched[dd][0]; nextDay = i === 1 ? 'tomorrow' : dayNames[dd]; } } }
   function hm(x){ var h = Math.floor(x/60), mm = x%60; var ap = h >= 12 ? 'pm' : 'am'; h = h % 12 || 12; return h + (mm ? ':' + (mm<10?'0':'') + mm : '') + ap; }
-  el.textContent = open ? 'Sessions running now · ' : (next ? 'Next session today at ' + hm(next) + ' · ' : '');
-  el.classList.toggle('is-open', open);
+  function label(s){ return (s[3] === 'class' ? s[2] : 'Personal Training') + ' at ' + hm(s[0]); }
+  el.textContent = open ? 'Running now: ' + label(open) + ' · ' : (next ? 'Next: ' + label(next) + (nextDay ? ' ' + nextDay : ' today') + ' · ' : '');
+  el.classList.toggle('is-open', !!open);
 })();
 (function(){
   var b = document.createElement('a'); b.href = '#top'; b.className = 'totop'; b.setAttribute('aria-label', 'Back to top'); b.textContent = '↑';
