@@ -195,3 +195,21 @@
     else window.open('https://wa.me/447376941421?text='+encodeURIComponent(msg),'_blank','noopener');
   });
 })();
+
+// Drink calculator: sums units and calories from the per-week inputs.
+(function(){
+  var out=document.getElementById('alc-out'); if(!out) return;
+  var ins=document.querySelectorAll('input.alc'), u=document.getElementById('alc-units'), k=document.getElementById('alc-kcal'), n=document.getElementById('alc-note'), wa=document.getElementById('alc-wa');
+  function upd(){
+    var units=0, kcal=0;
+    ins.forEach(function(i){ var v=parseFloat(i.value)||0; units+=v*parseFloat(i.getAttribute('data-u')); kcal+=v*parseInt(i.getAttribute('data-k'),10); });
+    u.textContent=Math.round(units*10)/10; k.textContent=Math.round(kcal);
+    var msg;
+    if(kcal===0) msg='Type your week above.';
+    else if(units<=14) msg='Under the 14-unit guideline. '+Math.round(kcal)+' kcal is about '+(kcal/250).toFixed(1)+' extra days of food over the week; worth knowing, not worth panicking about.';
+    else msg='Over the 14-unit guideline. '+Math.round(kcal)+' kcal a week from drink is roughly '+Math.round(kcal/3500*8*100)/100+' lb of fat loss per 8-week block going the other way. One swap fixes half of it.';
+    n.textContent=msg;
+    if(wa) wa.href='https://wa.me/447376941421?text='+encodeURIComponent('Hi Stevie, my normal week is about '+Math.round(units)+' units and '+Math.round(kcal)+' kcal from drink. Can we build the plan around that? (via clydebankpt.com/tools/alcohol)');
+  }
+  ins.forEach(function(i){ i.addEventListener('input',upd); i.addEventListener('change',upd); }); upd();
+})();
