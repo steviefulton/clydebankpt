@@ -234,3 +234,32 @@
     w.textContent=days?('Last '+days+' day'+(days===1?'':'s')+': '+ticks+' of '+(days*names.length)+' ticks.'):'Nothing ticked yet this week.'; }
   week();
 })();
+
+// Photo compare (local only): two file inputs -> side by side plus an opacity overlay. Nothing leaves the device.
+(function(){
+  var a=document.getElementById('pc-a'), b=document.getElementById('pc-b'); if(!a||!b) return;
+  var stage=document.getElementById('pc-stage'), ia=document.getElementById('pc-img-a'), ib=document.getElementById('pc-img-b'), oa=document.getElementById('pc-ov-a'), ob=document.getElementById('pc-ov-b'), r=document.getElementById('pc-range');
+  function load(inp, img, ov){ var f=inp.files && inp.files[0]; if(!f) return; var url=URL.createObjectURL(f); img.src=url; ov.src=url; stage.hidden=false; }
+  a.addEventListener('change', function(){ load(a, ia, oa); });
+  b.addEventListener('change', function(){ load(b, ib, ob); });
+  r.addEventListener('input', function(){ ob.style.opacity = (r.value/100); });
+})();
+
+// Shopping list: ticked recipes -> merged ingredient list -> WhatsApp link and copy button.
+(function(){
+  var boxes=document.querySelectorAll('input.sl'); if(!boxes.length) return;
+  var out=document.getElementById('sl-text'), wa=document.getElementById('sl-wa'), cp=document.getElementById('sl-copy'); var NL=String.fromCharCode(10);
+  function build(){
+    var items={}, meals=[];
+    boxes.forEach(function(c){ if(!c.checked) return; meals.push(c.parentNode.querySelector('b').textContent); c.getAttribute('data-ing').split('|').forEach(function(i){ var k=i.toLowerCase(); items[k]=(items[k]||0)+1; }); });
+    var keys=Object.keys(items).sort();
+    if(!keys.length){ out.textContent='Tick a meal above.'; wa.href='https://wa.me/?text='; return ''; }
+    var lines=keys.map(function(k){ return (items[k]>1? k+' (x'+items[k]+')' : k); });
+    out.innerHTML='<b>Meals:</b> '+meals.join(', ')+'<br><br>'+lines.map(function(l){ return '&#9744; '+l.charAt(0).toUpperCase()+l.slice(1); }).join('<br>');
+    var text='Shopping list ('+meals.join(', ')+'):'+NL+lines.map(function(l){ return '- '+l; }).join(NL)+NL+NL+'clydebankpt.com/tools/shopping-list';
+    wa.href='https://wa.me/?text='+encodeURIComponent(text); return text;
+  }
+  boxes.forEach(function(c){ c.addEventListener('change', build); });
+  cp.addEventListener('click', function(){ var t=build(); if(!t) return; try{ navigator.clipboard.writeText(t).then(function(){ cp.textContent='Copied'; setTimeout(function(){ cp.textContent='Copy the list'; },1500); }); }catch(e){} });
+})();
+
