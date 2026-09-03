@@ -163,3 +163,15 @@
   var items=[].slice.call(document.querySelectorAll('.guide-card, .faq-page details, .faq details'));
   f.addEventListener('input',function(){ var q=f.value.trim().toLowerCase(); items.forEach(function(el){ var hide=q.length>1 && el.textContent.toLowerCase().indexOf(q)<0; el.style.display=hide?'none':''; }); });
 })();
+
+// Callback picker: builds the WhatsApp and email links from the two selects.
+(function(){
+  var t=document.getElementById('cb-time'), a=document.getElementById('cb-about'), w=document.getElementById('cb-wa'), e=document.getElementById('cb-email');
+  if(!t||!a||!w||!e) return;
+  function upd(){
+    var msg='Hi Stevie, can you call me back? Best time is '+t.value.toLowerCase()+'. It is about: '+a.value+'. (via clydebankpt.com/contact)';
+    w.href='https://wa.me/447376941421?text='+encodeURIComponent(msg);
+    e.href='mailto:sanctuary@clydebankpt.com?subject='+encodeURIComponent('Call me back')+'&body='+encodeURIComponent(msg+String.fromCharCode(10,10)+'My number: ');
+  }
+  t.addEventListener('change',upd); a.addEventListener('change',upd); upd();
+})();

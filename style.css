@@ -622,3 +622,4 @@ html.big-text{font-size:118%}
 input.filter{width:100%;max-width:520px;margin:0 0 18px;padding:12px 14px;border:1px solid var(--line-strong);border-radius:10px;background:var(--panel);color:var(--text);font:inherit;font-size:1rem}
 input.filter:focus{outline:2px solid var(--focus);outline-offset:1px}
 .facts-list{display:grid;gap:14px;margin:0}.facts-list div{display:grid;grid-template-columns:minmax(120px,200px) 1fr;gap:12px;padding:12px 0;border-bottom:1px solid rgba(128,128,128,.25)}.facts-list dt{font-weight:700;color:var(--red,#e2262e)}.facts-list dd{margin:0}@media(max-width:560px){.facts-list div{grid-template-columns:1fr;gap:4px}}
+.cb-form{display:grid;gap:16px;max-width:520px}.cb-form label{display:grid;gap:6px;font-weight:700}.cb-form select{font:inherit;padding:12px 14px;border-radius:10px;border:1px solid rgba(128,128,128,.4);background:var(--bg-2,transparent);color:inherit}
