@@ -175,3 +175,23 @@
   }
   t.addEventListener('change',upd); a.addEventListener('change',upd); upd();
 })();
+
+// Health questionnaire: builds a WhatsApp or email message from the form. Nothing is sent to a server.
+(function(){
+  var f=document.getElementById('parq'); if(!f) return;
+  var send='wa';
+  f.querySelectorAll('button[data-send]').forEach(function(b){ b.addEventListener('click', function(){ send=b.getAttribute('data-send'); }); });
+  f.addEventListener('submit', function(e){
+    e.preventDefault();
+    var d=new FormData(f), lines=['Health questionnaire for Sanctuary Fitness'];
+    lines.push('Name: '+(d.get('name')||'')); lines.push('DOB: '+(d.get('dob')||'')); lines.push('Mobile: '+(d.get('phone')||''));
+    var yes=[]; f.querySelectorAll('fieldset.pq').forEach(function(fs,i){ var v=fs.querySelector('input:checked'); if(v&&v.value==='Yes') yes.push(String(i+1)); });
+    lines.push('Answered YES to questions: '+(yes.length?yes.join(', '):'none'));
+    if(d.get('notes')) lines.push('Notes: '+d.get('notes'));
+    lines.push('Emergency contact: '+(d.get('ec_name')||'')+' ('+(d.get('ec_rel')||'')+') '+(d.get('ec_phone')||''));
+    lines.push('Confirmed true by me. (via clydebankpt.com/health-questionnaire)');
+    var msg=lines.join(String.fromCharCode(10));
+    if(send==='email') location.href='mailto:sanctuary@clydebankpt.com?subject='+encodeURIComponent('Health questionnaire: '+(d.get('name')||''))+'&body='+encodeURIComponent(msg);
+    else window.open('https://wa.me/447376941421?text='+encodeURIComponent(msg),'_blank','noopener');
+  });
+})();
