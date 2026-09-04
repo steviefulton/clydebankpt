@@ -120,7 +120,7 @@
 (function(){
   var a = document.querySelector('.callbar a[data-label]'); if (!a) return;
   var p = location.pathname; var t = 'WhatsApp';
-  if (p.indexOf('8-week') > -1) t = 'Ask about £205'; else if (p.indexOf('one-to-one') > -1) t = 'Ask about 1-to-1'; else if (p.indexOf('classes') > -1 || p.indexOf('timetable') > -1) t = 'Book a free week';
+  if (p.indexOf('8-week') > -1) t = 'Ask about £205'; else if (p.indexOf('one-to-one') > -1) t = 'Ask about 1-to-1'; else if (p.indexOf('classes') > -1 || p.indexOf('timetable') > -1) t = 'Book a free consult';
   var svg = a.querySelector('svg'); a.textContent = ''; if (svg) a.appendChild(svg); a.appendChild(document.createTextNode(t));
 })();
 
@@ -265,3 +265,105 @@
 
 // Offline copy of the pages people open most (roadmap B102/B103). Network first; the worker only answers when the network fails.
 if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ navigator.serviceWorker.register('/sw.js').catch(function(){}); }); }
+
+// Roadmap A50: which sections get seen (one event per section per page view) and how far people scroll.
+(function(){
+  if (!('IntersectionObserver' in window)) return;
+  function send(name, params){ try { if (window.gtag) gtag('event', name, params || {}); } catch (e) {} }
+  var secs = Array.prototype.slice.call(document.querySelectorAll('main section[id], main section[class]')).filter(function(s){ return s.id || s.className; });
+  var seen = {};
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if (!en.isIntersecting) return;
+      var k = en.target.id || en.target.className.split(' ')[0];
+      if (seen[k]) return; seen[k] = 1; io.unobserve(en.target);
+      send('section_view', {section: k, page: location.pathname});
+    });
+  }, {threshold: 0.4});
+  secs.forEach(function(s){ io.observe(s); });
+  var marks = [25, 50, 75, 100], hit = {};
+  window.addEventListener('scroll', function(){
+    var h = document.documentElement; var pct = Math.round((h.scrollTop + window.innerHeight) / h.scrollHeight * 100);
+    marks.forEach(function(m){ if (pct >= m && !hit[m]) { hit[m] = 1; send('scroll_depth', {percent: m, page: location.pathname}); } });
+  }, {passive: true});
+})();
+
+// Roadmap A68: recipe of the week, rotates every Monday through the recipe bank.
+(function(){
+  var el = document.getElementById('row-name'); if (!el) return;
+  var R = [["Chicken fajita tray","15 min","520 kcal","48g","Chicken breast strips, peppers, onion, fajita spice, wraps. Tray, 200\u00b0C, 15 minutes. Yoghurt on top, not sour cream."],["Ten-minute prawn rice","10 min","480 kcal","34g","Microwave rice, frozen prawns, frozen peas, egg, soy, chilli. One pan, one wok if you have it."],["Turkey chilli, four portions","30 min","450 kcal","42g","Turkey mince, tin tomatoes, kidney beans, onion, chilli, cumin. Freezes. Rice or jacket on the side."],["Big breakfast eggs","8 min","420 kcal","30g","Three eggs, two slices wholemeal toast, tomatoes, a handful of spinach wilted in the pan."],["Greek yoghurt bowl","3 min","350 kcal","30g","200g Greek yoghurt 0%, 40g oats, berries, a spoon of peanut butter. The default breakfast for a reason."],["Salmon and new potatoes","20 min","550 kcal","36g","Salmon fillet, boiled new potatoes, broccoli, lemon, black pepper. Nothing to it."],["Tuna pasta, no cream","15 min","520 kcal","38g","Wholewheat pasta, tin tuna, sweetcorn, cherry tomatoes, light mayo, black pepper."],["Beef stir-fry","15 min","500 kcal","40g","Lean beef strips, frozen stir-fry veg, soy, garlic, ginger, microwave rice."],["Chicken curry, four portions","35 min","480 kcal","40g","Chicken thighs, onion, curry paste, tin tomatoes, light coconut milk, spinach at the end. Rice or naan, not both."],["Cottage cheese toast","5 min","380 kcal","28g","Two slices wholemeal, 150g cottage cheese, sliced tomato, pepper. Weird until you try it."],["Lentil and chorizo soup","30 min","420 kcal","24g","Red lentils, a little chorizo, carrot, onion, stock. A pot lasts three days."],["Steak and eggs","12 min","520 kcal","50g","Rump steak, two eggs, mushrooms, a tomato. Saturday post-class."],["Chicken Caesar wrap","8 min","450 kcal","38g","Cooked chicken, lettuce, parmesan, light Caesar dressing, one large wrap."],["Overnight oats","5 min","400 kcal","25g","Oats, milk, a scoop of protein, berries. Made the night before the @@EARLY_TIME@@ class."],["Jacket potato and tuna","6 min microwave","480 kcal","36g","Tuna, light mayo, sweetcorn, on a jacket. Side salad. Office lunch sorted."],["Egg fried rice, proper","12 min","450 kcal","26g","Cold rice, three eggs, peas, spring onion, soy. Add chicken for more protein."],["Chicken and halloumi tray","25 min","560 kcal","48g","Chicken breast, halloumi, peppers, courgette, olive oil, oregano. 200\u00b0C."],["Cod in the bag","20 min","380 kcal","34g","Cod, cherry tomatoes, lemon, herbs, folded in foil. Serve with rice."],["Beef and bean burrito bowl","15 min","550 kcal","42g","Lean mince, black beans, rice, salsa, a little cheese, lettuce. No tortilla, less mess."],["Protein pancakes","10 min","400 kcal","32g","One banana, two eggs, a scoop of protein, 30g oats blended. Fry in batches."],["Chicken noodle soup","25 min","420 kcal","35g","Chicken, stock, noodles, carrot, sweetcorn, spring onion. Sick day or cold night."],["Turkey burgers","20 min","480 kcal","40g","Turkey mince, egg, breadcrumbs, spices. Bun, salad, done. Makes four."],["Smoked mackerel salad","5 min","450 kcal","28g","Smoked mackerel, new potatoes, rocket, beetroot, horseradish. No cooking."],["Prawn linguine","15 min","500 kcal","32g","Wholewheat linguine, prawns, garlic, chilli, cherry tomatoes, a squeeze of lemon."],["Tofu and veg stir-fry","15 min","420 kcal","24g","Firm tofu, frozen veg, soy, sesame, rice. The vegetarian default."],["Chicken tikka skewers","20 min","380 kcal","42g","Chicken breast in yoghurt and tikka spice, grilled. Salad and a wholemeal pitta."],["Quick beef ragu","30 min","520 kcal","38g","Lean mince, tin tomatoes, onion, garlic, oregano, wholewheat pasta. Doubles for tomorrow."],["Baked beans on toast, upgraded","6 min","420 kcal","24g","Half a tin of beans, two poached eggs, two slices wholemeal. Cheap, fast, decent."],["Chicken and sweet potato","30 min","500 kcal","45g","Chicken breast, sweet potato wedges, green beans. The meal-prep classic."],["Protein porridge","5 min","380 kcal","28g","50g oats, milk, half a scoop of protein stirred in after cooking, a sliced banana."]];
+  var d = new Date(); var jan = new Date(d.getFullYear(), 0, 1); var week = Math.floor(((d - jan) / 86400000 + jan.getDay() + 6) / 7);
+  var r = R[week % R.length];
+  el.textContent = r[0];
+  document.getElementById('row-desc').textContent = r[4];
+  document.getElementById('row-meta').textContent = r[1] + ' · ' + r[2] + ' · ' + r[3] + ' protein';
+})();
+
+// Roadmap A66: body map.
+(function(){
+  var wrap = document.querySelector('.bm-wrap'); if (!wrap) return;
+  function show(r){
+    wrap.querySelectorAll('.bm-panel').forEach(function(p){ p.hidden = p.id !== 'bm-' + r; });
+    wrap.querySelectorAll('.bm-region').forEach(function(p){ p.classList.toggle('on', p.getAttribute('data-r') === r); });
+    wrap.querySelectorAll('.chip').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-r') === r); });
+    var out = wrap.querySelector('.bm-out'); if (out && window.innerWidth < 760) out.scrollIntoView({behavior: 'smooth', block: 'start'});
+  }
+  wrap.addEventListener('click', function(e){ var t = e.target.closest('[data-r]'); if (t) show(t.getAttribute('data-r')); });
+  wrap.addEventListener('keydown', function(e){ var t = e.target.closest('.bm-region'); if (t && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); show(t.getAttribute('data-r')); } });
+})();
+
+// Roadmap A67: should you train tonight.
+(function(){
+  var out = document.getElementById('tn-out'); if (!out) return;
+  var sched = {"1":[[1060,1120,"HIIT","class"]],"2":[[360,420,"HIIT","class"],[420,480,"Personal Training","pt"],[480,540,"Personal Training","pt"],[540,600,"Personal Training","pt"],[600,660,"Personal Training","pt"],[960,1020,"Personal Training","pt"],[1060,1120,"Barbell & Dumbbell","class"]],"3":[[360,420,"Barbell & Dumbbell","class"],[420,480,"Personal Training","pt"],[480,540,"Personal Training","pt"],[540,600,"Personal Training","pt"],[600,660,"Personal Training","pt"],[960,1020,"Personal Training","pt"],[1060,1120,"Functional Fitness","class"]],"4":[[360,420,"Personal Training","pt"],[420,480,"Personal Training","pt"],[480,540,"Personal Training","pt"],[540,600,"Personal Training","pt"],[600,660,"Personal Training","pt"],[1020,1080,"Personal Training","pt"],[1080,1140,"Personal Training","pt"]],"5":[[360,420,"Functional Fitness","class"],[420,480,"Personal Training","pt"],[480,540,"Personal Training","pt"],[540,600,"Personal Training","pt"],[600,660,"Personal Training","pt"]],"6":[[420,480,"Personal Training","pt"],[480,540,"Personal Training","pt"],[540,600,"Full Body Workout","class"]]}; var dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  function hm(x){ var h = Math.floor(x/60), mm = x%60; var ap = h >= 12 ? 'pm' : 'am'; h = h % 12 || 12; return h + (mm ? ':' + (mm<10?'0':'') + mm : '') + ap; }
+  function nextClass(){
+    var now = new Date(); var d = now.getDay(); var m = now.getHours()*60 + now.getMinutes();
+    for (var i = 0; i < 7; i++) { var dd = (d + i) % 7; var slots = (sched[dd] || []).filter(function(s){ return s[3] === 'class' && (i > 0 || s[0] > m); }); if (slots.length) return {s: slots[0], when: i === 0 ? 'tonight' : (i === 1 ? 'tomorrow' : 'on ' + dayNames[dd])}; }
+    return null;
+  }
+  var ids = ['tn-sleep', 'tn-stress', 'tn-energy'];
+  function run(){
+    ids.forEach(function(id){ document.getElementById(id + '-out').textContent = document.getElementById(id).value; });
+    var sleep = +document.getElementById('tn-sleep').value, stress = +document.getElementById('tn-stress').value, energy = +document.getElementById('tn-energy').value, sore = document.getElementById('tn-sore').value;
+    var nc = nextClass(); var nextEl = document.getElementById('tn-next');
+    nextEl.textContent = nc ? 'Next on the timetable: ' + nc.s[2] + ' at ' + hm(nc.s[0]) + ' ' + nc.when + '.' : 'Nothing on the timetable just now.';
+    var score = (sleep >= 7 ? 2 : sleep >= 5.5 ? 1 : 0) + (stress <= 2 ? 2 : stress <= 3 ? 1 : 0) + (energy >= 4 ? 2 : energy >= 3 ? 1 : 0);
+    var v, n;
+    if (score >= 5) { v = 'Come in and go for it.'; n = 'You are rested and switched on. This is the night to add weight or chase the finisher.'; }
+    else if (score >= 3) { v = 'Come in, work at about 80%.'; n = 'Normal night. Train, leave one rep in the tank on the big lifts, skip nothing.'; }
+    else if (score >= 1) { v = 'Come in, but dial it right down.'; n = 'Short sleep or a rough day. Lighter weights, the low-impact option in HIIT, no finisher. You will sleep better for it. Tell me at the door and I will scale the session for you.'; }
+    else { v = 'Walk, eat, bed. Train tomorrow.'; n = 'Under five hours, fried and flat is the one combination where a session costs more than it gives. A 30-minute walk and an early night, then message me tomorrow.'; }
+    if (sore !== 'none' && score >= 1) n += ' Sore ' + (sore === 'legs' ? 'legs' : sore === 'upper' ? 'shoulders or arms' : 'back') + ': we work around it, so still come. Say it before the warm-up.';
+    document.getElementById('tn-verdict').textContent = v; document.getElementById('tn-note').textContent = n;
+    var wa = document.getElementById('tn-wa'); if (wa && nc) { var base = wa.href.split('?text=')[0]; wa.href = base + '?text=' + encodeURIComponent('Hi Stevie, I am coming to ' + nc.s[2] + ' at ' + hm(nc.s[0]) + ' ' + nc.when + '. Slept ' + sleep + 'h, stress ' + stress + '/5, energy ' + energy + '/5' + (sore !== 'none' ? ', ' + sore + ' a bit sore' : '') + '.'); }
+  }
+  ids.concat(['tn-sore']).forEach(function(id){ document.getElementById(id).addEventListener('input', run); });
+  run();
+})();
+
+// Roadmap B74: meal builder.
+(function(){
+  var list = document.getElementById('mb-list'); if (!list) return;
+  var F = [["Chicken breast, cooked",100,"g",165,31,0,3.6],["Chicken thigh, cooked, skinless",100,"g",209,26,0,11],["Turkey mince 2%, cooked",100,"g",150,30,0,3],["Beef mince 5%, cooked",100,"g",170,27,0,6],["Salmon fillet, cooked",100,"g",208,22,0,13],["Cod or haddock, cooked",100,"g",105,24,0,1],["Tuna, tinned in spring water, drained",100,"g",110,25,0,1],["Prawns, cooked",100,"g",99,24,0,1],["Egg, large",1,"egg",78,6.5,0.5,5.5],["Egg whites",100,"g",52,11,0.7,0.2],["Greek yoghurt 0%",100,"g",57,10,4,0.2],["Cottage cheese",100,"g",98,11,3,4],["Skyr",100,"g",63,11,4,0.2],["Semi-skimmed milk",100,"ml",47,3.5,4.8,1.7],["Whey protein scoop",1,"scoop",120,24,3,2],["Cheddar",30,"g",125,7.5,0,10.5],["Tofu, firm",100,"g",117,12,2,7],["Quorn pieces",100,"g",94,14,3,2.7],["Lentils, cooked",100,"g",116,9,20,0.4],["Chickpeas, tinned, drained",100,"g",139,7,22,2.5],["Kidney beans, tinned, drained",100,"g",100,7,15,0.7],["Baked beans",100,"g",80,5,13,0.4],["Basmati rice, cooked",100,"g",130,3,28,0.4],["Microwave rice pouch",1,"pouch",330,7,68,2.5],["Pasta, cooked",100,"g",131,5,25,1.1],["Potato, boiled",100,"g",87,2,20,0.1],["Jacket potato, medium",1,"potato",190,4.5,43,0.3],["Sweet potato, baked",100,"g",90,2,21,0.2],["Wholemeal bread, slice",1,"slice",90,4,15,1.2],["Wrap, tortilla",1,"wrap",190,5,32,4.5],["Oats",40,"g",150,5,24,3],["Banana, medium",1,"banana",105,1.3,27,0.4],["Apple, medium",1,"apple",95,0.5,25,0.3],["Berries",100,"g",45,1,9,0.3],["Broccoli, cooked",100,"g",35,2.4,7,0.4],["Mixed veg, frozen, cooked",100,"g",60,3,10,0.5],["Salad, big bowl",1,"bowl",30,2,5,0.3],["Peppers and onion, cooked",100,"g",40,1,8,0.5],["Avocado, half",1,"half",120,1.5,6,11],["Peanut butter",15,"g",90,4,3,7.5],["Olive oil",10,"ml",90,0,0,10],["Butter",10,"g",74,0,0,8],["Hummus",30,"g",90,2.4,4,7],["Fajita or curry sauce, jar",100,"g",90,1.5,10,5],["Protein bar",1,"bar",200,20,18,7],["Beer, pint of lager",1,"pint",210,1.5,15,0],["Wine, 175ml glass",1,"glass",160,0,4,0],["Chocolate, 4 squares",1,"serve",130,1.5,14,7.5]]; var plate = [];
+  function n1(x){ return Math.round(x * 10) / 10; }
+  function render(){
+    list.innerHTML = plate.map(function(p, i){ var f = F[p.i]; return '<li><b>' + f[0] + '</b> × ' + p.q + ' <span class="muted">' + Math.round(f[3]*p.q) + ' kcal · ' + n1(f[4]*p.q) + 'g protein</span> <button type="button" class="chip mb-del" data-i="' + i + '" aria-label="Remove">×</button></li>'; }).join('');
+    var k = 0, pr = 0, c = 0, fa = 0;
+    plate.forEach(function(p){ var f = F[p.i]; k += f[3]*p.q; pr += f[4]*p.q; c += f[5]*p.q; fa += f[6]*p.q; });
+    document.getElementById('mb-kcal').textContent = Math.round(k); document.getElementById('mb-p').textContent = Math.round(pr);
+    document.getElementById('mb-c').textContent = Math.round(c); document.getElementById('mb-f').textContent = Math.round(fa);
+    var t = +document.getElementById('mb-target').value, pt = +document.getElementById('mb-ptarget').value, msg = [];
+    if (t) msg.push(Math.round(k) + ' of your ' + t + ' kcal for the day (' + Math.round(k / t * 100) + '%)');
+    if (pt) msg.push(Math.round(pr) + ' of ' + pt + 'g protein');
+    if (!plate.length) msg = ['Add something to the plate.'];
+    document.getElementById('mb-vs').textContent = msg.join(' · ');
+    var wa = document.getElementById('mb-wa');
+    wa.href = 'https://wa.me/?text=' + encodeURIComponent('My plate: ' + plate.map(function(p){ return F[p.i][0] + ' x' + p.q; }).join(', ') + '. ' + Math.round(k) + ' kcal, ' + Math.round(pr) + 'g protein, ' + Math.round(c) + 'g carbs, ' + Math.round(fa) + 'g fat. (clydebankpt.com/tools/meal-builder)');
+  }
+  document.getElementById('mb-add').addEventListener('click', function(){ var i = +document.getElementById('mb-food').value, q = +document.getElementById('mb-qty').value || 1; plate.push({i: i, q: q}); render(); });
+  document.getElementById('mb-clear').addEventListener('click', function(){ plate = []; render(); });
+  list.addEventListener('click', function(e){ var b = e.target.closest('.mb-del'); if (b) { plate.splice(+b.getAttribute('data-i'), 1); render(); } });
+  ['mb-target', 'mb-ptarget'].forEach(function(id){ document.getElementById(id).addEventListener('input', render); });
+  render();
+})();
