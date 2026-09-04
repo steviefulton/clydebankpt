@@ -246,8 +246,8 @@ footer .fine{border-top:1px solid var(--line);padding-top:14px;display:flex;flex
 @media (max-width:760px){footer .cols{grid-template-columns:1fr}}
 .callbar{display:none}
 @media (max-width:960px){
-.callbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;position:fixed;bottom:0;left:0;right:0;padding:10px 12px;background:var(--bg);border-top:1px solid var(--line);z-index:30}
-.callbar .btn{padding:13px;font-size:1.1rem}
+.callbar{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;position:fixed;bottom:0;left:0;right:0;padding:10px 12px;background:var(--bg);border-top:1px solid var(--line);z-index:30}
+.callbar .btn{padding:13px 8px;font-size:1rem;white-space:nowrap}
 body{padding-bottom:72px}
 }
 .watermark{position:absolute;left:-2vw;bottom:-.18em;font-family:"Big Shoulders Display",sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(9rem,26vw,24rem);line-height:1;color:transparent;-webkit-text-stroke:1px var(--line-strong);opacity:.35;pointer-events:none;user-select:none;white-space:nowrap;z-index:0}
