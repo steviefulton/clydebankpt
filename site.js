@@ -149,7 +149,7 @@
       var t = new Date(el.getAttribute('data-start')).getTime(); var d = t - now;
       if (d <= 0) { el.textContent = 'Started this week. Message Stevie to join late. '; return; }
       var days = Math.floor(d / 86400000), hrs = Math.floor((d % 86400000) / 3600000);
-      el.textContent = (days > 0 ? days + (days === 1 ? ' day ' : ' days ') + hrs + 'h to go. ' : hrs + ' hours to go. ');
+      el.textContent = (days > 0 ? days + (days === 1 ? ' day to go. ' : ' days to go. ') : (hrs > 0 ? hrs + (hrs === 1 ? ' hour to go. ' : ' hours to go. ') : 'Starts today. '));
     });
   }
   tick(); setInterval(tick, 60000);
