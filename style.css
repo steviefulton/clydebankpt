@@ -673,3 +673,8 @@ a.area{display:block;text-decoration:none;color:inherit}a.area:hover h3{color:va
 .srule p{margin:0}
 .mood-scale{display:flex;justify-content:space-between;gap:6px;font-size:.8rem;margin:2px 0 0}
 .support{margin-top:28px;padding:22px 24px;border:1px solid var(--line-strong);border-radius:6px;background:var(--panel)}
+.questions h2{margin-top:40px}
+.qa{display:grid;gap:14px;margin:0}
+.qa div{padding:16px 18px;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+.qa dt{font-weight:800;margin:0 0 6px}
+.qa dd{margin:0}
