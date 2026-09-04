@@ -1,7 +1,7 @@
 // Service worker for clydebankpt.com (roadmap B102/B103): network first, cache as the fallback, so a deploy is
 // never hidden behind a stale copy and the timetable, prices, protein sheet and recipes still open with no signal.
 // The version is the build's site.js hash, so every deploy that changes the scripts swaps the cache.
-var VERSION = 'sf-ecb137d09f';
+var VERSION = 'sf-0f29b1eed2';
 var PRECACHE = ['/', '/timetable/', '/prices/', '/start/', '/protein/', '/recipes/', '/tools/', '/offline/', '/style.css', '/site.js', '/img/logo-192.png'];
 
 self.addEventListener('install', function (e) {

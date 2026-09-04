@@ -666,3 +666,10 @@ a.area{display:block;text-decoration:none;color:inherit}a.area:hover h3{color:va
 .mb-list li{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .mb-del{padding:2px 9px;line-height:1.2}
 .mb-totals{font-size:1.15rem}
+.rules{list-style:none;margin:0;padding:0;display:grid;gap:14px;max-width:820px}
+.rule{display:grid;grid-template-columns:72px 1fr;gap:16px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:22px 24px}
+.rule .n{font-family:"Big Shoulders Display",sans-serif;font-weight:900;font-size:2.4rem;line-height:1;color:var(--red)}
+.rule h3{margin:0 0 6px;font-size:1.4rem}
+.rule p{margin:0}
+.mood-scale{display:flex;justify-content:space-between;gap:6px;font-size:.8rem;margin:2px 0 0}
+.support{margin-top:28px;padding:22px 24px;border:1px solid var(--line-strong);border-radius:6px;background:var(--panel)}
