@@ -3,3 +3,4 @@ Allow: /
 Disallow: /members/
 Sitemap: https://clydebankpt.com/sitemap.xml
 Sitemap: https://clydebankpt.com/video-sitemap.xml
+Sitemap: https://clydebankpt.com/image-sitemap.xml

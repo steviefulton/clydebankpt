@@ -682,3 +682,11 @@ a.area{display:block;text-decoration:none;color:inherit}a.area:hover h3{color:va
 .clip-row{display:grid;grid-template-columns:minmax(200px,280px) 1fr;gap:32px;align-items:center}
 .clip-row .actions{display:flex;gap:10px;flex-wrap:wrap;margin:0}
 @media (max-width:700px){.clip-row{grid-template-columns:1fr}.clip-row .clip{max-width:280px}}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-top:18px}
+.gal-item{margin:0;background:#131316;border:1px solid #2A2A31;border-radius:8px;overflow:hidden}
+.gal-item img{display:block;width:100%;height:auto}
+.gal-clips{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-top:18px}
+.gal-clip{flex:none;width:auto}
+.gal-clip video{display:block;width:100%;height:auto;background:#000}
+.gal-item figcaption,.gal-clip figcaption{position:static;display:block;padding:10px 12px;font-size:.82rem;line-height:1.35;background:none;color:var(--muted)}
+.gal-item figcaption strong,.gal-clip figcaption strong{display:block;color:#F4F1EC;font-weight:600;margin-bottom:2px}
