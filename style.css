@@ -678,3 +678,7 @@ a.area{display:block;text-decoration:none;color:inherit}a.area:hover h3{color:va
 .qa div{padding:16px 18px;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
 .qa dt{font-weight:800;margin:0 0 6px}
 .qa dd{margin:0}
+.clip-band{padding:clamp(40px,6vw,72px) 0;border-top:1px solid var(--line)}
+.clip-row{display:grid;grid-template-columns:minmax(200px,280px) 1fr;gap:32px;align-items:center}
+.clip-row .actions{display:flex;gap:10px;flex-wrap:wrap;margin:0}
+@media (max-width:700px){.clip-row{grid-template-columns:1fr}.clip-row .clip{max-width:280px}}
