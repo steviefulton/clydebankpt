@@ -381,3 +381,6 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
   function run(){ var v = +r.value; document.getElementById('md-out').textContent = v; document.getElementById('md-text').textContent = T[v][0]; document.getElementById('md-note').textContent = T[v][1]; document.getElementById('support').classList.toggle('on', v <= 2); }
   r.addEventListener('input', run); run();
 })();
+
+// Roadmap C157: after a WhatsApp tap on /start, show the reviews line.
+(function(){ var p=document.getElementById('st-after'); if(!p) return; document.querySelectorAll('a[href*="wa.me"]').forEach(function(a){ a.addEventListener('click', function(){ p.hidden=false; }); }); })();
