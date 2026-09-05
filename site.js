@@ -394,3 +394,20 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
 
 // Roadmap C157: after a WhatsApp tap on /start, show the reviews line.
 (function(){ var p=document.getElementById('st-after'); if(!p) return; document.querySelectorAll('a[href*="wa.me"]').forEach(function(a){ a.addEventListener('click', function(){ p.hidden=false; }); }); })();
+
+(function(){
+  if (location.pathname.indexOf('/8-week-package') !== 0) return;
+  try { if (sessionStorage.getItem('sf_nudge')) return; } catch (e) {}
+  function send(name){ try { if (window.gtag) gtag('event', name, {page_path: location.pathname}); } catch (e) {} }
+  setTimeout(function(){
+    if (document.hidden) return;
+    var n = document.createElement('div'); n.className = 'nudge'; n.setAttribute('role', 'status');
+    n.innerHTML = '<p><b>Want the timetable on your phone?</b> Message me TIMETABLE and I\'ll send this week\'s times and the next start date.</p>' +
+      '<a class="btn btn-red" href="https://wa.me/447376941421?text=TIMETABLE%20(via%20clydebankpt.com%2F8-week-package%20after%2040s)" target="_blank" rel="noopener">WhatsApp TIMETABLE</a>' +
+      '<button type="button" class="x" aria-label="Close">\u00d7</button>';
+    document.body.appendChild(n); send('nudge_view');
+    function done(){ n.remove(); try { sessionStorage.setItem('sf_nudge', '1'); } catch (e) {} }
+    n.querySelector('.x').addEventListener('click', done);
+    n.querySelector('a').addEventListener('click', function(){ send('nudge_click'); done(); });
+  }, 40000);
+})();
