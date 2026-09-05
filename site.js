@@ -125,7 +125,17 @@
 })();
 
 (function(){
-  function send(name, params){ try { if (window.gtag) gtag('event', name, params || {}); } catch (e) {} }
+  var heroV = '';
+  try {
+    var hs = document.getElementById('hero-sub');
+    if (hs) {
+      heroV = localStorage.getItem('sf_hero') || (Math.random() < 0.5 ? 'A' : 'B');
+      try { localStorage.setItem('sf_hero', heroV); } catch (e) {}
+      if (heroV === 'B' && hs.getAttribute('data-b')) hs.textContent = hs.getAttribute('data-b');
+    }
+  } catch (e) {}
+  function send(name, params){ try { params = params || {}; if (heroV) params.variant = heroV; if (window.gtag) gtag('event', name, params); } catch (e) {} }
+  if (heroV) send('hero_view', {page: location.pathname});
   document.addEventListener('click', function(e){
     var a = e.target.closest('a'); if (!a) return;
     var h = a.getAttribute('href') || '';
