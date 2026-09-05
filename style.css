@@ -116,7 +116,7 @@ background:radial-gradient(60% 50% at 85% 20%, var(--red-soft), transparent 70%)
 .rating b{color:var(--text);font-variant-numeric:tabular-nums}
 .rise{animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
 .rise.d1{animation-delay:.08s}.rise.d2{animation-delay:.16s}.rise.d3{animation-delay:.24s}
-@keyframes rise{from{transform:translateY(14px);opacity:.001}to{transform:none;opacity:1}}
+@keyframes rise{from{transform:translateY(14px)}to{transform:none}}  
 @media (max-width:960px){.hero .grid{grid-template-columns:1fr}}
 .hero.sub{padding-bottom:clamp(40px,6vw,72px)}
 .hero.sub h1{font-size:clamp(2.8rem,7.5vw,6rem)}
