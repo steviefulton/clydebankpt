@@ -383,7 +383,7 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
   var r = document.getElementById('md'); if (!r) return;
   var T = {
     1: ['Today is about getting through it.', 'Forget the session. Ring one of the numbers below, or message me and I will ring you. There is no version of this where you are a bother.'],
-    2: ['Come in if you can. Say nothing if you want.', 'Low days are the ones training helps most, and nobody in the room will ask you a thing. A light session and a walk home. If it has been like this for a couple of weeks, the GP line below is the one to use.'],
+    2: ['Come in if you can. Say nothing if you want.', 'Low days are the ones training helps most, and nobody in the gym will ask you a thing. A light session and a walk home. If it has been like this for a couple of weeks, the GP line below is the one to use.'],
     3: ['Flat is normal. Move anyway.', 'A session or a thirty-minute walk usually lifts a flat day a notch. Do the easy version and count it.'],
     4: ['Alright is a good day to train properly.', 'Use it. Add a bit to the bar or chase the finisher.'],
     5: ['Good. Bank it.', 'Note what made today good and do it again tomorrow. Then come in and lift something.']
