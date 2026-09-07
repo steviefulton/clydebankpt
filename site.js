@@ -424,6 +424,24 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
 })();
 
 
+// ROADMAP-4 C108: outside 6am to 9pm the Call buttons become Message buttons (nobody answers a phone mid-class or asleep)
+(function(){
+  var h = new Date().getHours(); if (h >= 6 && h < 21) return;
+  document.querySelectorAll('.hero .actions a[href^="tel:"], .cta-band a[href^="tel:"], .mobile-cta a[href^="tel:"]').forEach(function(a){
+    a.href = 'https://wa.me/447376941421?text=' + encodeURIComponent('Hi Stevie, can you call me back? Best time is ');
+    a.textContent = 'Message me, I call you back'; a.target = '_blank'; a.rel = 'noopener';
+  });
+})();
+
+// ROADMAP-4 H468: outbound clicks to the app stores, Instagram, Facebook, Google Maps
+(function(){
+  document.addEventListener('click', function(e){
+    var a = e.target.closest('a[href^="http"]'); if (!a) return;
+    var m = /apps\.apple|play\.google|instagram\.com|facebook\.com|maps\.apple|google\.com\/maps|tiktok\.com/.exec(a.href); if (!m) return;
+    try { if (window.gtag) gtag('event', 'outbound_click', {site: m[0], page_path: location.pathname}); } catch (err) {}
+  }, {passive: true});
+})();
+
 // ROADMAP-4 A21: native share on guides and the timetable, copy-link fallback
 (function(){
   if (!/^\/(guides\/.+|timetable\/)/.test(location.pathname)) return;
