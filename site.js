@@ -393,7 +393,15 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
 })();
 
 // Roadmap C157: after a WhatsApp tap on /start, show the reviews line.
-(function(){ var p=document.getElementById('st-after'); if(!p) return; document.querySelectorAll('a[href*="wa.me"]').forEach(function(a){ a.addEventListener('click', function(){ p.hidden=false; }); }); })();
+(function(){ var p=document.getElementById('st-after');
+  document.querySelectorAll('a[href*="wa.me"]').forEach(function(a){ a.addEventListener('click', function(){
+    if(p){ p.hidden=false; return; }
+    if(document.querySelector('.sent-note')) return;
+    var n=document.createElement('div'); n.className='sent-note'; n.setAttribute('role','status');
+    n.innerHTML='<b>Sent?</b> I read every message myself and reply as soon as I am off the gym floor. If WhatsApp did not open, text or call <a href="tel:+447376941421">07376 941421</a>.<button type="button" class="x" aria-label="Close">\u00d7</button>';
+    document.body.appendChild(n); n.querySelector('.x').addEventListener('click',function(){ n.remove(); });
+    setTimeout(function(){ if(n.parentNode) n.remove(); }, 20000);
+  }); }); })();
 
 (function(){
   if (location.pathname.indexOf('/8-week-package') !== 0) return;
