@@ -124,9 +124,9 @@
     } else {
       t.textContent='The 8-Week Package. £205, everything included.';
       w.textContent=ans.freq==='5'?'You want to train a lot. Every class on the timetable plus Personal Training slots is the most training you can buy for the money.':ans.time==='early'?'Three 6am classes and Personal Training slots from 7am. Your week has a shape already.':'Coached classes with a good crowd, Personal Training slots, a nutrition plan and a measured start and finish.';
-      ['Every coached class, Monday to Saturday','Personal Training slots included','Nutrition plan written for you','Week 1 and week 8 measurements','Next start: Monday 28 September'].forEach(function(x){var li=document.createElement('li');li.textContent=x;p.appendChild(li);});
+      ['Every coached class, Monday to Saturday','Personal Training slots included','Nutrition plan written for you','Week 1 and week 8 measurements','Next start: Monday the 28th of September'].forEach(function(x){var li=document.createElement('li');li.textContent=x;p.appendChild(li);});
       document.getElementById('q-link').href='/8-week-package/';
-      document.getElementById('q-wa').href='https://wa.me/447376941421?text='+encodeURIComponent('Hi Stevie, the quiz on clydebankpt.com says the 8-Week Package is my fit. Can I get a place for 28 September?');
+      document.getElementById('q-wa').href='https://wa.me/447376941421?text='+encodeURIComponent('Hi Stevie, the quiz on clydebankpt.com says the 8-Week Package is my fit. Can I get a place for the 28th of September?');
     }
     document.getElementById('qout').hidden=false; document.getElementById('qout').scrollIntoView({behavior:'smooth'});
     if(window.gtag) gtag('event','tool_quiz',{result:one?'one_to_one':'eight_week'});
