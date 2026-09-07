@@ -88,9 +88,9 @@
 <section class="section"><div class="wrap tool">
   <form id="parq" class="parq" autocomplete="on">
     <div class="cb-form">
-      <label>Your name <input type="text" name="name" required placeholder="First and last name"></label>
+      <label>Your name <input type="text" name="name" required placeholder="First and last name" autocomplete="name"></label>
       <label>Date of birth <input type="date" name="dob"></label>
-      <label>Mobile <input type="tel" name="phone" placeholder="07..."></label>
+      <label>Mobile <input type="tel" name="phone" placeholder="07..." autocomplete="tel" inputmode="tel"></label>
     </div>
     <h2 style="margin-top:28px">Health</h2>
     <p class="muted">Answer honestly. A "Yes" does not stop you training; it tells Stevie what to plan around, and sometimes means a quick word with your GP first.</p>
@@ -100,7 +100,7 @@
     <div class="cb-form">
       <label>Name <input type="text" name="ec_name"></label>
       <label>Relationship <input type="text" name="ec_rel" placeholder="partner, parent, friend"></label>
-      <label>Their mobile <input type="tel" name="ec_phone"></label>
+      <label>Their mobile <input type="tel" name="ec_phone" autocomplete="tel" inputmode="tel"></label>
     </div>
     <label style="display:block;margin-top:16px"><input type="checkbox" name="consent" required> I confirm the answers are true, and I understand Stevie will use them only to plan my training.</label>
     <div class="actions" style="margin-top:20px">
