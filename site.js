@@ -13,7 +13,10 @@
     });
     menu.addEventListener('click', function(e){
       if (e.target.closest('a')) { menu.classList.remove('open'); burger.setAttribute('aria-expanded','false'); burger.textContent = 'Menu'; document.body.classList.remove('menu-open'); }
-    });
+    });    // A15: Escape closes and returns focus; opening moves focus to the first link
+    function closeMenu(){ menu.classList.remove('open'); burger.setAttribute('aria-expanded','false'); burger.textContent = 'Menu'; document.body.classList.remove('menu-open'); }
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && menu.classList.contains('open')) { closeMenu(); burger.focus(); } });
+    burger.addEventListener('click', function(){ if (menu.classList.contains('open')) { var f = menu.querySelector('a'); if (f) setTimeout(function(){ f.focus(); }, 60); } });
   }
 
   // Enquiry form: composes a WhatsApp message and opens the chat. No server needed.
@@ -418,4 +421,48 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
     n.querySelector('.x').addEventListener('click', done);
     n.querySelector('a').addEventListener('click', function(){ send('nudge_click'); done(); });
   }, 40000);
+})();
+
+
+// ROADMAP-4 A21: native share on guides and the timetable, copy-link fallback
+(function(){
+  if (!/^\/(guides\/.+|timetable\/)/.test(location.pathname)) return;
+  var host = document.querySelector('.byline') || document.querySelector('.tt-share');
+  if (!host) return;
+  var b = document.createElement('button'); b.type = 'button'; b.className = 'share-btn'; b.textContent = navigator.share ? 'Share this page' : 'Copy link';
+  b.addEventListener('click', function(){
+    var data = {title: document.title, url: location.href.split('#')[0]};
+    try { if (window.gtag) gtag('event', 'share_click', {page_path: location.pathname}); } catch (e) {}
+    if (navigator.share) { navigator.share(data).catch(function(){}); return; }
+    try { navigator.clipboard.writeText(data.url).then(function(){ b.textContent = 'Link copied'; setTimeout(function(){ b.textContent = 'Copy link'; }, 2000); }); } catch (e) {}
+  });
+  host.insertAdjacentElement('afterend', b);
+})();
+
+// ROADMAP-4 A22: add-to-home-screen prompt on the members area and timetable, once, dismissable
+(function(){
+  if (!/^\/(members|timetable)\//.test(location.pathname)) return;
+  try { if (localStorage.getItem('sf_install_dismissed')) return; } catch (e) {}
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    var n = document.createElement('div'); n.className = 'sent-note install-note'; n.setAttribute('role', 'status');
+    n.innerHTML = '<b>Add Sanctuary to your home screen?</b> One tap to the timetable and the members area, works offline.<br><button type="button" class="btn btn-red add">Add</button><button type="button" class="btn btn-ghost no">Not now</button><button type="button" class="x" aria-label="Close">\u00d7</button>';
+    document.body.appendChild(n);
+    function bye(){ n.remove(); try { localStorage.setItem('sf_install_dismissed', '1'); } catch (err) {} }
+    n.querySelector('.add').addEventListener('click', function(){ e.prompt(); try { if (window.gtag) gtag('event', 'install_prompt_accept'); } catch (err) {} bye(); });
+    n.querySelector('.no').addEventListener('click', bye); n.querySelector('.x').addEventListener('click', bye);
+  });
+})();
+
+// ROADMAP-4 C110: scroll depth (50, 90) and first red button seen, once per page view
+(function(){
+  if (!('IntersectionObserver' in window)) return;
+  var sent = {};
+  function ev(name, extra){ if (sent[name]) return; sent[name] = true; try { if (window.gtag) gtag('event', name, Object.assign({page_path: location.pathname}, extra || {})); } catch (e) {} }
+  window.addEventListener('scroll', function(){
+    var h = document.documentElement; var pct = (h.scrollTop + h.clientHeight) / h.scrollHeight;
+    if (pct > 0.5) ev('scroll_50'); if (pct > 0.9) ev('scroll_90');
+  }, {passive: true});
+  var cta = document.querySelector('main .btn-red, .hero .btn-red');
+  if (cta) { var io = new IntersectionObserver(function(en){ if (en[0].isIntersecting) { ev('cta_view'); io.disconnect(); } }); io.observe(cta); }
 })();
