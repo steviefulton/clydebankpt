@@ -737,3 +737,11 @@ input,select,textarea{font-size:16px}
 @media (max-width:360px){.nut table{font-size:.85rem}.nut th,.nut td{padding:6px 3px}.nut .nut-build{grid-template-columns:1fr}}
 .share-btn{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:6px 14px;border:1px solid var(--line-strong);border-radius:999px;background:none;color:inherit;font:inherit;font-size:.9rem;cursor:pointer;margin:8px 0 0}
 .install-note .btn{margin:8px 8px 0 0}
+.cta-band{background:#B71C22;color:#F4F1EC}.cta-band .cta-copy{opacity:1;color:#F4F1EC}.cta-band h2{color:#F4F1EC}
+.week .wk{color:#FF8A8E}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .week .wk{color:#B71C22}}
+:root[data-theme="light"] .week .wk{color:#B71C22}
+.quotes:focus-visible,.res-grid:focus-visible,.clips:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+#next-class{margin:0 0 10px;color:var(--text-2)}
+.nut-search{width:100%;padding:10px 12px;font:inherit;font-size:16px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:inherit;margin:8px 0 14px}
+.nut .hit{outline:2px solid var(--nr);outline-offset:2px}
