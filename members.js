@@ -152,7 +152,7 @@ function sfMembersDash(){
   });
   // C61: the dashboard, from the page and the phone's own logs
   var dash = document.getElementById('m-dash'); var cards = [];
-  var wk = root.querySelector('#thisweek h2'); if (wk) cards.push(['This week', wk.textContent.trim(), '#thisweek']);
+  var wk = root.querySelector('#thisweek h2'); if (wk) cards.push(['This week', wk.textContent.replace(/\s*(Hide|Show)\s*$/, '').trim(), '#thisweek']);
   var today = root.querySelector('#today'); if (today) { var tp = today.querySelector('p'); var tt = tp ? tp.textContent.trim() : today.textContent.trim(); cards.push(['Today', tt.split(/(?<=[.!])\s/)[0].slice(0, 120), '#today']); }
   var streak = 0; try { var hb = JSON.parse(localStorage.getItem('sf_habits_v1') || '{}'); var d = new Date(); for (var i = 0; i < 60; i++) { var k = d.toISOString().slice(0, 10); var v = hb[k]; var any = v && (Array.isArray(v) ? v.some(Boolean) : Object.keys(v).some(function(x){ return v[x]; })); if (!any) { if (i === 0) { d.setDate(d.getDate() - 1); continue; } break; } streak++; d.setDate(d.getDate() - 1); } } catch (e) {}
   cards.push(['Habit streak', streak ? streak + ' day' + (streak === 1 ? '' : 's') + ' with a tick' : 'No ticks yet. Five a day, on the tracker.', '/tools/8-week-tracker/#habits']);
@@ -171,7 +171,7 @@ function sfMembersMore(){
   function wa(text){ var a = document.querySelector('#dash a[href^="https://wa.me/"]'); var base = a ? a.getAttribute('href').split('?')[0] : 'https://wa.me/'; return base + '?text=' + encodeURIComponent(text); }
   // C66 tour, once
   var tour = document.getElementById('m-tour');
-  if (tour && !get('sf_m_tour_done', false)) { tour.hidden = false; document.getElementById('m-tour-done').addEventListener('click', function(){ tour.hidden = true; set('sf_m_tour_done', true); }); }
+  if (tour && !get('sf_m_tour_done', false) && get('sf_start_mode', 'start') === 'ongoing') { tour.hidden = false; document.getElementById('m-tour-done').addEventListener('click', function(){ tour.hidden = true; set('sf_m_tour_done', true); }); }
   // C70 print this week
   var pb = document.getElementById('m-tour-print');
   if (pb) pb.addEventListener('click', function(){ document.body.classList.add('print-week'); setTimeout(function(){ window.print(); document.body.classList.remove('print-week'); }, 50); });
@@ -388,7 +388,7 @@ function sfMembersStart(){
   // shown by default until done, or until the block is past week one; the choice is remembered
   var allDone = Object.keys(ticks).filter(function(k){ return ticks[k]; }).length >= items.length;
   var mode = get('sf_start_mode', null); if (mode === null) mode = (allDone || wk > 1) ? 'ongoing' : 'start';
-  function apply(){ box.hidden = mode !== 'start'; show.hidden = mode === 'start'; set('sf_start_mode', mode); }
+  function apply(){ box.hidden = mode !== 'start'; show.hidden = mode === 'start'; set('sf_start_mode', mode); var tour = document.getElementById('m-tour'); if (tour) { if (mode === 'start') tour.hidden = true; else if (!get('sf_m_tour_done', false)) tour.hidden = false; } }
   document.getElementById('m-start-hide').addEventListener('click', function(){ mode = 'ongoing'; apply(); });
   document.getElementById('m-start-again').addEventListener('click', function(){ mode = 'start'; ticks = {}; paint(); apply(); box.scrollIntoView({block: 'start'}); });
   paint(); apply();

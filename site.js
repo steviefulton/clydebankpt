@@ -828,7 +828,7 @@ document.addEventListener('input', function(e){ var t = e.target; if (t && t.cla
 function sfMailAlts(root){
   var scope = root || document; var email = 'sanctuary@clydebankpt.com';
   scope.querySelectorAll('main a.btn[href^="https://wa.me/44"], #members a.btn[href^="https://wa.me/44"]').forEach(function(a){
-    if (a.dataset.mailAlt || a.closest('.callbar') || a.closest('.nav')) return; a.dataset.mailAlt = '1';
+    if (a.dataset.mailAlt || a.dataset.nomail || a.closest('.callbar') || a.closest('.nav')) return; a.dataset.mailAlt = '1';
     var m = document.createElement('a'); m.className = 'mail-alt'; m.href = 'mailto:' + email; m.textContent = 'or email';
     m.addEventListener('click', function(){ var t = ''; try { t = decodeURIComponent((a.getAttribute('href').split('?text=')[1] || '').replace(/\+/g, ' ')); } catch (e) {} m.href = 'mailto:' + email + '?subject=' + encodeURIComponent('From clydebankpt.com') + '&body=' + encodeURIComponent(t || 'Hi Stevie, '); if (window.gtag) gtag('event', 'email_click', {alt: 1}); });
     a.parentNode.insertBefore(m, a.nextSibling);
