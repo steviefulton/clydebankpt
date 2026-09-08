@@ -759,3 +759,10 @@ html.save-data img{image-rendering:auto}
 }
 @media (min-width:901px) and (max-width:1399px){ .navlinks li.sec{display:none} }
 @media (min-width:901px) and (max-width:1099px){ .brand small{display:none} .navlinks a{font-size:.86rem} .navlinks{gap:10px} .nav .btn{padding:10px 14px;font-size:1rem} }
+.tool-guide{margin-bottom:34px}
+.goal-btns{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 18px}
+.goal-btns .btn{font-size:1rem;padding:11px 16px}
+.goal-btns .btn[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+.goal-steps{max-width:62ch;padding-left:1.3em;margin:0;display:grid;gap:10px;color:var(--text-2)}
+.goal-steps a{color:var(--text)}
+.all-tools{margin:0 0 16px}
