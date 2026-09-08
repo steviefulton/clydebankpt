@@ -751,3 +751,11 @@ html.save-data video,html.save-data .instagram-media,html.save-data #instagram .
 html.save-data .clip::after{content:"Clip not loaded: Save data is on";display:block;padding:12px;color:var(--muted);font-size:.9rem}
 html.save-data img{image-rendering:auto}
 .btn .kw{font-size:.72em;font-weight:600;letter-spacing:.08em;margin-left:.2em;padding-left:.6em;border-left:1px solid currentColor;opacity:.85}
+@media (min-width:901px){
+.nav .wrap{height:auto;min-height:72px}
+.navlinks{flex-wrap:nowrap;gap:clamp(10px,1.3vw,22px)}
+.navlinks a,.brand b,.brand small,.nav .btn{white-space:nowrap}
+.navlinks a{font-size:.9rem}
+}
+@media (min-width:901px) and (max-width:1399px){ .navlinks li.sec{display:none} }
+@media (min-width:901px) and (max-width:1099px){ .brand small{display:none} .navlinks a{font-size:.86rem} .navlinks{gap:10px} .nav .btn{padding:10px 14px;font-size:1rem} }
