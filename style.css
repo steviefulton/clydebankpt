@@ -934,3 +934,9 @@ html.tt-plan .tt-panel li.c,html.tt-plan .tt-panel li.p{cursor:pointer}
 .start-list li.done label{color:var(--muted)}
 .start-list li.done b{text-decoration:line-through}
 .mail-alt{display:inline-block;margin:0 10px;font-weight:600;color:var(--text-2);text-decoration:underline;padding:10px 4px;white-space:nowrap}
+.consent-block label{display:block;margin:6px 0}
+.terms-block{margin-top:14px;border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--panel)}
+.terms-block summary{cursor:pointer;font-weight:600}
+.terms-block p{font-size:.92rem;margin:8px 0}
+.mnav .more-btn{border:1px dashed var(--line-strong)}
+.mnav .more-btn.open{border-style:solid}

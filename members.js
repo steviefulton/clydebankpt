@@ -111,8 +111,10 @@ function sfMembersDash(){
   function hash(str){ var h = 0; for (var i = 0; i < str.length; i++) { h = (h * 31 + str.charCodeAt(i)) | 0; } return String(h); }
   // C62: sticky nav with where-you-are and C64: new dots
   var nav = document.getElementById('m-nav'); var ul = nav.querySelector('ul');
+  var LABELS = {welcome: 'Start', today: 'Today', 'first-week': 'First week', 'parq-members': 'Questionnaire', 'pt-booking': 'Book PT', thisweek: 'This week', bookfit: 'BookFit app', nutrition: 'Nutrition', plan: 'Meal plan', log: 'Log', planb: 'Ill or away', admin: 'Your block', plans: 'Files', updates: 'Updates', wall: 'Wall', 'when-life-happens': 'Bad week', pblog: 'PBs', measure: 'Measure days', 'members-faq': 'Questions', feedback: 'Tell Stevie', 'home-programme': 'Home days', dash: 'Top'};
+  var PRIMARY = ['thisweek', 'parq-members', 'pt-booking', 'bookfit', 'nutrition', 'plan', 'log', 'plans', 'wall', 'admin'];
   secs.forEach(function(s){
-    var li = document.createElement('li'); var a = document.createElement('a'); a.href = '#' + s.id; a.textContent = label(s); li.appendChild(a);
+    var li = document.createElement('li'); var a = document.createElement('a'); a.href = '#' + s.id; a.textContent = LABELS[s.id] || label(s); li.appendChild(a); if (PRIMARY.indexOf(s.id) < 0) { li.className = 'more-item'; li.hidden = true; }
     if (s.id === 'updates' || s.id === 'wall' || s.id === 'plans') {
       var key = 'sf_m_seen_' + s.id, now = hash(s.textContent.replace(/\s+/g, ' ')), seen = null;
       try { seen = localStorage.getItem(key); } catch (e) {}
@@ -122,6 +124,8 @@ function sfMembersDash(){
     }
     ul.appendChild(li);
   });
+  var moreLi = document.createElement('li'); var moreBtn = document.createElement('a'); moreBtn.href = '#dash'; moreBtn.textContent = 'More'; moreBtn.className = 'more-btn'; moreLi.appendChild(moreBtn); ul.appendChild(moreLi);
+  moreBtn.addEventListener('click', function(e){ e.preventDefault(); var open = moreBtn.classList.toggle('open'); ul.querySelectorAll('li.more-item').forEach(function(li){ li.hidden = !open; }); moreBtn.textContent = open ? 'Less' : 'More'; });
   if ('IntersectionObserver' in window) {
     var io = new IntersectionObserver(function(entries){ entries.forEach(function(en){ if (en.isIntersecting) { ul.querySelectorAll('a').forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === '#' + en.target.id); }); } }); }, {rootMargin: '-40% 0px -55% 0px'});
     secs.forEach(function(s){ io.observe(s); });
@@ -302,7 +306,7 @@ function sfMembersAdmin(){
   var cons = document.getElementById('mconsent'); if (cons) cons.querySelectorAll('a[href^="mailto:"], a[href^="https://wa.me/"], button[type="submit"]').forEach(function(a){ a.addEventListener('click', function(){ mark('sf_consent_sent'); }); });
   function status(){
     var ul = document.getElementById('status-list'); ul.innerHTML = '';
-    [['Health questionnaire', get('sf_parq_sent', null), '#parq-members'], ['Photo and results consent', get('sf_consent_sent', null), '#measure'], ['Weekly review', (get('sf_review_last', {}) || {}).at, '#review']].forEach(function(x){
+    [['Health questionnaire, consent and terms', get('sf_parq_sent', null), '#parq-members'], ['Weekly review', (get('sf_review_last', {}) || {}).at, '#review']].forEach(function(x){
       var li = document.createElement('li'); var a = document.createElement('a'); a.href = x[2]; a.textContent = x[0]; li.appendChild(a); li.appendChild(document.createTextNode(x[1] ? ': sent ' + fmt(x[1]) : ': not sent yet')); li.className = x[1] ? 'done' : ''; ul.appendChild(li);
     });
     document.getElementById('status-med').hidden = wk !== 4;
