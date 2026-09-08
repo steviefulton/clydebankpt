@@ -746,3 +746,7 @@ input,select,textarea{font-size:16px}
 .nut-search{width:100%;padding:10px 12px;font:inherit;font-size:16px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:inherit;margin:8px 0 14px}
 .nut .hit{outline:2px solid var(--nr);outline-offset:2px}
 .tt-panel li.hit{outline:2px solid var(--red);outline-offset:3px;border-radius:6px}
+.field-msg{color:var(--red);margin:6px 0 0}
+html.save-data video,html.save-data .instagram-media,html.save-data #instagram .ig-grid{display:none}
+html.save-data .clip::after{content:"Clip not loaded: Save data is on";display:block;padding:12px;color:var(--muted);font-size:.9rem}
+html.save-data img{image-rendering:auto}

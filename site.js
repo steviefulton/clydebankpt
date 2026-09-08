@@ -57,6 +57,11 @@
     if (label) label.textContent = names[d];
     applyFilter();
   }
+  // ROADMAP-4 A17: swipe between days on a phone
+  (function(){ var wrap = root.querySelector('.tt-panels'); if (!wrap) return; var x0 = null, y0 = null;
+    wrap.addEventListener('touchstart', function(e){ x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, {passive: true});
+    wrap.addEventListener('touchend', function(e){ if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null; if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx)) return;
+      var cur = 0; tabs.forEach(function(t, i){ if (t.getAttribute('aria-selected') === 'true') cur = i; }); var next = dx < 0 ? Math.min(tabs.length - 1, cur + 1) : Math.max(0, cur - 1); if (next !== cur) tabs[next].click(); }, {passive: true}); })();
   function applyFilter(){
     panels.forEach(function(p){
       var shown = 0;
@@ -78,7 +83,7 @@
   var ig = document.getElementById('instagram');
   var igLoaded = false;
   function loadIg(){
-    if (igLoaded) return; igLoaded = true;
+    if (igLoaded || document.documentElement.classList.contains('save-data')) return; igLoaded = true;
     var sc = document.createElement('script'); sc.async = true; sc.src = 'https://www.instagram.com/embed.js'; document.body.appendChild(sc);
   }
   if ('IntersectionObserver' in window) {
@@ -86,7 +91,7 @@
       entries.forEach(function(en){
         var el = en.target;
         if (el.tagName === 'VIDEO') {
-          if (en.isIntersecting) { if (!el.src) { el.src = el.getAttribute('data-src'); } el.play().catch(function(){}); }
+          if (en.isIntersecting && !document.documentElement.classList.contains('save-data')) { if (!el.src) { el.src = el.getAttribute('data-src'); } el.play().catch(function(){}); }
           else { el.pause(); }
         } else if (en.isIntersecting) { loadIg(); io.unobserve(el); }
       });
@@ -184,9 +189,10 @@
 
 (function(){
   var root=document.documentElement;
-  try{ var th=localStorage.getItem('sf_theme'); if(th) root.setAttribute('data-theme',th); if(localStorage.getItem('sf_text')==='big') root.classList.add('big-text'); }catch(e){}
+  try{ var th=localStorage.getItem('sf_theme'); if(th) root.setAttribute('data-theme',th); if(localStorage.getItem('sf_text')==='big') root.classList.add('big-text'); if(localStorage.getItem('sf_data')==='1'){ root.classList.add('save-data'); var pb=document.querySelector('.pref[data-pref=data]'); if(pb) pb.textContent='Save data: on'; } }catch(e){}
   document.querySelectorAll('.pref').forEach(function(b){ b.addEventListener('click',function(){
     if(b.dataset.pref==='theme'){ var cur=root.getAttribute('data-theme'); var dark=cur?cur==='dark':!window.matchMedia('(prefers-color-scheme: light)').matches; var next=dark?'light':'dark'; root.setAttribute('data-theme',next); try{localStorage.setItem('sf_theme',next);}catch(e){} }
+    else if(b.dataset.pref==='data'){ root.classList.toggle('save-data'); try{localStorage.setItem('sf_data',root.classList.contains('save-data')?'1':'');}catch(e){} b.textContent=root.classList.contains('save-data')?'Save data: on':'Save data'; }
     else { root.classList.toggle('big-text'); try{localStorage.setItem('sf_text',root.classList.contains('big-text')?'big':'');}catch(e){} }
   }); });
   var f=document.querySelector('input.filter'); if(!f) return;
@@ -513,4 +519,24 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
   }, {passive: true});
   var cta = document.querySelector('main .btn-red, .hero .btn-red');
   if (cta) { var io = new IntersectionObserver(function(en){ if (en[0].isIntersecting) { ev('cta_view'); io.disconnect(); } }); io.observe(cta); }
+})();
+
+
+// ROADMAP-4 A13: a plain message under the field instead of the browser bubble
+(function(){
+  document.querySelectorAll('form').forEach(function(f){
+    f.setAttribute('novalidate', '');
+    f.addEventListener('submit', function(e){
+      var bad = Array.prototype.filter.call(f.querySelectorAll('input, select, textarea'), function(el){ return !el.checkValidity(); });
+      f.querySelectorAll('.field-msg').forEach(function(m){ m.remove(); });
+      if (!bad.length) return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      bad.forEach(function(el){
+        var m = document.createElement('p'); m.className = 'field-msg small'; m.setAttribute('role', 'alert');
+        m.textContent = el.type === 'checkbox' ? 'Tick this box to send it.' : el.validity.valueMissing ? 'This one is needed.' : el.type === 'email' ? 'That does not look like an email address.' : el.type === 'tel' ? 'That does not look like a phone number.' : 'Check this one.';
+        var host = el.closest('label') || el; host.insertAdjacentElement('afterend', m);
+      });
+      bad[0].focus();
+    }, true);
+  });
 })();
