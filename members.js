@@ -360,3 +360,34 @@ function sfMembersFiles(){
   try { localStorage.setItem('sf_files_seen', names); } catch (e) {}
 }
 document.addEventListener('sf:open', sfMembersFiles); sfMembersFiles();
+
+// Start-of-block checklist (Stevie 8 Sept): new members get the things to do in order; ongoing members see everything
+function sfMembersStart(){
+  var box = document.getElementById('m-start'); if (!box || box.dataset.ready) return; box.dataset.ready = '1';
+  function get(k, d){ try { var v = JSON.parse(localStorage.getItem(k) || 'null'); return v === null ? d : v; } catch (e) { return d; } }
+  function set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function wa(text){ var a = document.querySelector('#dash .chips-lg a[href^="https://wa.me/"]'); var base = a ? a.getAttribute('href').split('?')[0] : 'https://wa.me/'; return base + '?text=' + encodeURIComponent(text); }
+  var ticks = get('sf_start_ticks', {}); var items = box.querySelectorAll('#m-start-list li'); var show = document.getElementById('m-start-show');
+  var wk = (function(){ var h = document.querySelector('#thisweek h2'); var m = h && h.textContent.match(/Week (\d) of 8/); return m ? +m[1] : 0; })();
+  // self-ticking from what the phone already knows
+  if (get('sf_parq_sent', null)) ticks.parq = true; if (get('sf_calc', null)) ticks.calc = true; if (get('sf_consent_sent', null)) ticks.consent = true;
+  if ((get('sf_tt_picks', []) || []).length >= 3) ticks.picks = true; if (matchMedia('(display-mode: standalone)').matches || navigator.standalone) ticks.home = true;
+  function paint(){
+    var done = 0; items.forEach(function(li){ var k = li.getAttribute('data-k'); var cb = li.querySelector('input'); cb.checked = !!ticks[k]; li.classList.toggle('done', !!ticks[k]); if (ticks[k]) done++; });
+    document.getElementById('m-start-progress').textContent = done + ' of ' + items.length + ' done' + (done === items.length ? '. You are set. Turn up.' : '');
+    set('sf_start_ticks', ticks);
+  }
+  items.forEach(function(li){ var k = li.getAttribute('data-k'); li.querySelector('input').addEventListener('change', function(e){ ticks[k] = e.target.checked; paint(); }); });
+  var ready = document.getElementById('m-start-wa'); ready.href = wa('READY: Hi Stevie, questionnaire sent, app downloaded, first three sessions picked. Anything else before day one?');
+  ready.addEventListener('click', function(){ ticks.ready = true; paint(); });
+  var parq = document.getElementById('parq-members'); if (parq) parq.querySelectorAll('a[href^="https://wa.me/"], a[href^="mailto:"]').forEach(function(a){ a.addEventListener('click', function(){ ticks.parq = true; paint(); }); });
+  // shown by default until done, or until the block is past week one; the choice is remembered
+  var allDone = Object.keys(ticks).filter(function(k){ return ticks[k]; }).length >= items.length;
+  var mode = get('sf_start_mode', null); if (mode === null) mode = (allDone || wk > 1) ? 'ongoing' : 'start';
+  function apply(){ box.hidden = mode !== 'start'; show.hidden = mode === 'start'; set('sf_start_mode', mode); }
+  document.getElementById('m-start-hide').addEventListener('click', function(){ mode = 'ongoing'; apply(); });
+  document.getElementById('m-start-again').addEventListener('click', function(){ mode = 'start'; ticks = {}; paint(); apply(); box.scrollIntoView({block: 'start'}); });
+  paint(); apply();
+  if (window.gtag) gtag('event', 'members_start_view', {mode: mode});
+}
+document.addEventListener('sf:open', sfMembersStart); sfMembersStart();

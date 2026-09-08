@@ -926,3 +926,10 @@ html.tt-plan .tt-panel li.c,html.tt-plan .tt-panel li.p{cursor:pointer}
 .md-day.v3{background:var(--line-strong);color:var(--text)}
 .md-day.v4,.md-day.v5{background:#1f7a3a;color:#fff;border-color:#1f7a3a}
 [hidden]:not(.tt-panel){display:none!important}
+.start-block{margin:0 0 22px;padding:16px 18px;border:2px solid var(--red);border-radius:14px;background:var(--panel)}
+.start-block h3{margin:4px 0 4px}
+.start-list{margin:10px 0 0;padding-left:1.4em;display:grid;gap:10px}
+.start-list li label{display:block;cursor:pointer}
+.start-list li input{width:20px;height:20px;vertical-align:-4px;margin-right:6px;accent-color:var(--red)}
+.start-list li.done label{color:var(--muted)}
+.start-list li.done b{text-decoration:line-through}
