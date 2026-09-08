@@ -933,3 +933,4 @@ html.tt-plan .tt-panel li.c,html.tt-plan .tt-panel li.p{cursor:pointer}
 .start-list li input{width:20px;height:20px;vertical-align:-4px;margin-right:6px;accent-color:var(--red)}
 .start-list li.done label{color:var(--muted)}
 .start-list li.done b{text-decoration:line-through}
+.mail-alt{display:inline-block;margin:0 10px;font-weight:600;color:var(--text-2);text-decoration:underline;padding:10px 4px;white-space:nowrap}

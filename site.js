@@ -35,6 +35,7 @@
       var msg = 'Hi Stevie, I\'m ' + (name || 'interested') + '. I\'d like to book a free consult.';
       if (pkg) msg += ' I\'m interested in: ' + pkg + '.';
       if (goal) msg += ' My goal: ' + goal;
+      if (e.submitter && e.submitter.dataset && e.submitter.dataset.send === 'email') { location.href = 'mailto:sanctuary@clydebankpt.com?subject=' + encodeURIComponent('Free consult') + '&body=' + encodeURIComponent(msg); if (window.gtag) gtag('event', 'email_click', {form: 1}); return; }
       window.open('https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
       var done = document.getElementById('wa-done');
       if (done) { done.hidden = false; }
@@ -821,3 +822,15 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
 
 // ROADMAP-5 B43: alc-cell readout beside each drink slider
 document.addEventListener('input', function(e){ var t = e.target; if (t && t.classList && t.classList.contains('alc') && t.nextElementSibling && t.nextElementSibling.tagName === 'OUTPUT') t.nextElementSibling.textContent = t.value; });
+
+// Stevie 8 Sept: wherever there is a WhatsApp button to Stevie, an email option sits beside it (same message)
+function sfMailAlts(root){
+  var scope = root || document; var email = 'sanctuary@clydebankpt.com';
+  scope.querySelectorAll('main a.btn[href^="https://wa.me/44"], #members a.btn[href^="https://wa.me/44"]').forEach(function(a){
+    if (a.dataset.mailAlt || a.closest('.callbar') || a.closest('.nav')) return; a.dataset.mailAlt = '1';
+    var m = document.createElement('a'); m.className = 'mail-alt'; m.href = 'mailto:' + email; m.textContent = 'or email';
+    m.addEventListener('click', function(){ var t = ''; try { t = decodeURIComponent((a.getAttribute('href').split('?text=')[1] || '').replace(/\+/g, ' ')); } catch (e) {} m.href = 'mailto:' + email + '?subject=' + encodeURIComponent('From clydebankpt.com') + '&body=' + encodeURIComponent(t || 'Hi Stevie, '); if (window.gtag) gtag('event', 'email_click', {alt: 1}); });
+    a.parentNode.insertBefore(m, a.nextSibling);
+  });
+}
+sfMailAlts(); document.addEventListener('sf:open', function(){ sfMailAlts(document.getElementById('members')); });
