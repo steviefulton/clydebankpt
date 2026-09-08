@@ -910,3 +910,18 @@ details.local summary{cursor:pointer;font-weight:600}
 details.local p{margin:8px 0 0}
 .sec-count{display:block;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-family:Archivo,Arial,sans-serif;font-weight:600}
 .file-tag{margin-left:6px}
+.ring{--p:0;width:120px;height:120px;border-radius:50%;background:conic-gradient(var(--red) calc(var(--p) * 1%),var(--line) 0);display:grid;place-items:center;margin:8px 0 14px}
+.ring span{width:92px;height:92px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-family:"Big Shoulders Display","BSD Fallback Impact","BSD Fallback Arial",Impact,sans-serif;font-size:2.2rem;font-weight:800}
+.alc-cell{display:flex;align-items:center;gap:8px}
+.alc-cell input[type=range]{flex:1;min-width:90px}
+.alc-cell output{min-width:2ch;font-weight:700;text-align:right}
+#tn-list{margin:6px 0 10px}
+html.tt-plan .tt-panel li.c,html.tt-plan .tt-panel li.p{cursor:pointer}
+.tt-panel li.picked{outline:3px solid var(--red);outline-offset:3px;border-radius:6px;background:var(--panel)}
+.tt-planbar{margin:12px 0;padding:12px 16px;border:1px solid var(--red);border-radius:10px;background:var(--panel)}
+.tt-planbar p{margin:0 0 8px}
+.md-strip{display:flex;gap:6px;margin:12px 0 8px}
+.md-day{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--panel);font:inherit;font-weight:700;cursor:pointer;color:var(--muted)}
+.md-day.v1,.md-day.v2{background:#b71c22;color:#fff;border-color:#b71c22}
+.md-day.v3{background:var(--line-strong);color:var(--text)}
+.md-day.v4,.md-day.v5{background:#1f7a3a;color:#fff;border-color:#1f7a3a}

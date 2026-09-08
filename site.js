@@ -344,6 +344,8 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
     wrap.querySelectorAll('.bm-region').forEach(function(p){ p.classList.toggle('on', p.getAttribute('data-r') === r); });
     wrap.querySelectorAll('.chip').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-r') === r); });
     var out = wrap.querySelector('.bm-out'); if (out && window.innerWidth < 760) out.scrollIntoView({behavior: 'smooth', block: 'start'});
+    var wa = wrap.querySelector('.bm-out a[href^="https://wa.me/"]'); var lab = wrap.querySelector('.chip[data-r="' + r + '"]'); if (wa && lab) { var base = wa.getAttribute('href').split('?')[0]; wa.setAttribute('href', base + '?text=' + encodeURIComponent('SORE: Hi Stevie, my ' + lab.textContent.trim().toLowerCase() + ' is sore. The body map says you train around it. Can I still come this week?')); }
+    if (window.gtag) gtag('event', 'body_map', {region: r});
   }
   wrap.addEventListener('click', function(e){ var t = e.target.closest('[data-r]'); if (t) show(t.getAttribute('data-r')); });
   wrap.addEventListener('keydown', function(e){ var t = e.target.closest('.bm-region'); if (t && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); show(t.getAttribute('data-r')); } });
@@ -365,6 +367,7 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
     var sleep = +document.getElementById('tn-sleep').value, stress = +document.getElementById('tn-stress').value, energy = +document.getElementById('tn-energy').value, sore = document.getElementById('tn-sore').value;
     var nc = nextClass(); var nextEl = document.getElementById('tn-next');
     nextEl.textContent = nc ? 'Next on the timetable: ' + nc.s[2] + ' at ' + hm(nc.s[0]) + ' ' + nc.when + '.' : 'Nothing on the timetable just now.';
+    var tl = document.getElementById('tn-list'); if (tl) { var now2 = new Date(), m2 = now2.getHours() * 60 + now2.getMinutes(); var left = (sched[now2.getDay()] || []).filter(function(s){ return s[0] > m2; }); tl.innerHTML = ''; left.slice(0, 6).forEach(function(s){ var li = document.createElement('li'); var mins = s[0] - m2; li.textContent = hm(s[0]) + ' ' + s[2] + (s[3] === 'class' ? '' : ' (booked)') + ' · in ' + (mins >= 60 ? Math.floor(mins / 60) + 'h ' : '') + (mins % 60) + 'm'; tl.appendChild(li); }); if (!left.length) { var li0 = document.createElement('li'); li0.className = 'muted'; li0.textContent = 'Nothing else on today.'; tl.appendChild(li0); } }
     var score = (sleep >= 7 ? 2 : sleep >= 5.5 ? 1 : 0) + (stress <= 2 ? 2 : stress <= 3 ? 1 : 0) + (energy >= 4 ? 2 : energy >= 3 ? 1 : 0);
     var v, n;
     if (score >= 5) { v = 'Come in and go for it.'; n = 'You are rested and switched on. This is the night to add weight or chase the finisher.'; }
@@ -417,6 +420,13 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
   };
   function run(){ var v = +r.value; document.getElementById('md-out').textContent = v; document.getElementById('md-text').textContent = T[v][0]; document.getElementById('md-note').textContent = T[v][1]; document.getElementById('support').classList.toggle('on', v <= 2); }
   r.addEventListener('input', run); run();
+  // ROADMAP-5 B45: a seven-day strip, on this phone only
+  (function(){ var strip = document.createElement('div'); strip.className = 'md-strip'; strip.setAttribute('aria-label', 'Your last seven check-ins'); var note = document.getElementById('md-note'); if (!note) return; note.parentNode.insertBefore(strip, note.nextSibling);
+    function load(){ try { return JSON.parse(localStorage.getItem('sf_mood') || '{}'); } catch (e) { return {}; } }
+    function paint(){ var m = load(); strip.innerHTML = ''; var d = new Date(); d.setDate(d.getDate() - 6); for (var i = 0; i < 7; i++) { var k = d.toISOString().slice(0, 10); var v = m[k]; var b = document.createElement('button'); b.type = 'button'; b.className = 'md-day' + (v ? ' v' + v : ''); b.textContent = ['S','M','T','W','T','F','S'][d.getDay()]; b.title = k + (v ? ': ' + v + ' of 5' : ''); b.setAttribute('aria-label', b.title); (function(val){ b.addEventListener('click', function(){ if (val) { r.value = val; run(); } }); })(v); strip.appendChild(b); d.setDate(d.getDate() + 1); } }
+    var saveBtn = document.createElement('button'); saveBtn.type = 'button'; saveBtn.className = 'nut-btn'; saveBtn.textContent = 'Keep today on this phone'; strip.parentNode.insertBefore(saveBtn, strip.nextSibling);
+    saveBtn.addEventListener('click', function(){ var m = load(); m[new Date().toISOString().slice(0, 10)] = +r.value; var keys = Object.keys(m).sort(); while (keys.length > 60) { delete m[keys.shift()]; } try { localStorage.setItem('sf_mood', JSON.stringify(m)); } catch (e) {} paint(); if (window.sfToast) sfToast('Kept'); });
+    paint(); })();
 })();
 
 // Roadmap C157: after a WhatsApp tap on /start, show the reviews line.
@@ -550,6 +560,16 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
   var panels = document.querySelector('.tt-panels'); if (!panels) return;
   var wa = document.querySelector('a[href^="https://wa.me/"]'); var base = wa ? wa.getAttribute('href').split('?')[0] : null; if (!base) return;
   var rows = panels.querySelectorAll('li.c');
+  var picks = []; try { picks = JSON.parse(localStorage.getItem('sf_tt_picks') || '[]'); } catch (e) {}
+  var bar = document.createElement('div'); bar.className = 'tt-planbar'; bar.hidden = true; bar.innerHTML = '<p><b id="tt-plan-n"></b> <span id="tt-plan-list"></span></p><p class="chips-lg"><a class="btn btn-red" id="tt-plan-wa" target="_blank" rel="noopener" href="/start/">Send Stevie my first week</a><button type="button" class="btn btn-ghost" id="tt-plan-done">Done</button></p>'; panels.parentNode.insertBefore(bar, panels.nextSibling);
+  var share = document.querySelector('.tt-share'); var planBtn = document.createElement('button'); planBtn.type = 'button'; planBtn.className = 'btn btn-ghost tt-plan-btn'; planBtn.textContent = 'Plan my first week';
+  if (share) { share.appendChild(document.createTextNode(' · ')); share.appendChild(planBtn); }
+  function key(li){ return li.closest('.tt-panel').querySelector('h3').textContent + ' ' + li.querySelector('.t').textContent + ' ' + li.querySelector('.n').textContent; }
+  function paintPicks(){ var base = document.querySelector('a[href^="https://wa.me/"]'); var b = base ? base.getAttribute('href').split('?')[0] : 'https://wa.me/'; Array.prototype.forEach.call(rows, function(li){ li.classList.toggle('picked', picks.indexOf(key(li)) >= 0); }); document.getElementById('tt-plan-n').textContent = picks.length + ' of 3 picked'; document.getElementById('tt-plan-list').textContent = picks.join(' · '); document.getElementById('tt-plan-wa').href = b + '?text=' + encodeURIComponent('FIRST CLASS: Hi Stevie, my first week: ' + (picks.join(', ') || 'still picking') + '. Can I come to those? (via clydebankpt.com/timetable)'); }
+  function pick(li){ var k = key(li); var i = picks.indexOf(k); if (i >= 0) picks.splice(i, 1); else { if (picks.length >= 3) picks.shift(); picks.push(k); } try { localStorage.setItem('sf_tt_picks', JSON.stringify(picks)); } catch (e) {} paintPicks(); }
+  planBtn.addEventListener('click', function(){ var on = document.documentElement.classList.toggle('tt-plan'); bar.hidden = !on; planBtn.textContent = on ? 'Picking: tap three sessions' : 'Plan my first week'; paintPicks(); if (on && window.gtag) gtag('event', 'timetable_plan'); });
+  bar.addEventListener('click', function(e){ if (e.target.id === 'tt-plan-done') planBtn.click(); });
+  if (picks.length) paintPicks();
   Array.prototype.forEach.call(rows, function(li){
     li.setAttribute('tabindex', '0'); li.setAttribute('role', 'button'); li.setAttribute('aria-expanded', 'false'); li.classList.add('tappable');
     function toggle(){
@@ -565,7 +585,7 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
       li.appendChild(card); li.setAttribute('aria-expanded', 'true');
       if (window.gtag) gtag('event', 'timetable_card', {class_name: name, day: day});
     }
-    li.addEventListener('click', function(e){ if (e.target.closest('a')) return; toggle(); });
+    li.addEventListener('click', function(e){ if (e.target.closest('a')) return; if (document.documentElement.classList.contains('tt-plan')) { pick(li); return; } toggle(); });
     li.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
   });
 })();
