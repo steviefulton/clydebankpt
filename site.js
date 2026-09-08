@@ -424,6 +424,22 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
 })();
 
 
+// ROADMAP-4 C109: on a guide, after 60% of the page, one quiet note per session: want this coached?
+(function(){
+  if (location.pathname.indexOf('/guides/') !== 0 || location.pathname === '/guides/') return;
+  try { if (sessionStorage.getItem('sf_guide_nudge')) return; } catch (e) {}
+  var shown = false;
+  window.addEventListener('scroll', function(){
+    if (shown) return; var h = document.documentElement; if ((h.scrollTop + h.clientHeight) / h.scrollHeight < 0.6) return;
+    shown = true; try { sessionStorage.setItem('sf_guide_nudge', '1'); } catch (e) {}
+    var n = document.createElement('div'); n.className = 'sent-note'; n.setAttribute('role', 'status');
+    n.innerHTML = '<b>Want this coached instead of read?</b> Message me START and we sort a free ten-minute consult. <a class="btn btn-red" style="margin-top:8px" href="https://wa.me/447376941421?text=START%20(via%20' + encodeURIComponent('clydebankpt.com' + location.pathname) + ')" target="_blank" rel="noopener">Message START</a><button type="button" class="x" aria-label="Close">\u00d7</button>';
+    document.body.appendChild(n); n.querySelector('.x').addEventListener('click', function(){ n.remove(); });
+    try { if (window.gtag) gtag('event', 'guide_nudge_view', {page_path: location.pathname}); } catch (e) {}
+    setTimeout(function(){ if (n.parentNode) n.remove(); }, 25000);
+  }, {passive: true});
+})();
+
 // ROADMAP-4 C108: outside 6am to 9pm the Call buttons become Message buttons (nobody answers a phone mid-class or asleep)
 (function(){
   var h = new Date().getHours(); if (h >= 6 && h < 21) return;
