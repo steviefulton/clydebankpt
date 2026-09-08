@@ -702,3 +702,73 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
     f.addEventListener('submit', function(){ try { localStorage.removeItem(key); } catch (e) {} });
   });
 })();
+
+// ROADMAP-5 round 7: toasts, count-up, stars, FAQ deep links and one-at-a-time, FAQ search across both pages, was-this-useful, glossary cards, copy address
+(function(){
+  var path = location.pathname; var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.sfToast = function(msg){ var t = document.querySelector('.toast'); if (!t) { t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); } t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(function(){ t.classList.remove('show'); }, 2200); };
+  // B37 numbers count up once, B49 stars light up
+  if ('IntersectionObserver' in window) {
+    var nums = document.querySelectorAll('.badge .big, .rating b');
+    var io = new IntersectionObserver(function(entries){ entries.forEach(function(en){ if (!en.isIntersecting) return; io.unobserve(en.target); var el = en.target; var node = el.firstChild; if (!node || node.nodeType !== 3) return; var raw = node.nodeValue.trim(); var m = raw.match(/^(\d+(?:\.\d+)?)$/); if (!m || reduce) return; var target = +m[1], dec = (m[1].split('.')[1] || '').length, t0 = performance.now(); (function step(now){ var k = Math.min(1, (now - t0) / 700); var v = target * (1 - Math.pow(1 - k, 3)); node.nodeValue = v.toFixed(dec); if (k < 1) requestAnimationFrame(step); else node.nodeValue = m[1]; })(t0); setTimeout(function(){ node.nodeValue = m[1]; }, 900); }); }, {threshold: 0.5});
+    nums.forEach(function(n){ io.observe(n); });
+    var so = new IntersectionObserver(function(entries){ entries.forEach(function(en){ if (en.isIntersecting) { en.target.classList.add('lit'); so.unobserve(en.target); } }); }, {threshold: 0.5});
+    document.querySelectorAll('.stars').forEach(function(s){ so.observe(s); });
+  }
+  // B48: one open at a time inside a FAQ block, and the URL remembers the question
+  document.querySelectorAll('details[id^="q-"]').forEach(function(d){
+    d.addEventListener('toggle', function(){ if (!d.open) return; var box = d.parentNode; box.querySelectorAll('details[id^="q-"]').forEach(function(o){ if (o !== d && o.open) o.open = false; }); try { history.replaceState(null, '', '#' + d.id); } catch (e) {} });
+  });
+  if (location.hash && /^#q-/.test(location.hash)) { var t = document.getElementById(location.hash.slice(1)); if (t && t.tagName === 'DETAILS') { t.open = true; setTimeout(function(){ t.scrollIntoView({block: 'start'}); }, 50); } }
+  // A21: search across the FAQ and the questions page
+  if (path === '/faq/' || path === '/questions/') {
+    var input = document.getElementById('faq-filter');
+    if (!input) { var host = document.querySelector('main .questions') || document.querySelector('main .prose'); if (host) { var pf = document.createElement('p'); pf.innerHTML = '<input class="filter" id="faq-filter" type="search" placeholder="Search the questions, e.g. parking, price, kids" aria-label="Search questions">'; host.insertBefore(pf, host.firstChild); input = pf.querySelector('input'); } }
+    if (input) {
+      var idx = null, other = document.createElement('div'); other.className = 'faq-other'; other.hidden = true; input.parentNode.insertBefore(other, input.nextSibling);
+      var local = path === '/faq/' ? Array.prototype.slice.call(document.querySelectorAll('main details')) : Array.prototype.slice.call(document.querySelectorAll('main dl.qa > div'));
+      function run(){
+        var terms = input.value.toLowerCase().split(/\s+/).filter(function(w){ return w.length > 1; });
+        local.forEach(function(el){ var txt = el.textContent.toLowerCase(); el.hidden = !!terms.length && !terms.every(function(w){ return txt.indexOf(w) >= 0; }); });
+        if (path === '/questions/') document.querySelectorAll('main .questions h2').forEach(function(h){ var dl = h.nextElementSibling; if (dl && dl.tagName === 'DL') h.hidden = !Array.prototype.some.call(dl.children, function(c){ return !c.hidden; }); });
+        if (!terms.length || !idx) { other.hidden = true; return; }
+        var here = path; var hits = idx.filter(function(e){ return e.u.indexOf(here) !== 0 && terms.every(function(w){ return (e.q + ' ' + e.a).toLowerCase().indexOf(w) >= 0; }); }).slice(0, 6);
+        other.innerHTML = ''; if (!hits.length) { other.hidden = true; return; }
+        var h3 = document.createElement('p'); h3.className = 'eyebrow'; h3.textContent = 'Also answered on ' + (here === '/faq/' ? 'the questions page' : 'the FAQ'); other.appendChild(h3);
+        hits.forEach(function(e){ var d = document.createElement('details'); var s = document.createElement('summary'); s.textContent = e.q; var p = document.createElement('p'); p.textContent = e.a; var a = document.createElement('a'); a.href = e.u; a.textContent = 'Open it there'; p.appendChild(document.createTextNode(' ')); p.appendChild(a); d.appendChild(s); d.appendChild(p); other.appendChild(d); });
+        other.hidden = false;
+      }
+      input.addEventListener('input', function(){ if (!idx && window.fetch) { fetch('/faq.json').then(function(r){ return r.json(); }).then(function(j){ idx = j; run(); }).catch(function(){}); } run(); });
+    }
+    // A22: was this what you were looking for
+    var main = document.querySelector('main'); if (main && !document.querySelector('.useful')) { var u = document.createElement('section'); u.className = 'section useful'; u.innerHTML = '<div class="wrap"><p class="lede">Was this what you were looking for? <button type="button" class="btn btn-ghost" data-u="yes">Yes</button> <button type="button" class="btn btn-ghost" data-u="no">No</button></p></div>'; var cta = main.querySelector('.next-step') || main.lastElementChild; main.insertBefore(u, cta); u.addEventListener('click', function(e){ var b = e.target.closest('button[data-u]'); if (!b) return; if (window.gtag) gtag('event', 'faq_useful', {answer: b.getAttribute('data-u'), page_path: path}); u.querySelector('.lede').textContent = b.getAttribute('data-u') === 'yes' ? 'Good. Message Stevie when you are ready.' : 'Thanks. Message Stevie and ask; he replies himself.'; }); }
+  }
+  // B47: glossary cards in place
+  var glinks = document.querySelectorAll('a[href^="/glossary/#"]');
+  if (glinks.length && path !== '/glossary/' && window.fetch) {
+    var gidx = null, card = null;
+    function closeCard(){ if (card) { card.remove(); card = null; } }
+    function show(a){
+      var term = decodeURIComponent(a.getAttribute('href').split('#')[1] || '').toLowerCase();
+      function slug(t){ return t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+      var e = gidx.filter(function(x){ return slug(x.t) === term; })[0] || gidx.filter(function(x){ return slug(x.t).indexOf(term) === 0 || term.indexOf(slug(x.t)) === 0; })[0];
+      if (!e) { location.href = a.getAttribute('href'); return; }
+      closeCard(); card = document.createElement('div'); card.className = 'gcard'; card.setAttribute('role', 'dialog'); card.setAttribute('aria-label', e.t);
+      var b = document.createElement('b'); b.textContent = e.t; var p = document.createElement('p'); p.textContent = e.d; var w = document.createElement('p'); w.className = 'small'; var wa = document.createElement('a'); wa.href = e.h; wa.textContent = e.w; w.appendChild(wa); var f = document.createElement('p'); f.className = 'small'; f.innerHTML = '<a href="/glossary/">Full glossary</a> · <button type="button" class="nut-btn gclose">Close</button>';
+      card.appendChild(b); card.appendChild(p); card.appendChild(w); card.appendChild(f); document.body.appendChild(card);
+      var r = a.getBoundingClientRect(); if (innerWidth > 700) { card.style.top = (scrollY + r.bottom + 8) + 'px'; card.style.left = Math.min(r.left + scrollX, innerWidth - 340) + 'px'; } else { card.classList.add('sheet'); }
+      card.querySelector('.gclose').addEventListener('click', closeCard);
+      if (window.gtag) gtag('event', 'glossary_card', {term: e.t});
+    }
+    glinks.forEach(function(a){ a.addEventListener('click', function(ev){ ev.preventDefault(); if (gidx) { show(a); } else { fetch('/glossary.json').then(function(r){ return r.json(); }).then(function(j){ gidx = j; show(a); }).catch(function(){ location.href = a.getAttribute('href'); }); } }); });
+    document.addEventListener('click', function(e){ if (card && !card.contains(e.target) && !e.target.closest('a[href^="/glossary/#"]')) closeCard(); });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeCard(); });
+  }
+  // B53: copy the address
+  document.querySelectorAll('dt').forEach(function(dt){
+    if (!/^(Address|Where)$/.test(dt.textContent.trim())) return; var dd = dt.nextElementSibling; if (!dd || dd.querySelector('.copy-addr')) return;
+    var text = dd.textContent.replace(/\s+/g, ' ').trim(); var b = document.createElement('button'); b.type = 'button'; b.className = 'nut-btn copy-addr'; b.textContent = 'Copy address';
+    b.addEventListener('click', function(){ try { navigator.clipboard.writeText(text).then(function(){ sfToast('Address copied'); }); } catch (e) { sfToast('Long-press the address to copy it'); } });
+    dd.appendChild(document.createTextNode(' ')); dd.appendChild(b);
+  });
+})();
