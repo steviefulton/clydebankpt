@@ -583,3 +583,57 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
   }
   window.addEventListener('scroll', onScroll, {passive: true}); onScroll();
 })();
+
+// ROADMAP-5 A6/A7/A8: site search in a dialog over a small index
+(function(){
+  var openers = document.querySelectorAll('[data-open-search]'); if (!openers.length || !window.fetch) return;
+  var dlg = null, input = null, list = null, idx = null, cur = -1;
+  var USEFUL = [['/start/', 'Start here'], ['/timetable/', 'Timetable'], ['/prices/', 'Prices'], ['/8-week-package/', '8-Week Package'], ['/one-to-one-personal-training/', 'One-to-one PT'], ['/guides/', 'Guides']];
+  function build(){
+    dlg = document.createElement('dialog'); dlg.className = 'sdlg'; dlg.setAttribute('aria-label', 'Search the site');
+    dlg.innerHTML = '<form class="sform" role="search"><input type="search" name="q" placeholder="Search: timetable, prices, 6am, protein..." autocomplete="off" aria-label="Search"><button type="button" class="sclose" aria-label="Close">Close</button></form><ol class="sres" aria-live="polite"></ol><p class="small snone" hidden>Nothing matched. Most people want one of these:</p><p class="chips-lg snone-links" hidden></p>';
+    document.body.appendChild(dlg);
+    input = dlg.querySelector('input'); list = dlg.querySelector('.sres');
+    dlg.querySelector('.snone-links').innerHTML = USEFUL.map(function(u){ return '<a class="btn btn-ghost" href="' + u[0] + '">' + u[1] + '</a>'; }).join('');
+    dlg.querySelector('.sclose').addEventListener('click', close);
+    dlg.querySelector('form').addEventListener('submit', function(e){ e.preventDefault(); var a = list.querySelector('a.active') || list.querySelector('a'); if (a) location.href = a.getAttribute('href'); });
+    input.addEventListener('input', function(){ render(input.value); });
+    dlg.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+      var as = list.querySelectorAll('a'); if (!as.length) return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); cur = Math.min(as.length - 1, cur + 1); mark(as); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); cur = Math.max(0, cur - 1); mark(as); }
+    });
+    dlg.addEventListener('click', function(e){ if (e.target === dlg) close(); });
+  }
+  function mark(as){ as.forEach(function(a, i){ a.classList.toggle('active', i === cur); if (i === cur) a.focus(); }); }
+  function norm(s){ return (s || '').toLowerCase().replace(/&amp;/g, '&'); }
+  function score(e, terms){
+    var t = norm(e.t), d = norm(e.d), h = norm(e.h.join(' ')), u = norm(e.u), s = 0;
+    terms.forEach(function(w){ if (t.indexOf(w) >= 0) s += 4; if (u.indexOf(w) >= 0) s += 2; if (h.indexOf(w) >= 0) s += 2; if (d.indexOf(w) >= 0) s += 1; });
+    return s;
+  }
+  function render(q){
+    var terms = norm(q).split(/\s+/).filter(function(w){ return w.length > 1; });
+    list.innerHTML = ''; cur = -1;
+    var none = dlg.querySelectorAll('.snone, .snone-links');
+    if (!terms.length || !idx) { none.forEach(function(n){ n.hidden = true; }); return; }
+    var hits = idx.map(function(e){ return [score(e, terms), e]; }).filter(function(x){ return x[0] > 0; }).sort(function(a, b){ return b[0] - a[0]; }).slice(0, 8);
+    none.forEach(function(n){ n.hidden = hits.length > 0; });
+    hits.forEach(function(x){ var e = x[1]; var li = document.createElement('li'); li.innerHTML = '<a href="' + e.u + '"><b></b><span></span></a>'; li.querySelector('b').textContent = e.t; li.querySelector('span').textContent = e.d; list.appendChild(li); });
+    if (window.gtag && terms.length) gtag('event', 'site_search', {search_term: terms.join(' '), results: hits.length});
+  }
+  function open(prefill){
+    if (!dlg) build();
+    if (!idx) { fetch('/search.json').then(function(r){ return r.json(); }).then(function(j){ idx = j; if (input.value) render(input.value); }).catch(function(){}); }
+    if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+    if (prefill) { input.value = prefill; render(prefill); }
+    input.focus(); input.select();
+  }
+  function close(){ if (!dlg) return; if (dlg.open && typeof dlg.close === 'function') dlg.close(); else dlg.removeAttribute('open'); }
+  openers.forEach(function(b){ b.addEventListener('click', function(){ open(''); }); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) { var t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return; e.preventDefault(); open(''); }
+  });
+  if (location.pathname === '/404' || document.title.indexOf('Page not found') === 0) { var seg = decodeURIComponent(location.pathname.replace(/[\/-]+/g, ' ')).trim(); if (seg) { setTimeout(function(){ open(seg); }, 300); } }
+})();
