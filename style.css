@@ -834,3 +834,15 @@ section.m-collapsed > .wrap > *:not(h2):not(.eyebrow){display:none}
 section.m-collapsed > .wrap > h2{margin-bottom:0}
 .today-strip{padding-top:8px;padding-bottom:0}
 .today-strip .lede{margin:0}
+.log-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin-top:12px}
+.log-card{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--bg);display:grid;gap:10px;align-content:start}
+.log-card h3{margin:0}
+.log-card .tool-form{padding:0;border:0;background:none}
+.att-cal{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;max-width:340px}
+.att-cal i{display:block;aspect-ratio:1;border-radius:3px;background:var(--line)}
+.att-cal i.on{background:var(--red)}
+.ll-grid{display:grid;gap:8px}
+.ll-card{display:grid;gap:4px;padding:10px 12px;border:1px solid var(--line);border-radius:8px}
+.ll-card span{color:var(--muted);font-size:.9rem}
+.ll-card svg{color:var(--red);max-width:100%}
+.rest-disp{font-family:"Big Shoulders Display","BSD Fallback Impact","BSD Fallback Arial",Impact,sans-serif;font-size:3rem;font-weight:800;margin:0;letter-spacing:.04em}
