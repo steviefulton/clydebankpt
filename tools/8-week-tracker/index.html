@@ -86,50 +86,40 @@
 </nav>
 </header>
 <main id="main">
-<section class="hero sub"><div class="wrap"><p class="eyebrow">Members tool</p><h1>8-Week progress tracker.</h1><p class="lede">One row a week. Weight, waist, sessions, steps, energy. The tape and the calendar tell the truth the mirror hides.</p></div></section>
+<section class="hero sub"><div class="wrap"><p class="eyebrow">Members only</p><h1>8-Week progress tracker.</h1><p class="lede">One row a week. Weight, waist, sessions, steps, energy. The tape and the calendar tell the truth the mirror hides. Password from Stevie.</p></div></section>
 <section class="section"><div class="wrap tool">
-<p class="pk-note">Saved on this phone only (nothing is uploaded). Fill in a row each week, then tap <b>Send check-in</b> and it opens WhatsApp with your numbers ready to go to Stevie.</p>
-<div class="track-head"><label>Start date <input type="date" id="t-start"></label><label>Start weight (kg) <input type="number" step="0.1" id="t-w0" inputmode="decimal"></label><label>Start waist (cm) <input type="number" step="0.5" id="t-c0" inputmode="decimal"></label></div>
-<div class="table-wrap"><table class="track" id="track">
-<thead><tr><th>Week</th><th>Weight kg</th><th>Waist cm</th><th>Sessions</th><th>Avg steps</th><th>Energy 1-5</th><th>Note</th></tr></thead>
-<tbody></tbody>
-</table></div>
-<div class="stat-row" id="t-stats" hidden>
-<div class="stat"><span class="n" id="t-dw"></span><span>kg since week 1</span></div>
-<div class="stat"><span class="n" id="t-dc"></span><span>cm off the waist</span></div>
-<div class="stat"><span class="n" id="t-ds"></span><span>sessions done</span></div>
-</div>
-<div class="g-cta"><a id="t-wa" class="btn btn-red" target="_blank" rel="noopener">Send check-in to Stevie</a><button class="btn btn-ghost" id="t-clear" type="button">Clear all</button></div>
-<p class="pk-note">Finished week 8? Two minutes that help the next nervous person: <a href="/review/">leave a Google review</a>.</p>
+<form id="gate" class="tool-form" autocomplete="off">
+<label>Members password<input type="password" name="pw" autocomplete="current-password" required placeholder="From Stevie at your consult"></label>
+<label class="check"><input type="checkbox" name="keep" checked> Keep me signed in on this phone</label>
+<button class="btn btn-red" type="submit">Open</button>
+<p class="small" id="gate-msg">Not a member yet? <a href="/start/">Start here</a>: free consult, no contract.</p>
+</form>
 </div></section>
+<div id="members" hidden></div>
 <script>
 (function(){
-  var KEY='sf_tracker_v1', tb=document.querySelector('#track tbody');
-  var st; try{ st=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ st={}; }
-  st.rows=st.rows||[]; for(var i=0;i<8;i++) st.rows[i]=st.rows[i]||{};
-  ['start','w0','c0'].forEach(function(k){ var el=document.getElementById('t-'+k); el.value=st[k]||''; el.addEventListener('input',function(){ st[k]=el.value; save(); }); });
-  var cols=[['w','number','0.1'],['c','number','0.5'],['s','number','1'],['st','number','100'],['e','number','1'],['n','text','']];
-  st.rows.forEach(function(r,i){ var tr=document.createElement('tr'); tr.innerHTML='<td>'+(i+1)+'</td>'; cols.forEach(function(c){ var td=document.createElement('td'),inp=document.createElement('input'); inp.type=c[1]; if(c[2]) inp.step=c[2]; inp.inputMode=c[1]==='number'?'decimal':'text'; inp.value=r[c[0]]||''; inp.addEventListener('input',function(){ r[c[0]]=inp.value; save(); }); td.appendChild(inp); tr.appendChild(td); }); tb.appendChild(tr); });
-  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(st)); }catch(e){} render(); }
-  function render(){
-    var done=st.rows.filter(function(r){return r.w;}); var last=done[done.length-1]; var w0=+st.w0||(+st.rows[0].w||0), c0=+st.c0||(+st.rows[0].c||0);
-    var box=document.getElementById('t-stats'); box.hidden=!last; if(!last) return;
-    var dw=w0&&last.w?(+last.w-w0):0, dc=c0&&last.c?(+last.c-c0):0, ds=st.rows.reduce(function(a,r){return a+(+r.s||0);},0);
-    document.getElementById('t-dw').textContent=(dw>0?'+':'')+dw.toFixed(1); document.getElementById('t-dc').textContent=(dc>0?'+':'')+dc.toFixed(1); document.getElementById('t-ds').textContent=ds;
-    var wk=st.rows.indexOf(last)+1;
-    var msg='Week '+wk+' check-in: weight '+last.w+'kg ('+(dw>0?'+':'')+dw.toFixed(1)+' since start), waist '+(last.c||'-')+'cm, '+(last.s||0)+' sessions, avg steps '+(last.st||'-')+', energy '+(last.e||'-')+'/5. '+(last.n||'');
-    document.getElementById('t-wa').href='https://wa.me/447376941421?text='+encodeURIComponent(msg);
+  var D={salt:"KtcBYK0EkhPMNA+Fxoiluw==",iv:"ZlxLXClH7ApHS+vl",ct:"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"};
+  var b=function(s){var r=atob(s),a=new Uint8Array(r.length);for(var i=0;i<r.length;i++)a[i]=r.charCodeAt(i);return a;};
+  function open(pw,keep){
+    return crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']).then(function(k){
+      return crypto.subtle.deriveKey({name:'PBKDF2',salt:b(D.salt),iterations:200000,hash:'SHA-256'},k,{name:'AES-GCM',length:256},false,['decrypt']);
+    }).then(function(key){ return crypto.subtle.decrypt({name:'AES-GCM',iv:b(D.iv)},key,b(D.ct)); }).then(function(buf){
+      var html=new TextDecoder().decode(buf); var m=document.getElementById('members'); m.innerHTML=html; m.hidden=false; Array.prototype.forEach.call(m.querySelectorAll('script'),function(sc){var n=document.createElement('script');n.textContent=sc.textContent;sc.parentNode.replaceChild(n,sc);}); try{ document.dispatchEvent(new CustomEvent('sf:open')); }catch(e){} document.getElementById('gate').closest('section').hidden=true;
+      if(keep){ try{ localStorage.setItem('sf_members_pw',pw); }catch(e){} }
+      var foot=document.createElement('p'); foot.className='small'; foot.style.cssText='max-width:1100px;margin:24px auto;padding:0 20px';
+      foot.innerHTML='<button type="button" class="nut-btn" id="m-signout">Sign out on this phone</button> <button type="button" class="nut-btn" id="m-clear">Clear my saved numbers on this phone</button><br>Your logs stay on this phone only; nothing is sent unless you tap a WhatsApp or email button.';
+      m.appendChild(foot);
+      foot.querySelector('#m-signout').addEventListener('click',function(ev){ ev.preventDefault(); try{ localStorage.removeItem('sf_members_pw'); }catch(e){} location.reload(); });
+      foot.querySelector('#m-clear').addEventListener('click',function(ev){ ev.preventDefault(); try{ Object.keys(localStorage).filter(function(k){ return k.indexOf('sf_nut_')===0||k.indexOf('sf_parq')===0||k.indexOf('sf_habits')===0||k.indexOf('sf_tracker')===0; }).forEach(function(k){ localStorage.removeItem(k); }); }catch(e){} location.reload(); });
+      if(window.gtag) gtag('event','members_open');
+    });
   }
-  document.getElementById('t-clear').addEventListener('click',function(){ if(confirm('Clear all eight weeks on this phone?')){ try{localStorage.removeItem(KEY);}catch(e){} location.reload(); } });
-  render();
+  var f=document.getElementById('gate');
+  f.addEventListener('submit',function(e){ e.preventDefault(); var pw=f.pw.value.trim(); document.getElementById('gate-msg').textContent='Opening...';
+    open(pw,f.keep.checked).catch(function(){ document.getElementById('gate-msg').textContent='That password did not work. Check with Stevie on WhatsApp.'; }); });
+  try{ var saved=localStorage.getItem('sf_members_pw'); if(saved){ open(saved,true).catch(function(){}); } }catch(e){}
 })();
-</script><section class="section"><div class="wrap tool" id="habits">
-<p class="eyebrow">Today</p><h2>Five ticks a day.</h2>
-<p class="lede">The daily habits that move the tape. Tick them on your phone; the last seven days stay on this device.</p>
-<div class="habit-grid" data-habits="Trained or walked 30 min|Hit my protein|Stayed on plan|10,000 steps|7 hours sleep"></div>
-<p class="muted" id="habit-week"></p>
-</div></section>
-<section class="section"><div class="wrap tool"><p class="eyebrow">Prefer paper?</p><h2>Print the fridge chart.</h2><p class="lede">Eight weeks, seven days, two ticks a day: trained, and on plan. <a href="/img/print/8-week-wall-chart-A4.jpg" download="sanctuary-8-week-wall-chart.jpg">Download the A4 wall chart</a> and stick it where you will see it every morning.</p></div></section>
+</script>
 </main>
 <section class="cta-band" role="region" aria-label="Get started">
 <div class="wrap">
@@ -206,6 +196,6 @@
 <a class="btn btn-ghost" href="/timetable/">Timetable</a>
 </div>
 <a class="float-wa" href="https://wa.me/447376941421?text=Hi%20Stevie%2C%20I%27d%20like%20to%20book%20a%20free%20consult%20at%20Sanctuary%20Fitness%20(via%20clydebankpt.com%2Ftools%2F8-week-tracker)" target="_blank" rel="noopener" aria-label="WhatsApp Sanctuary Fitness"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2m0 1.67c4.55 0 8.24 3.7 8.24 8.24 0 4.55-3.69 8.24-8.24 8.24-1.5 0-2.96-.4-4.24-1.16l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.37c0-4.54 3.7-8.24 8.29-8.24M8.53 7.33c-.16 0-.43.06-.66.31-.22.25-.87.86-.87 2.07 0 1.22.89 2.39 1 2.56.14.17 1.76 2.67 4.25 3.73.59.27 1.05.42 1.41.53.59.19 1.13.16 1.56.1.48-.07 1.46-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.07-.1-.23-.16-.48-.27-.25-.14-1.47-.74-1.69-.82-.23-.08-.37-.12-.56.12-.16.25-.64.81-.78.97-.15.17-.29.19-.53.07-.26-.13-1.06-.39-2-1.23-.74-.66-1.23-1.47-1.38-1.72-.12-.24-.01-.39.11-.5.11-.11.27-.29.37-.44.13-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.11-.56-1.35-.77-1.84-.2-.48-.4-.42-.56-.43-.14 0-.3-.01-.47-.01"/></svg><span>WhatsApp</span></a>
-<script src="/site.js?v=9054a5c961" defer></script>
+<script src="/site.js?v=6086d674b9" defer></script>
 </body>
 </html>

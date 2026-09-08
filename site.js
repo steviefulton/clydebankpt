@@ -251,8 +251,8 @@
 })();
 
 // Daily habit ticks on the tracker page, kept on the phone for seven days.
-(function(){
-  var g=document.querySelector('.habit-grid'); if(!g) return;
+function sfHabits(){
+  var g=document.querySelector('.habit-grid'); if(!g||g.dataset.ready) return; g.dataset.ready='1';
   var names=g.getAttribute('data-habits').split('|'), KEY='sf_habits_v1', today=new Date().toISOString().slice(0,10), data={};
   try{ data=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ data={}; }
   Object.keys(data).forEach(function(d){ if((new Date(today)-new Date(d))/86400000>7) delete data[d]; });
@@ -266,17 +266,19 @@
   function week(){ var days=Object.keys(data).length, ticks=0; Object.keys(data).forEach(function(d){ Object.keys(data[d]).forEach(function(k){ if(data[d][k]) ticks++; }); });
     w.textContent=days?('Last '+days+' day'+(days===1?'':'s')+': '+ticks+' of '+(days*names.length)+' ticks.'):'Nothing ticked yet this week.'; }
   week();
-})();
+}
+sfHabits(); document.addEventListener('sf:open', sfHabits);
 
 // Photo compare (local only): two file inputs -> side by side plus an opacity overlay. Nothing leaves the device.
-(function(){
-  var a=document.getElementById('pc-a'), b=document.getElementById('pc-b'); if(!a||!b) return;
+function sfPhotoCompare(){
+  var a=document.getElementById('pc-a'), b=document.getElementById('pc-b'); if(!a||!b||a.dataset.ready) return; a.dataset.ready='1';
   var stage=document.getElementById('pc-stage'), ia=document.getElementById('pc-img-a'), ib=document.getElementById('pc-img-b'), oa=document.getElementById('pc-ov-a'), ob=document.getElementById('pc-ov-b'), r=document.getElementById('pc-range');
   function load(inp, img, ov){ var f=inp.files && inp.files[0]; if(!f) return; var url=URL.createObjectURL(f); img.src=url; ov.src=url; stage.hidden=false; }
   a.addEventListener('change', function(){ load(a, ia, oa); });
   b.addEventListener('change', function(){ load(b, ib, ob); });
   r.addEventListener('input', function(){ ob.style.opacity = (r.value/100); });
-})();
+}
+sfPhotoCompare(); document.addEventListener('sf:open', sfPhotoCompare);
 
 // Shopping list: ticked recipes -> merged ingredient list -> WhatsApp link and copy button.
 (function(){

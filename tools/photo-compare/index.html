@@ -5,7 +5,7 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Progress Photo Compare, Private | Sanctuary Fitness</title>
-<meta name="description" content="Put your week 1 and week 8 photos side by side or fade one into the other. Nothing is uploaded; the photos never leave your phone. Free, from Sanctuary Fitness.">
+<meta name="description" content="Members only: put your week 1 and week 8 photos side by side or fade one into the other. Nothing is uploaded; the photos never leave your phone.">
 <link rel="canonical" href="https://clydebankpt.com/tools/photo-compare/">
 <meta name="robots" content="noindex,nofollow">
 <meta name="geo.region" content="GB-WDU">
@@ -14,7 +14,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Sanctuary Fitness">
 <meta property="og:title" content="Progress Photo Compare, Private | Sanctuary Fitness">
-<meta property="og:description" content="Put your week 1 and week 8 photos side by side or fade one into the other. Nothing is uploaded; the photos never leave your phone. Free, from Sanctuary Fitness.">
+<meta property="og:description" content="Members only: put your week 1 and week 8 photos side by side or fade one into the other. Nothing is uploaded; the photos never leave your phone.">
 <meta property="og:url" content="https://clydebankpt.com/tools/photo-compare/">
 <meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image">
@@ -86,24 +86,40 @@
 </nav>
 </header>
 <main id="main">
-<section class="hero sub"><div class="wrap"><p class="eyebrow">Free tool · Private</p><h1>Week 1 next to week 8.</h1><p class="lede">Pick your two progress photos and see them side by side, or slide one over the other. Nothing is uploaded anywhere: the photos stay on your phone and disappear when you close the page.</p></div></section>
+<section class="hero sub"><div class="wrap"><p class="eyebrow">Members only</p><h1>Week 1 next to week 8.</h1><p class="lede">Pick your two progress photos and see them side by side, or slide one over the other. Nothing is uploaded anywhere: the photos stay on your phone and disappear when you close the page.</p></div></section>
 <section class="section"><div class="wrap tool">
-<div class="cb-form">
-<label>Before (week 1)<input type="file" accept="image/*" id="pc-a"></label>
-<label>After (week 8)<input type="file" accept="image/*" id="pc-b"></label>
-</div>
-<div class="pc-stage" id="pc-stage" hidden>
-<div class="pc-pair"><figure><img id="pc-img-a" alt="Before photo" width="600" height="800"><figcaption>Week 1</figcaption></figure><figure><img id="pc-img-b" alt="After photo" width="600" height="800"><figcaption>Week 8</figcaption></figure></div>
-<label class="pc-slide">Overlay: slide to fade week 1 into week 8<input type="range" id="pc-range" min="0" max="100" value="100"></label>
-<div class="pc-overlay"><img id="pc-ov-a" alt="" width="600" height="800"><img id="pc-ov-b" alt="" width="600" height="800"></div>
-</div>
-<ul class="plain">
-<li>Same spot, same light, same distance, same clothes. <a href="/guides/how-i-measure-week-one-and-week-eight/">How to take photos that compare fairly.</a></li>
-<li>Screenshot the pair if you want to keep it. The page does not save anything.</li>
-<li>The tape and the scales tell the rest: <a href="/tools/8-week-tracker/">the 8-week tracker</a>.</li>
-</ul>
-<div class="actions"><a class="btn btn-red" href="https://wa.me/447376941421?text=Hi%20Stevie%2C%20I%27d%20like%20to%20book%20a%20free%20consult%20at%20Sanctuary%20Fitness%20(via%20clydebankpt.com%2Ftools%2Fphoto-compare)" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2m0 1.67c4.55 0 8.24 3.7 8.24 8.24 0 4.55-3.69 8.24-8.24 8.24-1.5 0-2.96-.4-4.24-1.16l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.37c0-4.54 3.7-8.24 8.29-8.24M8.53 7.33c-.16 0-.43.06-.66.31-.22.25-.87.86-.87 2.07 0 1.22.89 2.39 1 2.56.14.17 1.76 2.67 4.25 3.73.59.27 1.05.42 1.41.53.59.19 1.13.16 1.56.1.48-.07 1.46-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.07-.1-.23-.16-.48-.27-.25-.14-1.47-.74-1.69-.82-.23-.08-.37-.12-.56.12-.16.25-.64.81-.78.97-.15.17-.29.19-.53.07-.26-.13-1.06-.39-2-1.23-.74-.66-1.23-1.47-1.38-1.72-.12-.24-.01-.39.11-.5.11-.11.27-.29.37-.44.13-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.11-.56-1.35-.77-1.84-.2-.48-.4-.42-.56-.43-.14 0-.3-.01-.47-.01"/></svg>Book a free consult</a></div>
+<form id="gate" class="tool-form" autocomplete="off">
+<label>Members password<input type="password" name="pw" autocomplete="current-password" required placeholder="From Stevie at your consult"></label>
+<label class="check"><input type="checkbox" name="keep" checked> Keep me signed in on this phone</label>
+<button class="btn btn-red" type="submit">Open</button>
+<p class="small" id="gate-msg">Not a member yet? <a href="/start/">Start here</a>: free consult, no contract.</p>
+</form>
 </div></section>
+<div id="members" hidden></div>
+<script>
+(function(){
+  var D={salt:"bIJAfMjkCwRdsw0hnzL/iw==",iv:"GddutJas2RhSO2zK",ct:"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"};
+  var b=function(s){var r=atob(s),a=new Uint8Array(r.length);for(var i=0;i<r.length;i++)a[i]=r.charCodeAt(i);return a;};
+  function open(pw,keep){
+    return crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']).then(function(k){
+      return crypto.subtle.deriveKey({name:'PBKDF2',salt:b(D.salt),iterations:200000,hash:'SHA-256'},k,{name:'AES-GCM',length:256},false,['decrypt']);
+    }).then(function(key){ return crypto.subtle.decrypt({name:'AES-GCM',iv:b(D.iv)},key,b(D.ct)); }).then(function(buf){
+      var html=new TextDecoder().decode(buf); var m=document.getElementById('members'); m.innerHTML=html; m.hidden=false; Array.prototype.forEach.call(m.querySelectorAll('script'),function(sc){var n=document.createElement('script');n.textContent=sc.textContent;sc.parentNode.replaceChild(n,sc);}); try{ document.dispatchEvent(new CustomEvent('sf:open')); }catch(e){} document.getElementById('gate').closest('section').hidden=true;
+      if(keep){ try{ localStorage.setItem('sf_members_pw',pw); }catch(e){} }
+      var foot=document.createElement('p'); foot.className='small'; foot.style.cssText='max-width:1100px;margin:24px auto;padding:0 20px';
+      foot.innerHTML='<button type="button" class="nut-btn" id="m-signout">Sign out on this phone</button> <button type="button" class="nut-btn" id="m-clear">Clear my saved numbers on this phone</button><br>Your logs stay on this phone only; nothing is sent unless you tap a WhatsApp or email button.';
+      m.appendChild(foot);
+      foot.querySelector('#m-signout').addEventListener('click',function(ev){ ev.preventDefault(); try{ localStorage.removeItem('sf_members_pw'); }catch(e){} location.reload(); });
+      foot.querySelector('#m-clear').addEventListener('click',function(ev){ ev.preventDefault(); try{ Object.keys(localStorage).filter(function(k){ return k.indexOf('sf_nut_')===0||k.indexOf('sf_parq')===0||k.indexOf('sf_habits')===0||k.indexOf('sf_tracker')===0; }).forEach(function(k){ localStorage.removeItem(k); }); }catch(e){} location.reload(); });
+      if(window.gtag) gtag('event','members_open');
+    });
+  }
+  var f=document.getElementById('gate');
+  f.addEventListener('submit',function(e){ e.preventDefault(); var pw=f.pw.value.trim(); document.getElementById('gate-msg').textContent='Opening...';
+    open(pw,f.keep.checked).catch(function(){ document.getElementById('gate-msg').textContent='That password did not work. Check with Stevie on WhatsApp.'; }); });
+  try{ var saved=localStorage.getItem('sf_members_pw'); if(saved){ open(saved,true).catch(function(){}); } }catch(e){}
+})();
+</script>
 </main>
 <section class="cta-band" role="region" aria-label="Get started">
 <div class="wrap">
@@ -180,6 +196,6 @@
 <a class="btn btn-ghost" href="/timetable/">Timetable</a>
 </div>
 <a class="float-wa" href="https://wa.me/447376941421?text=Hi%20Stevie%2C%20I%27d%20like%20to%20book%20a%20free%20consult%20at%20Sanctuary%20Fitness%20(via%20clydebankpt.com%2Ftools%2Fphoto-compare)" target="_blank" rel="noopener" aria-label="WhatsApp Sanctuary Fitness"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2m0 1.67c4.55 0 8.24 3.7 8.24 8.24 0 4.55-3.69 8.24-8.24 8.24-1.5 0-2.96-.4-4.24-1.16l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.37c0-4.54 3.7-8.24 8.29-8.24M8.53 7.33c-.16 0-.43.06-.66.31-.22.25-.87.86-.87 2.07 0 1.22.89 2.39 1 2.56.14.17 1.76 2.67 4.25 3.73.59.27 1.05.42 1.41.53.59.19 1.13.16 1.56.1.48-.07 1.46-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.07-.1-.23-.16-.48-.27-.25-.14-1.47-.74-1.69-.82-.23-.08-.37-.12-.56.12-.16.25-.64.81-.78.97-.15.17-.29.19-.53.07-.26-.13-1.06-.39-2-1.23-.74-.66-1.23-1.47-1.38-1.72-.12-.24-.01-.39.11-.5.11-.11.27-.29.37-.44.13-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.11-.56-1.35-.77-1.84-.2-.48-.4-.42-.56-.43-.14 0-.3-.01-.47-.01"/></svg><span>WhatsApp</span></a>
-<script src="/site.js?v=9054a5c961" defer></script>
+<script src="/site.js?v=6086d674b9" defer></script>
 </body>
 </html>
