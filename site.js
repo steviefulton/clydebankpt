@@ -65,14 +65,15 @@
   function applyFilter(){
     panels.forEach(function(p){
       var shown = 0;
-      p.querySelectorAll('li').forEach(function(li){ var ok = kind === 'all' || li.getAttribute('data-kind') === kind; li.hidden = !ok; if (ok) shown++; });
+      p.querySelectorAll('li').forEach(function(li){ var ok = kind === 'all' || li.getAttribute('data-kind') === kind || li.getAttribute('data-when') === kind; li.hidden = !ok; if (ok) shown++; });
       var empty = p.querySelector('.tt-empty');
       if (!empty) { empty = document.createElement('p'); empty.className = 'tt-empty'; empty.textContent = 'Nothing of this type on this day. Try another day.'; p.appendChild(empty); }
       empty.hidden = shown > 0;
     });
   }
   tabs.forEach(function(t){ t.addEventListener('click', function(){ show(+t.getAttribute('data-day')); }); });
-  filters.forEach(function(f){ f.addEventListener('click', function(){ kind = f.getAttribute('data-kind'); filters.forEach(function(x){ x.classList.toggle('is-on', x === f); }); applyFilter(); }); });
+  filters.forEach(function(f){ f.addEventListener('click', function(){ kind = f.getAttribute('data-kind'); filters.forEach(function(x){ x.classList.toggle('is-on', x === f); }); try { localStorage.setItem('sf_tt_kind', kind); } catch (e) {} applyFilter(); }); });
+  try { var savedKind = localStorage.getItem('sf_tt_kind'); if (savedKind) { filters.forEach(function(x){ if (x.getAttribute('data-kind') === savedKind) { kind = savedKind; filters.forEach(function(y){ y.classList.toggle('is-on', y === x); }); } }); } } catch (e) {}
   var jsDay = new Date().getDay(); // 0 Sun .. 6 Sat
   var start = jsDay === 0 ? 0 : jsDay - 1; if (start > 5) start = 5;
   show(start);
@@ -240,6 +241,7 @@
     var units=0, kcal=0;
     ins.forEach(function(i){ var v=parseFloat(i.value)||0; units+=v*parseFloat(i.getAttribute('data-u')); kcal+=v*parseInt(i.getAttribute('data-k'),10); });
     u.textContent=Math.round(units*10)/10; k.textContent=Math.round(kcal);
+    try{ localStorage.setItem('sf_alcohol', JSON.stringify({units:Math.round(units*10)/10, kcal:Math.round(kcal), at:Date.now()})); }catch(e){}
     var msg;
     if(kcal===0) msg='Type your week above.';
     else if(units<=14) msg='Under the 14-unit guideline. '+Math.round(kcal)+' kcal is about '+(kcal/250).toFixed(1)+' extra days of food over the week; worth knowing, not worth panicking about.';

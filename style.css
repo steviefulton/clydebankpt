@@ -832,3 +832,5 @@ a{color:#000;text-decoration:underline}
 .m-toggle{font:inherit;font-size:.8rem;font-weight:600;margin-left:12px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:none;color:var(--muted);cursor:pointer;vertical-align:middle;min-height:32px}
 section.m-collapsed > .wrap > *:not(h2):not(.eyebrow){display:none}
 section.m-collapsed > .wrap > h2{margin-bottom:0}
+.today-strip{padding-top:8px;padding-bottom:0}
+.today-strip .lede{margin:0}

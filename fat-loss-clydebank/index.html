@@ -186,7 +186,72 @@
 </div>
 </div>
 </section>
-<section class="faq">
+<section class="section"><div class="wrap"><p class="eyebrow">Work it out now</p><h2>Your calories and protein, the way I do it in a consult.</h2></div></section>
+<section class="section"><div class="wrap tool">
+<form id="calc" class="tool-form" autocomplete="off">
+<div class="row2">
+<label>Sex<select name="sex"><option value="f">Female</option><option value="m">Male</option></select></label>
+<label>Age<input name="age" type="number" min="16" max="90" inputmode="numeric" required placeholder="38"></label>
+</div>
+<div class="row2">
+<label>Height (cm)<input name="h" type="number" min="120" max="230" inputmode="numeric" required placeholder="168"></label>
+<label>Weight (kg)<input name="w" type="number" min="35" max="250" step="0.1" inputmode="decimal" required placeholder="82"></label>
+</div>
+<label>Activity outside training<select name="act">
+<option value="1.2">Mostly sitting (desk, driving)</option>
+<option value="1.375" selected>On my feet some of the day</option>
+<option value="1.55">On my feet most of the day</option>
+<option value="1.725">Physical job</option>
+</select></label>
+<label>Coached sessions a week<select name="sess"><option>0</option><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select></label>
+<label>Goal<select name="goal"><option value="fat">Lose fat</option><option value="muscle">Build muscle</option><option value="keep">Feel better, keep weight</option></select></label>
+<button class="btn btn-red" type="submit">Work it out</button>
+</form>
+<div id="out" class="tool-out" hidden>
+<div class="stat-row">
+<div class="stat"><span class="n" id="o-cal"></span><span>calories a day</span></div>
+<div class="stat"><span class="n" id="o-pro"></span><span>g protein a day</span></div>
+<div class="stat"><span class="n" id="o-tdee"></span><span>maintenance</span></div>
+</div>
+<p id="o-note"></p>
+<ul class="plain">
+<li>Protein first at every meal: <b id="o-meal"></b> per meal over four meals.</li>
+<li>Water: <b id="o-water"></b> a day, more on training days.</li>
+<li>Steps: 8,000 to 10,000 on non-training days. Walking is the easiest calorie you will ever spend.</li>
+<li>Weigh once a week, same morning, after the toilet, before food. One number never tells you anything. Four in a row do.</li>
+</ul>
+<div class="g-cta"><a id="o-wa" class="btn btn-red" target="_blank" rel="noopener">Send these numbers to Stevie</a><a class="btn btn-ghost" href="/8-week-package/">See the 8-Week Package</a></div>
+<p class="small">Estimate only, based on the Mifflin-St Jeor equation and your activity. Stevie adjusts it at your week-one weigh-in. If you are pregnant, under 18, or have a medical condition, talk to your GP before changing your diet.</p>
+</div>
+</div></section>
+<script>
+(function(){
+  var f=document.getElementById('calc'),o=document.getElementById('out');
+  f.addEventListener('submit',function(e){
+    e.preventDefault();
+    var d=Object.fromEntries(new FormData(f).entries());
+    var w=+d.w,h=+d.h,a=+d.age; if(!w||!h||!a) return;
+    var bmr=10*w+6.25*h-5*a+(d.sex==='m'?5:-161);
+    var tdee=bmr*(+d.act)+(+d.sess)*400/7;
+    var cal=d.goal==='fat'?tdee*0.8:d.goal==='muscle'?tdee*1.1:tdee;
+    if(d.goal==='fat') cal=Math.max(cal,d.sex==='m'?1500:1200);
+    var pro=Math.round(w*(d.goal==='fat'?2.0:1.8));
+    var r=function(x){return Math.round(x/10)*10;};
+    document.getElementById('o-cal').textContent=r(cal).toLocaleString();
+    document.getElementById('o-pro').textContent=pro;
+    document.getElementById('o-tdee').textContent=r(tdee).toLocaleString();
+    document.getElementById('o-meal').textContent=Math.round(pro/4)+'g';
+    document.getElementById('o-water').textContent=(Math.round(w*0.035*10)/10)+' litres';
+    var note={fat:'A 20% cut. Enough to lose 0.5 to 1kg a week without feeling starved, and enough protein to keep your muscle while you do it.',muscle:'A small surplus. Eat this, train hard three or four times a week, and the scales should creep up slowly, not jump.',keep:'Maintenance. Eat this and the number holds. Use the training to change the shape, not the weight.'}[d.goal];
+    document.getElementById('o-note').textContent=note;
+    var msg='Hi Stevie, I used the calculator on clydebankpt.com. I\'m '+a+', '+w+'kg, '+h+'cm, goal: '+{fat:'lose fat',muscle:'build muscle',keep:'feel better'}[d.goal]+'. It says '+r(cal)+' kcal and '+pro+'g protein. Can we book a free consult?';
+    document.getElementById('o-wa').href='https://wa.me/447376941421?text='+encodeURIComponent(msg);
+    try{ localStorage.setItem('sf_calc', JSON.stringify({cal:r(cal), pro:pro, goal:{fat:'lose fat',muscle:'build muscle',keep:'feel better'}[d.goal], at:Date.now()})); }catch(e){}
+    o.hidden=false; o.scrollIntoView({behavior:'smooth',block:'start'});
+    if(window.gtag) gtag('event','tool_calculator',{goal:d.goal});
+  });
+})();
+</script><section class="faq">
 <div class="wrap">
 <div class="sec-head">
 <p class="eyebrow">Questions</p>
@@ -335,6 +400,6 @@
 <a class="btn btn-ghost" href="/timetable/">Timetable</a>
 </div>
 <a class="float-wa" href="https://wa.me/447376941421?text=Hi%20Stevie%2C%20I%27d%20like%20to%20book%20a%20free%20consult%20at%20Sanctuary%20Fitness%20(via%20clydebankpt.com%2Ffat-loss-clydebank)" target="_blank" rel="noopener" aria-label="WhatsApp Sanctuary Fitness"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2m0 1.67c4.55 0 8.24 3.7 8.24 8.24 0 4.55-3.69 8.24-8.24 8.24-1.5 0-2.96-.4-4.24-1.16l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.37c0-4.54 3.7-8.24 8.29-8.24M8.53 7.33c-.16 0-.43.06-.66.31-.22.25-.87.86-.87 2.07 0 1.22.89 2.39 1 2.56.14.17 1.76 2.67 4.25 3.73.59.27 1.05.42 1.41.53.59.19 1.13.16 1.56.1.48-.07 1.46-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.07-.1-.23-.16-.48-.27-.25-.14-1.47-.74-1.69-.82-.23-.08-.37-.12-.56.12-.16.25-.64.81-.78.97-.15.17-.29.19-.53.07-.26-.13-1.06-.39-2-1.23-.74-.66-1.23-1.47-1.38-1.72-.12-.24-.01-.39.11-.5.11-.11.27-.29.37-.44.13-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.11-.56-1.35-.77-1.84-.2-.48-.4-.42-.56-.43-.14 0-.3-.01-.47-.01"/></svg><span>WhatsApp</span></a>
-<script src="/site.js?v=d8ae257dc7" defer></script>
+<script src="/site.js?v=be6f7562bb" defer></script>
 </body>
 </html>
