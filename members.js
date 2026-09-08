@@ -158,3 +158,61 @@ function sfMembersDash(){
   if (window.gtag) gtag('event', 'members_dash', {cards: cards.length, streak: streak});
 }
 document.addEventListener('sf:open', sfMembersDash); sfMembersDash();
+
+// Round 8: tour, home-screen hint, print this week, week card links, circuit timer, ill/injured, holiday, form check
+function sfMembersMore(){
+  var root = document.getElementById('members'); var pbx = document.getElementById('planb'); if (!root || !pbx || pbx.dataset.more) return; pbx.dataset.more = '1';
+  function get(k, d){ try { var v = JSON.parse(localStorage.getItem(k) || 'null'); return v === null ? d : v; } catch (e) { return d; } }
+  function set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function wa(text){ var a = document.querySelector('#dash a[href^="https://wa.me/"]'); var base = a ? a.getAttribute('href').split('?')[0] : 'https://wa.me/'; return base + '?text=' + encodeURIComponent(text); }
+  // C66 tour, once
+  var tour = document.getElementById('m-tour');
+  if (tour && !get('sf_m_tour_done', false)) { tour.hidden = false; document.getElementById('m-tour-done').addEventListener('click', function(){ tour.hidden = true; set('sf_m_tour_done', true); }); }
+  // C70 print this week
+  var pb = document.getElementById('m-tour-print');
+  if (pb) pb.addEventListener('click', function(){ document.body.classList.add('print-week'); setTimeout(function(){ window.print(); document.body.classList.remove('print-week'); }, 50); });
+  // C71 add to home screen hint, only when not already installed
+  var hint = document.getElementById('m-home-hint');
+  if (hint && !(matchMedia('(display-mode: standalone)').matches || navigator.standalone)) hint.hidden = false;
+  // C67 the week card links to the right places
+  var wkp = document.querySelector('#thisweek .wrap > p:not(.eyebrow)');
+  if (wkp && !wkp.querySelector('a')) {
+    var map = [[/health questionnaire/i, '#parq-members'], [/Nutrition Guide/, '#nutrition'], [/tracker/i, '/tools/8-week-tracker/'], [/timetable/i, '/timetable/'], [/coached sessions?/i, '#pt-booking']];
+    var html = wkp.innerHTML; map.forEach(function(m){ html = html.replace(m[0], function(t){ return '<a href="' + m[1] + '">' + t + '</a>'; }); }); wkp.innerHTML = html;
+  }
+  // C81 circuit timer: 40 on, 20 off, six moves, three rounds
+  var ct = document.getElementById('circuit');
+  if (ct) {
+    var disp = document.getElementById('ct-disp'), step = document.getElementById('ct-step'), moves = Array.prototype.map.call(document.querySelectorAll('#home-programme ol li'), function(li){ return li.textContent.replace(/\s+/g, ' ').trim(); });
+    var i = 0, phase = 'work', end = 0, t = null, total = moves.length * 3;
+    function label(){ var round = Math.floor(i / moves.length) + 1; step.textContent = (phase === 'work' ? 'Work: ' : 'Rest, next: ') + moves[i % moves.length] + ' · round ' + round + ' of 3'; }
+    function tick(){ var left = Math.max(0, Math.round((end - Date.now()) / 1000)); disp.textContent = (phase === 'work' ? 'Go ' : 'Rest ') + left; if (left > 0) return; if (navigator.vibrate) navigator.vibrate(150); if (phase === 'work') { phase = 'rest'; end = Date.now() + 20000; } else { i++; if (i >= total) { stop(); disp.textContent = 'Done'; step.textContent = 'Three rounds. Walk it off, drink some water.'; if (window.gtag) gtag('event', 'members_circuit'); return; } phase = 'work'; end = Date.now() + 40000; } label(); }
+    function stop(){ if (t) clearInterval(t); t = null; }
+    document.getElementById('ct-start').addEventListener('click', function(){ stop(); i = 0; phase = 'work'; end = Date.now() + 40000; label(); tick(); t = setInterval(tick, 250); });
+    document.getElementById('ct-next').addEventListener('click', function(){ if (!t) return; end = Date.now(); tick(); });
+    document.getElementById('ct-stop').addEventListener('click', function(){ stop(); disp.textContent = 'Ready'; step.textContent = 'Three rounds of the six moves. Forty seconds on, twenty off, or go by reps and tap Next.'; });
+  }
+  // C88 ill or injured: the freeze rule from the terms, and the message
+  var ill = document.getElementById('ill-form');
+  if (ill) ill.addEventListener('submit', function(e){
+    e.preventDefault(); var d = Object.fromEntries(new FormData(ill).entries()); var out;
+    if (d.what === 'ill') out = d.how === 'days' ? 'Rest, fluids, sleep. Skip the sessions for a few days; nothing is lost. Come back to a class or a walk first, not a heavy session.' : d.how === 'week' ? 'Rest until you are well. Book your sessions for the week after and message Stevie so he knows. Walking when you can is enough.' : 'Two weeks or more: this is what the freeze is for. One freeze per block, up to two weeks, told in advance, and the block extends by the same length. Message Stevie now with the dates.';
+    else out = d.light === 'yes' ? 'Keep coming. Tell Stevie before the session and he trains around it: swaps, lighter loads, no heroics. The body map in the tools shows the usual swaps.' : d.how === 'days' ? 'Rest it for a few days and message Stevie before your next session so he can plan around it. Walking is fine if it does not hurt.' : 'This needs a plan, not a guess. Message Stevie with what happened and what a GP or physio said. If it is two weeks or more, the freeze rule covers it: one per block, up to two weeks, told in advance.';
+    document.getElementById('ill-out').textContent = out;
+    var m = 'Hi Stevie, ' + (d.what === 'ill' ? 'I am ill' : 'I have an injury or niggle') + ', probably ' + {days: 'a few days', week: 'about a week', two: 'two weeks or more'}[d.how] + '. ' + (d.light === 'yes' ? 'I can still walk and do light work.' : 'I cannot do much just now.') + ' What should I do this week?';
+    var a = document.getElementById('ill-wa'); a.href = wa(m); a.hidden = false; if (window.gtag) gtag('event', 'members_ill_plan', {what: d.what});
+  });
+  // C89 holiday: the dates and the plan
+  var hol = document.getElementById('hol-form');
+  if (hol) hol.addEventListener('submit', function(e){
+    e.preventDefault(); var d = Object.fromEntries(new FormData(hol).entries()); if (!d.from || !d.to) return;
+    var days = Math.round((new Date(d.to) - new Date(d.from)) / 864e5) + 1; if (days < 1) days = 1;
+    var plan = days <= 4 ? 'A short one: walk every day, protein at every meal, and pick up where you left off. No freeze needed.' : days <= 14 ? 'Walk every day (8,000 steps), the 15-minute circuit twice a week wherever you are staying, protein at every meal, drinks counted. The block can be frozen for up to two weeks if you tell Stevie before you go; the block extends by the same length.' : 'Longer than two weeks: message Stevie before you go so the block is frozen for the two weeks it allows, and keep the walks and the circuit going. Restart with a class, not a heavy session.';
+    document.getElementById('hol-out').textContent = days + ' day' + (days === 1 ? '' : 's') + ' away. ' + plan;
+    var a = document.getElementById('hol-wa'); a.href = wa('Hi Stevie, I am away from ' + d.from + ' to ' + d.to + ' (' + days + ' days). ' + (days > 4 ? 'Can we freeze the block for that time? ' : '') + 'I will keep the walks and the circuit going.'); a.hidden = false;
+    if (window.gtag) gtag('event', 'members_holiday_plan', {days: days});
+  });
+  // C86 form check
+  var fc = document.getElementById('fc-wa'); if (fc) fc.href = wa('FORM CHECK: Hi Stevie, I am about to send a clip of my ... (which lift). What should I fix first?');
+}
+document.addEventListener('sf:open', sfMembersMore); sfMembersMore();

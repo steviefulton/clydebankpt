@@ -875,3 +875,12 @@ section.m-collapsed > .wrap > h2{margin-bottom:0}
 .gcard.sheet{position:fixed;left:16px;right:16px;bottom:calc(96px + env(safe-area-inset-bottom));width:auto}
 .gcard p{margin:0}
 .copy-addr{margin-left:6px}
+.tour{margin:14px 0 0;padding:14px 16px;border:1px solid var(--red);border-radius:12px;background:var(--panel)}
+.tour-list{margin:6px 0 0;padding-left:1.3em;display:grid;gap:6px}
+.circuit{margin:14px 0;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+@media print{
+body.print-week #members > section{display:none!important}
+body.print-week #members > section#thisweek,body.print-week #members > section#today,body.print-week #members > section#log{display:block!important}
+body.print-week .log-card:not(:nth-child(4)){display:none!important}
+body.print-week .hero,body.print-week #gate,body.print-week .mnav{display:none!important}
+}

@@ -637,6 +637,7 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
   document.addEventListener('keydown', function(e){
     if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) { var t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return; e.preventDefault(); open(''); }
   });
+  if (document.title.indexOf('Page not found') === 0 && /members/i.test(location.pathname)) { var seg = location.pathname.split('/').filter(Boolean).pop() || ''; location.replace('/members/' + (seg && seg !== 'members' ? '#' + seg : '')); return; }
   if (location.pathname === '/404' || document.title.indexOf('Page not found') === 0) { var seg = decodeURIComponent(location.pathname.replace(/[\/-]+/g, ' ')).trim(); if (seg) { setTimeout(function(){ open(seg); }, 300); } }
 })();
 
@@ -710,7 +711,7 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
   // B37 numbers count up once, B49 stars light up
   if ('IntersectionObserver' in window) {
     var nums = document.querySelectorAll('.badge .big, .rating b');
-    var io = new IntersectionObserver(function(entries){ entries.forEach(function(en){ if (!en.isIntersecting) return; io.unobserve(en.target); var el = en.target; var node = el.firstChild; if (!node || node.nodeType !== 3) return; var raw = node.nodeValue.trim(); var m = raw.match(/^(\d+(?:\.\d+)?)$/); if (!m || reduce) return; var target = +m[1], dec = (m[1].split('.')[1] || '').length, t0 = performance.now(); (function step(now){ var k = Math.min(1, (now - t0) / 700); var v = target * (1 - Math.pow(1 - k, 3)); node.nodeValue = v.toFixed(dec); if (k < 1) requestAnimationFrame(step); else node.nodeValue = m[1]; })(t0); setTimeout(function(){ node.nodeValue = m[1]; }, 900); }); }, {threshold: 0.5});
+    var io = new IntersectionObserver(function(entries){ entries.forEach(function(en){ if (!en.isIntersecting) return; io.unobserve(en.target); var el = en.target; var node = el.firstChild; if (!node || node.nodeType !== 3) return; var raw = node.nodeValue.trim(); var m = raw.match(/^(\d+(?:\.\d+)?)$/); if (!m || reduce) return; var target = +m[1], dec = (m[1].split('.')[1] || '').length, t0 = performance.now(), done = false; (function step(now){ if (done) return; var k = Math.min(1, (now - t0) / 700); var v = target * (1 - Math.pow(1 - k, 3)); node.nodeValue = v.toFixed(dec); if (k < 1) requestAnimationFrame(step); else { done = true; node.nodeValue = m[1]; } })(t0); setTimeout(function(){ done = true; node.nodeValue = m[1]; }, 900); }); }, {threshold: 0.5});
     nums.forEach(function(n){ io.observe(n); });
     var so = new IntersectionObserver(function(entries){ entries.forEach(function(en){ if (en.isIntersecting) { en.target.classList.add('lit'); so.unobserve(en.target); } }); }, {threshold: 0.5});
     document.querySelectorAll('.stars').forEach(function(s){ so.observe(s); });
