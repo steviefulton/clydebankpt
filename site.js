@@ -100,6 +100,13 @@
 })();
 
 (function(){
+  // ROADMAP-4 C123: /timetable/#barbell etc. opens the first day with that class and highlights it
+  (function(){ var h = (location.hash || '').slice(1).toLowerCase(); if (!h || !document.querySelector('.tt-panels')) return;
+    var want = {hiit: 'hiit', barbell: 'barbell', functional: 'functional', 'full-body': 'full body', saturday: 'full body'}[h]; if (!want) return;
+    var rows = Array.prototype.filter.call(document.querySelectorAll('.tt-panel li.c'), function(li){ return (li.textContent || '').toLowerCase().indexOf(want) >= 0; }); if (!rows.length) return;
+    rows.forEach(function(li){ li.classList.add('hit'); });
+    var day = rows[0].closest('.tt-panel').getAttribute('data-day'); var tab = document.querySelector('.tt-tab[data-day="' + day + '"]'); if (tab) tab.click();
+    setTimeout(function(){ rows[0].scrollIntoView({block: 'center'}); }, 150); })();
   var el = document.getElementById('tt-status');
   // ROADMAP-4 C94: 'Next class: HIIT at 5:40pm today, in 3h 20m' on home and the timetable
   (function(){ var nc = document.getElementById('next-class'); if (!nc) return; var sch = {"1":[[1060,1120,"HIIT","class"]],"2":[[360,420,"HIIT","class"],[360,420,"Personal Training","pt"],[420,480,"Personal Training","pt"],[480,540,"Personal Training","pt"],[540,600,"Personal Training","pt"],[600,660,"Personal Training","pt"],[960,1020,"Personal Training","pt"],[1060,1120,"Barbell & Dumbbell","class"]],"3":[[360,420,"Barbell & Dumbbell","class"],[360,420,"Personal Training","pt"],[420,480,"Personal Training","pt"],[480,540,"Personal Training","pt"],[540,600,"Personal Training","pt"],[600,660,"Personal Training","pt"],[960,1020,"Personal Training","pt"],[1060,1120,"Functional Fitness","class"]],"4":[[360,420,"Personal Training","pt"],[420,480,"Personal Training","pt"],[480,540,"Personal Training","pt"],[540,600,"Personal Training","pt"],[600,660,"Personal Training","pt"],[1020,1080,"Personal Training","pt"],[1080,1140,"Personal Training","pt"]],"5":[[360,420,"Functional Fitness","class"],[360,420,"Personal Training","pt"],[420,480,"Personal Training","pt"],[480,540,"Personal Training","pt"],[540,600,"Personal Training","pt"],[600,660,"Personal Training","pt"]],"6":[[420,480,"Personal Training","pt"],[480,540,"Personal Training","pt"],[540,600,"Full Body Workout","class"]]}; var names = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
