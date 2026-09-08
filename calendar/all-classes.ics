@@ -6,7 +6,7 @@ BEGIN:VEVENT
 UID:hiit-monday-all@clydebankpt.com
 DTSTAMP:20260902T120000Z
 DTSTART;TZID=Europe/London:20260907T174000
-DTEND;TZID=Europe/London:20260907T184000
+DTEND;TZID=Europe/London:20260907T183000
 RRULE:FREQ=WEEKLY;BYDAY=MO
 SUMMARY:HIIT class at Sanctuary Fitness
 LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81 2DR
@@ -16,7 +16,7 @@ BEGIN:VEVENT
 UID:hiit-tuesday-all@clydebankpt.com
 DTSTAMP:20260902T120000Z
 DTSTART;TZID=Europe/London:20260908T060000
-DTEND;TZID=Europe/London:20260908T070000
+DTEND;TZID=Europe/London:20260908T065000
 RRULE:FREQ=WEEKLY;BYDAY=TU
 SUMMARY:HIIT class at Sanctuary Fitness
 LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81 2DR
@@ -26,7 +26,7 @@ BEGIN:VEVENT
 UID:barbell-dumbbell-tuesday-all@clydebankpt.com
 DTSTAMP:20260902T120000Z
 DTSTART;TZID=Europe/London:20260908T174000
-DTEND;TZID=Europe/London:20260908T184000
+DTEND;TZID=Europe/London:20260908T183000
 RRULE:FREQ=WEEKLY;BYDAY=TU
 SUMMARY:Barbell & Dumbbell class at Sanctuary Fitness
 LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81 2DR
@@ -36,7 +36,7 @@ BEGIN:VEVENT
 UID:barbell-dumbbell-wednesday-all@clydebankpt.com
 DTSTAMP:20260902T120000Z
 DTSTART;TZID=Europe/London:20260909T060000
-DTEND;TZID=Europe/London:20260909T070000
+DTEND;TZID=Europe/London:20260909T065000
 RRULE:FREQ=WEEKLY;BYDAY=WE
 SUMMARY:Barbell & Dumbbell class at Sanctuary Fitness
 LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81 2DR
@@ -46,7 +46,7 @@ BEGIN:VEVENT
 UID:functional-fitness-wednesday-all@clydebankpt.com
 DTSTAMP:20260902T120000Z
 DTSTART;TZID=Europe/London:20260909T174000
-DTEND;TZID=Europe/London:20260909T184000
+DTEND;TZID=Europe/London:20260909T183000
 RRULE:FREQ=WEEKLY;BYDAY=WE
 SUMMARY:Functional Fitness class at Sanctuary Fitness
 LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81 2DR
@@ -56,7 +56,7 @@ BEGIN:VEVENT
 UID:functional-fitness-friday-all@clydebankpt.com
 DTSTAMP:20260902T120000Z
 DTSTART;TZID=Europe/London:20260911T060000
-DTEND;TZID=Europe/London:20260911T070000
+DTEND;TZID=Europe/London:20260911T065000
 RRULE:FREQ=WEEKLY;BYDAY=FR
 SUMMARY:Functional Fitness class at Sanctuary Fitness
 LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81 2DR
@@ -66,7 +66,7 @@ BEGIN:VEVENT
 UID:full-body-workout-saturday-all@clydebankpt.com
 DTSTAMP:20260902T120000Z
 DTSTART;TZID=Europe/London:20260912T090000
-DTEND;TZID=Europe/London:20260912T100000
+DTEND;TZID=Europe/London:20260912T095000
 RRULE:FREQ=WEEKLY;BYDAY=SA
 SUMMARY:Full Body Workout class at Sanctuary Fitness
 LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81 2DR

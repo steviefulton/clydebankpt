@@ -925,3 +925,4 @@ html.tt-plan .tt-panel li.c,html.tt-plan .tt-panel li.p{cursor:pointer}
 .md-day.v1,.md-day.v2{background:#b71c22;color:#fff;border-color:#b71c22}
 .md-day.v3{background:var(--line-strong);color:var(--text)}
 .md-day.v4,.md-day.v5{background:#1f7a3a;color:#fff;border-color:#1f7a3a}
+[hidden]:not(.tt-panel){display:none!important}
