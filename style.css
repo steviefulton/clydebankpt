@@ -884,3 +884,18 @@ body.print-week #members > section#thisweek,body.print-week #members > section#t
 body.print-week .log-card:not(:nth-child(4)){display:none!important}
 body.print-week .hero,body.print-week #gate,body.print-week .mnav{display:none!important}
 }
+.plan-tools{margin:12px 0}
+.plan-grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.plan-day{border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;gap:6px;background:var(--bg)}
+.plan-row{display:flex;gap:4px;align-items:center}
+.plan-row select{flex:1;min-width:0;font:inherit;font-size:14px;padding:8px;border:1px solid var(--line-strong);border-radius:6px;background:var(--panel);color:var(--text)}
+.plan-star{min-width:36px;min-height:36px;padding:0}
+.plan-portions{border-collapse:collapse;width:100%;font-size:.9rem}
+.plan-portions th,.plan-portions td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+.plan-portions td.me{background:var(--panel);font-weight:700;outline:2px solid var(--red)}
+@media print{
+body.print-plan #members > section{display:none!important}
+body.print-plan #members > section#plan{display:block!important}
+body.print-plan .plan-tools,body.print-plan .hero,body.print-plan #gate,body.print-plan .mnav{display:none!important}
+body.print-plan .plan-row select{border:0;appearance:none;-webkit-appearance:none}
+}

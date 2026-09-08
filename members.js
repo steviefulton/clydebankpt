@@ -216,3 +216,73 @@ function sfMembersMore(){
   var fc = document.getElementById('fc-wa'); if (fc) fc.href = wa('FORM CHECK: Hi Stevie, I am about to send a clip of my ... (which lift). What should I fix first?');
 }
 document.addEventListener('sf:open', sfMembersMore); sfMembersMore();
+
+// Round 9: the week planner and nutrition cards, from the guide's own data (inside the encrypted page)
+function sfMembersPlan(){
+  var sec = document.getElementById('plan'); if (!sec || sec.dataset.ready) return; sec.dataset.ready = '1';
+  var D; try { D = JSON.parse(document.getElementById('plan-data').getAttribute('data-json')); } catch (e) { return; }
+  function get(k, d){ try { var v = JSON.parse(localStorage.getItem(k) || 'null'); return v === null ? d : v; } catch (e) { return d; } }
+  function set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  var DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], SLOTS = ['Breakfast', 'Lunch', 'Dinner'];
+  var plan = get('sf_plan', {}), favs = get('sf_nut_favs', []), cooked = get('sf_cooked', []);
+  function all(slot){ var out = []; ['quick', 'cook'].forEach(function(m){ (D.meals[m][slot] || []).forEach(function(x){ out.push({n: x[0], d: x[1], m: m}); }); }); return out.sort(function(a, b){ var fa = favs.indexOf(a.n) >= 0, fb = favs.indexOf(b.n) >= 0; return fa === fb ? 0 : fa ? -1 : 1; }); }
+  // C96 the grid
+  var grid = document.getElementById('plan-grid');
+  function render(){
+    grid.innerHTML = '';
+    DAYS.forEach(function(day){
+      var col = document.createElement('div'); col.className = 'plan-day'; var h = document.createElement('b'); h.textContent = day; col.appendChild(h);
+      SLOTS.forEach(function(slot){
+        var key = day + ':' + slot; var sel = document.createElement('select'); sel.setAttribute('aria-label', day + ' ' + slot);
+        var o0 = document.createElement('option'); o0.value = ''; o0.textContent = slot; sel.appendChild(o0);
+        all(slot).forEach(function(x){ var o = document.createElement('option'); o.value = x.n; o.textContent = (favs.indexOf(x.n) >= 0 ? '★ ' : '') + x.n + (x.m === 'cook' ? ' (cook)' : ''); sel.appendChild(o); });
+        sel.value = plan[key] || '';
+        sel.addEventListener('change', function(){ if (sel.value) plan[key] = sel.value; else delete plan[key]; set('sf_plan', plan); cook(); });
+        var star = document.createElement('button'); star.type = 'button'; star.className = 'nut-btn plan-star'; star.setAttribute('aria-label', 'Favourite this meal');
+        function paintStar(){ star.textContent = sel.value && favs.indexOf(sel.value) >= 0 ? '★' : '☆'; star.hidden = !sel.value; }
+        star.addEventListener('click', function(){ if (!sel.value) return; var i = favs.indexOf(sel.value); if (i >= 0) favs.splice(i, 1); else favs.push(sel.value); set('sf_nut_favs', favs); render(); });
+        sel.addEventListener('change', paintStar); paintStar();
+        var row = document.createElement('div'); row.className = 'plan-row'; row.appendChild(sel); row.appendChild(star); col.appendChild(row);
+      });
+      grid.appendChild(col);
+    });
+    cook();
+  }
+  // C97 what to cook this week, on top of the guide basket
+  function cook(){
+    var ul = document.getElementById('plan-cook'); ul.innerHTML = ''; var counts = {};
+    Object.keys(plan).forEach(function(k){ counts[plan[k]] = (counts[plan[k]] || 0) + 1; });
+    var names = Object.keys(counts).sort(function(a, b){ return counts[b] - counts[a]; });
+    if (!names.length) { var li0 = document.createElement('li'); li0.className = 'muted'; li0.textContent = 'Nothing planned yet.'; ul.appendChild(li0); return; }
+    names.forEach(function(n){ var li = document.createElement('li'); var meal = null; SLOTS.forEach(function(s){ all(s).forEach(function(x){ if (x.n === n) meal = x; }); }); li.textContent = n + ' × ' + counts[n] + (meal ? ': ' + meal.d : ''); ul.appendChild(li); });
+  }
+  document.getElementById('plan-quick').addEventListener('click', function(){ DAYS.forEach(function(day){ SLOTS.forEach(function(slot){ var q = (D.meals.quick[slot] || []); if (q.length) plan[day + ':' + slot] = q[(DAYS.indexOf(day) + SLOTS.indexOf(slot)) % q.length][0]; }); }); set('sf_plan', plan); render(); });
+  document.getElementById('plan-favs').addEventListener('click', function(){ if (!favs.length) { alertLine('Star a few meals first.'); return; } DAYS.forEach(function(day){ SLOTS.forEach(function(slot){ var f = all(slot).filter(function(x){ return favs.indexOf(x.n) >= 0; }); if (f.length) plan[day + ':' + slot] = f[DAYS.indexOf(day) % f.length].n; }); }); set('sf_plan', plan); render(); });
+  document.getElementById('plan-clear').addEventListener('click', function(){ plan = {}; set('sf_plan', plan); render(); });
+  document.getElementById('plan-print').addEventListener('click', function(){ document.body.classList.add('print-plan'); setTimeout(function(){ window.print(); document.body.classList.remove('print-plan'); }, 50); });
+  function alertLine(t){ var p = document.getElementById('plan-cooked'); p.textContent = t; }
+  // C105 batch-cook Sunday, C112 cooked-it ticks
+  var bl = document.getElementById('plan-batch');
+  D.batch.forEach(function(x){ var li = document.createElement('li'); var lab = document.createElement('label'); var cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = cooked.indexOf(x[0]) >= 0; cb.addEventListener('change', function(){ var i = cooked.indexOf(x[0]); if (cb.checked && i < 0) cooked.push(x[0]); if (!cb.checked && i >= 0) cooked.splice(i, 1); set('sf_cooked', cooked); paintCooked(); }); lab.appendChild(cb); lab.appendChild(document.createTextNode(' ' + x[0] + ': ' + x[1])); li.appendChild(lab); bl.appendChild(li); });
+  function paintCooked(){ document.getElementById('plan-cooked').textContent = cooked.length ? 'Cooked ' + cooked.length + ' of the guide\u2019s meals this block.' : ''; }
+  paintCooked();
+  // C99 portions by appetite
+  var app = get('sf_nut_app', null); var pt = document.getElementById('plan-portions'); var table = '<table class="plan-portions"><tr><th></th><th>Small</th><th>Moderate</th><th>Large</th></tr>';
+  Object.keys(D.portions).forEach(function(k){ table += '<tr><th>' + k + '</th>' + D.portions[k].map(function(v, i){ return '<td class="' + (app !== null && +app === i ? 'me' : '') + '">' + v + '</td>'; }).join('') + '</tr>'; });
+  pt.innerHTML = table + '</table>';
+  // C100 protein target from the calculator
+  var c = get('sf_calc', null); var tg = document.getElementById('plan-target');
+  tg.innerHTML = c ? '<h3>Your numbers</h3><p><b>' + c.pro + 'g protein</b> a day, about ' + Math.round(c.pro / 4) + 'g at each of four meals, and ' + c.cal + ' kcal for ' + c.goal + '. From the calculator on this phone.</p>' : '<h3>Your numbers</h3><p>Run the <a href="/tools/calories/">calculator</a> once and your protein target shows here and on the meals.</p>';
+  // C102 the 90/10 week so far
+  var W = get('sf_nut_week', {}); var off = +W.off || 0; var day = new Date().getDay(); var tonight = (day === 5 || day === 6) ? 'Friday or Saturday night' : 'Tonight';
+  document.getElementById('plan-9010').innerHTML = '<h3>90/10 this week</h3><p><b>' + off + ' of 2</b> off-plan meals used. ' + (off < 2 ? tonight + ' can be one of them if you want it.' : 'Both used: the next meal is a normal one, and nothing is ruined.') + '</p>';
+  // C104 weekend, with the drink calculator's week if there is one
+  var wl = document.getElementById('plan-weekend'); D.weekend.forEach(function(x){ var li = document.createElement('li'); li.innerHTML = '<b></b> '; li.querySelector('b').textContent = x[0]; li.appendChild(document.createTextNode(x[1])); wl.appendChild(li); });
+  var a = get('sf_alcohol', null); document.getElementById('plan-drinks').textContent = a ? 'Your normal week on the drink calculator: ' + a.units + ' units, about ' + a.kcal + ' kcal.' : '';
+  // C109 and C111: the 6am card on early days, in the guide's words
+  var early = document.getElementById('plan-early'); var isEarly = [2, 3, 5].indexOf(day) >= 0 || [1, 2, 4].indexOf(day) >= 0 && new Date().getHours() >= 17;
+  if (isEarly && D.early.length) { early.hidden = false; early.innerHTML = '<h3>6am class: what to eat</h3><ul class="plain small"></ul><p class="small muted"></p>'; D.early.slice(0, 4).forEach(function(x){ var li = document.createElement('li'); li.textContent = x[0] + ' ' + x[1]; early.querySelector('ul').appendChild(li); }); early.querySelector('p').textContent = D.caffeine || D.coffee; }
+  render();
+  if (window.gtag) gtag('event', 'members_plan_view', {planned: Object.keys(plan).length});
+}
+document.addEventListener('sf:open', sfMembersPlan); sfMembersPlan();
