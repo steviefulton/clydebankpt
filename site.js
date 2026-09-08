@@ -818,3 +818,6 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
     secs.forEach(function(s, i){ var h = s.querySelector('h2'); var c = document.createElement('span'); c.className = 'sec-count'; c.textContent = (i + 1) + ' of ' + secs.length; h.insertBefore(c, h.firstChild); });
   }
 })();
+
+// ROADMAP-5 B43: alc-cell readout beside each drink slider
+document.addEventListener('input', function(e){ var t = e.target; if (t && t.classList && t.classList.contains('alc') && t.nextElementSibling && t.nextElementSibling.tagName === 'OUTPUT') t.nextElementSibling.textContent = t.value; });
