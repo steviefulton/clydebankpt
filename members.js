@@ -344,3 +344,19 @@ function sfMembersAdmin(){
   });
 }
 document.addEventListener('sf:open', sfMembersAdmin); sfMembersAdmin();
+
+// Round 11 C131: files marked new (changed since last visit) and opened (tapped on this phone)
+function sfMembersFiles(){
+  var plans = document.getElementById('plans'); if (!plans || plans.dataset.files) return; plans.dataset.files = '1';
+  var links = plans.querySelectorAll('a.m-file'); if (!links.length) return;
+  var names = Array.prototype.map.call(links, function(a){ return a.textContent.trim(); }).join('|'); var seen = null, opened = [];
+  try { seen = localStorage.getItem('sf_files_seen'); opened = JSON.parse(localStorage.getItem('sf_files_opened') || '[]'); } catch (e) {}
+  links.forEach(function(a){
+    var n = a.textContent.trim(); var tag = document.createElement('span'); tag.className = 'small muted file-tag';
+    if (opened.indexOf(n) >= 0) tag.textContent = ' opened'; else if (seen && seen.indexOf(n) < 0) tag.textContent = ' new';
+    a.parentNode.insertBefore(tag, a.nextSibling);
+    a.addEventListener('click', function(){ if (opened.indexOf(n) < 0) opened.push(n); try { localStorage.setItem('sf_files_opened', JSON.stringify(opened)); } catch (e) {} tag.textContent = ' opened'; });
+  });
+  try { localStorage.setItem('sf_files_seen', names); } catch (e) {}
+}
+document.addEventListener('sf:open', sfMembersFiles); sfMembersFiles();

@@ -117,7 +117,7 @@ background:radial-gradient(60% 50% at 85% 20%, var(--red-soft), transparent 70%)
 .rating{display:inline-flex;align-items:center;gap:10px;font-size:.92rem;color:var(--text-2)}
 .rating .stars{color:var(--red);letter-spacing:.08em;font-size:1rem}
 .rating b{color:var(--text);font-variant-numeric:tabular-nums}
-.rise{animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
+.rise{animation:rise .3s cubic-bezier(.2,.7,.2,1) both}
 .rise.d1{animation-delay:.08s}.rise.d2{animation-delay:.16s}.rise.d3{animation-delay:.24s}
 @keyframes rise{from{transform:translateY(14px)}to{transform:none}}  
 @media (max-width:960px){.hero .grid{grid-template-columns:1fr}}
@@ -864,7 +864,7 @@ section.m-collapsed > .wrap > h2{margin-bottom:0}
 .toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:70}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 @media (min-width:901px){ .toast{bottom:32px} }
-.stars{color:var(--muted);transition:color .6s ease}
+.stars{color:var(--muted);transition:color .3s ease}
 .stars.lit{color:#e8b400}
 @media (prefers-reduced-motion: reduce){ .stars{color:#e8b400;transition:none} }
 .msg-preview{display:block;color:var(--muted);font-size:.85rem;margin:-4px 0 10px;max-width:60ch}
@@ -903,3 +903,10 @@ body.print-plan .plan-row select{border:0;appearance:none;-webkit-appearance:non
 #status-list li.done{color:var(--text)}
 #status-list li:not(.done){color:var(--muted)}
 #data-box{width:100%;font:inherit;font-size:14px;padding:10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--panel);color:var(--text)}
+.big-phone{margin:8px 0 14px}
+.big-phone a{font-family:"Big Shoulders Display","BSD Fallback Impact","BSD Fallback Arial",Impact,sans-serif;font-size:2.4rem;font-weight:800;text-decoration:none;letter-spacing:.04em}
+.navlinks a .dot,.mobile-menu a .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);margin-left:6px;vertical-align:middle}
+details.local summary{cursor:pointer;font-weight:600}
+details.local p{margin:8px 0 0}
+.sec-count{display:block;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-family:Archivo,Arial,sans-serif;font-weight:600}
+.file-tag{margin-left:6px}

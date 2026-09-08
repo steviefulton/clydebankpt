@@ -773,3 +773,28 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
     dd.appendChild(document.createTextNode(' ')); dd.appendChild(b);
   });
 })();
+
+// ROADMAP-5 round 11: what's-new dots, town paragraph open on desktop, section counters on the sales pages
+(function(){
+  var path = location.pathname;
+  function get(k){ try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function set(k, v){ try { localStorage.setItem(k, v); } catch (e) {} }
+  // B56 dots on Members and Guides when something changed since this phone last opened them
+  if (window.fetch) {
+    fetch('/whatsnew.json').then(function(r){ return r.json(); }).then(function(w){
+      [['members', '/members/'], ['guides', '/guides/']].forEach(function(x){
+        var cur = String(w[x[0]]), seen = get('sf_seen_' + x[0]);
+        if (path.indexOf(x[1]) === 0) { set('sf_seen_' + x[0], cur); return; }
+        if (seen && seen !== cur) document.querySelectorAll('.navlinks a[href="' + x[1] + '"], .mobile-menu a[href="' + x[1] + '"]').forEach(function(a){ if (!a.querySelector('.dot')) { var d = document.createElement('span'); d.className = 'dot'; d.title = 'Something new since your last visit'; a.appendChild(d); } });
+        if (!seen) set('sf_seen_' + x[0], cur);
+      });
+    }).catch(function(){});
+  }
+  // B50 the town paragraph: closed on phones, open on desktop
+  if (innerWidth > 900) document.querySelectorAll('details.local').forEach(function(d){ d.open = true; });
+  // A11 section counters on the long sales pages
+  if (['/8-week-package/', '/one-to-one-personal-training/', '/prices/'].indexOf(path) >= 0) {
+    var secs = Array.prototype.filter.call(document.querySelectorAll('main > section'), function(s){ return s.querySelector('h2') && !/next-step|looking|useful|faq|today-strip/.test(s.className); });
+    secs.forEach(function(s, i){ var h = s.querySelector('h2'); var c = document.createElement('span'); c.className = 'sec-count'; c.textContent = (i + 1) + ' of ' + secs.length; h.insertBefore(c, h.firstChild); });
+  }
+})();
