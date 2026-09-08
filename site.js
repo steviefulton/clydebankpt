@@ -542,3 +542,28 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
     }, true);
   });
 })();
+
+// ROADMAP-4 C124: tap a class row on the timetable for a small card with what to bring and a button
+(function(){
+  var panels = document.querySelector('.tt-panels'); if (!panels) return;
+  var wa = document.querySelector('a[href^="https://wa.me/"]'); var base = wa ? wa.getAttribute('href').split('?')[0] : null; if (!base) return;
+  var rows = panels.querySelectorAll('li.c');
+  Array.prototype.forEach.call(rows, function(li){
+    li.setAttribute('tabindex', '0'); li.setAttribute('role', 'button'); li.setAttribute('aria-expanded', 'false'); li.classList.add('tappable');
+    function toggle(){
+      var open = li.querySelector('.tt-card');
+      if (open) { open.remove(); li.setAttribute('aria-expanded', 'false'); return; }
+      Array.prototype.forEach.call(panels.querySelectorAll('.tt-card'), function(c){ c.parentNode.setAttribute('aria-expanded', 'false'); c.remove(); });
+      var name = (li.querySelector('.n') || {}).textContent || 'the class'; var time = (li.querySelector('.t') || {}).textContent || '';
+      var day = (li.closest('.tt-panel').querySelector('h3') || {}).textContent || '';
+      var msg = 'FIRST CLASS: Hi Stevie, I would like to come along to ' + name + ' on ' + day + ' at ' + time + '. Is there a place? (via clydebankpt.com/timetable)';
+      var card = document.createElement('div'); card.className = 'tt-card';
+      card.innerHTML = '<p><b>' + name + '</b>, ' + day + ' ' + time + '. Coached, scaled to you, sixty minutes. Bring trainers with a firm sole, a water bottle and a layer for the walk out; the kit is here.</p>' +
+        '<p class="tt-card-actions"><a class="btn btn-red" target="_blank" rel="noopener" href="' + base + '?text=' + encodeURIComponent(msg) + '">Come along to this one</a> <a class="btn btn-ghost" href="/first-visit/">Your first visit</a></p>';
+      li.appendChild(card); li.setAttribute('aria-expanded', 'true');
+      if (window.gtag) gtag('event', 'timetable_card', {class_name: name, day: day});
+    }
+    li.addEventListener('click', function(e){ if (e.target.closest('a')) return; toggle(); });
+    li.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+  });
+})();

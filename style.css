@@ -766,3 +766,10 @@ html.save-data img{image-rendering:auto}
 .goal-steps{max-width:62ch;padding-left:1.3em;margin:0;display:grid;gap:10px;color:var(--text-2)}
 .goal-steps a{color:var(--text)}
 .all-tools{margin:0 0 16px}
+.tt-panel li.tappable{cursor:pointer}
+.tt-panel li.tappable:hover .n{text-decoration:underline}
+.tt-panel li.tappable[aria-expanded="true"]{background:var(--panel-2,transparent)}
+.tt-card{grid-column:1/-1;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-top:6px;display:grid;gap:10px}
+.tt-card p{margin:0;color:var(--text-2)}
+.tt-card-actions{display:flex;flex-wrap:wrap;gap:8px}
+.tt-card .btn{padding:11px 16px;font-size:1rem}
