@@ -639,3 +639,66 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
   });
   if (location.pathname === '/404' || document.title.indexOf('Page not found') === 0) { var seg = decodeURIComponent(location.pathname.replace(/[\/-]+/g, ' ')).trim(); if (seg) { setTimeout(function(){ open(seg); }, 300); } }
 })();
+
+// ROADMAP-5 round 6: recently viewed, next-step checklist, prices toggle, guides chips, you-are-here, form drafts
+(function(){
+  var path = location.pathname; var footer = document.querySelector('footer .wrap'); var title = (document.title || '').split(' | ')[0];
+  function get(k, d){ try { var v = JSON.parse(localStorage.getItem(k) || 'null'); return v === null ? d : v; } catch (e) { return d; } }
+  function set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  // A13 recently viewed (this phone only)
+  if (footer && path.indexOf('/members') !== 0) {
+    var recent = get('sf_recent', []).filter(function(r){ return r.p !== path; });
+    var shown = recent.slice(0, 3);
+    recent.unshift({p: path, t: title}); set('sf_recent', recent.slice(0, 6));
+    if (shown.length) {
+      var rv = document.createElement('div'); rv.className = 'recent'; rv.innerHTML = '<p class="eyebrow">You looked at</p><ul class="chips"></ul>';
+      shown.forEach(function(r){ var li = document.createElement('li'); var a = document.createElement('a'); a.href = r.p; a.textContent = r.t; li.appendChild(a); rv.querySelector('ul').appendChild(li); });
+      footer.insertBefore(rv, footer.firstChild);
+    }
+  }
+  // A14 the three steps, ticked as you go
+  if (footer && path.indexOf('/members') !== 0) {
+    var steps = get('sf_steps', {});
+    if (path === '/prices/') steps.prices = 1; if (path === '/timetable/') steps.timetable = 1;
+    document.addEventListener('click', function(e){ var a = e.target.closest && e.target.closest('a[href^="https://wa.me/"]'); if (a) { steps.message = 1; set('sf_steps', steps); } });
+    set('sf_steps', steps);
+    var st = document.createElement('div'); st.className = 'steps3'; st.innerHTML = '<p class="eyebrow">Your next step</p><ol></ol>';
+    [['prices', '/prices/', 'See the two prices'], ['timetable', '/timetable/', 'Pick a first class'], ['message', '/start/', 'Message Stevie']].forEach(function(s){ var li = document.createElement('li'); var a = document.createElement('a'); a.href = s[1]; a.textContent = s[2]; if (steps[s[0]]) li.className = 'done'; li.appendChild(a); st.querySelector('ol').appendChild(li); });
+    footer.insertBefore(st, footer.firstChild);
+  }
+  // A17 prices toggle
+  if (path === '/prices/') {
+    var grid = document.querySelector('main .pk-grid'); var pks = grid ? grid.querySelectorAll('.pk') : [];
+    if (pks.length >= 2) {
+      var tg = document.createElement('p'); tg.className = 'chips-lg pk-toggle'; tg.innerHTML = '<button type="button" class="btn btn-ghost" data-pk="0">Classes and small groups</button><button type="button" class="btn btn-ghost" data-pk="1">Just me and the coach</button>';
+      grid.parentNode.insertBefore(tg, grid);
+      tg.querySelectorAll('button').forEach(function(b){ b.addEventListener('click', function(){ var i = +b.getAttribute('data-pk'); pks.forEach(function(p, j){ p.classList.toggle('pk-hi', j === i); }); pks[i].scrollIntoView({behavior: 'smooth', block: 'center'}); tg.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); }); });
+    }
+  }
+  // A19 guides hub chips
+  if (path === '/guides/') {
+    var cards = document.querySelectorAll('.guide-card'); var topics = {};
+    cards.forEach(function(c){ var e = c.querySelector('.eyebrow'); var t = e ? e.textContent.split('·')[0].trim() : ''; if (t) { c.setAttribute('data-topic', t); topics[t] = (topics[t] || 0) + 1; } });
+    var keys = Object.keys(topics).filter(function(k){ return topics[k] >= 2; }).sort(); var host = document.querySelector('.guide-cards');
+    if (host && keys.length > 1) {
+      var ch = document.createElement('p'); ch.className = 'chips-lg guide-chips'; ch.innerHTML = '<button type="button" class="btn btn-ghost" data-topic="" aria-pressed="true">All</button>';
+      keys.forEach(function(k){ var b = document.createElement('button'); b.type = 'button'; b.className = 'btn btn-ghost'; b.setAttribute('data-topic', k); b.setAttribute('aria-pressed', 'false'); b.textContent = k + ' (' + topics[k] + ')'; ch.appendChild(b); });
+      host.parentNode.insertBefore(ch, host);
+      ch.addEventListener('click', function(e){ var b = e.target.closest('button'); if (!b) return; var t = b.getAttribute('data-topic'); ch.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); cards.forEach(function(c){ c.hidden = !!t && c.getAttribute('data-topic') !== t; }); if (window.gtag) gtag('event', 'guides_filter', {topic: t || 'all'}); });
+    }
+  }
+  // A27 you are here, in the phone menu
+  var menu = document.getElementById('mobile-menu');
+  if (menu && path !== '/') { var here = document.createElement('p'); here.className = 'mobile-here small muted'; here.textContent = 'You are on: ' + title; menu.insertBefore(here, menu.firstChild); }
+  // A29 form drafts (not the members gate, not passwords)
+  document.querySelectorAll('form[id]').forEach(function(f){
+    if (f.id === 'gate' || f.closest('#members')) return;
+    var key = 'sf_draft_' + path + '#' + f.id;
+    var fields = Array.prototype.filter.call(f.querySelectorAll('input[name], textarea[name], select[name]'), function(el){ return ['password', 'file', 'submit', 'button', 'hidden'].indexOf(el.type) < 0; });
+    if (!fields.length) return;
+    var saved = get(key, null);
+    if (saved) fields.forEach(function(el){ if (!(el.name in saved)) return; if (el.type === 'checkbox' || el.type === 'radio') { el.checked = saved[el.name] === el.value || saved[el.name] === true; } else if (!el.value) { el.value = saved[el.name]; } });
+    f.addEventListener('input', function(){ var d = {}; fields.forEach(function(el){ if (el.type === 'checkbox') { if (el.checked) d[el.name] = el.value || true; } else if (el.type === 'radio') { if (el.checked) d[el.name] = el.value; } else if (el.value) d[el.name] = el.value; }); set(key, d); });
+    f.addEventListener('submit', function(){ try { localStorage.removeItem(key); } catch (e) {} });
+  });
+})();

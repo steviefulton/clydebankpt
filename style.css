@@ -846,3 +846,18 @@ section.m-collapsed > .wrap > h2{margin-bottom:0}
 .ll-card span{color:var(--muted);font-size:.9rem}
 .ll-card svg{color:var(--red);max-width:100%}
 .rest-disp{font-family:"Big Shoulders Display","BSD Fallback Impact","BSD Fallback Arial",Impact,sans-serif;font-size:3rem;font-weight:800;margin:0;letter-spacing:.04em}
+.recent,.steps3{margin:0 0 22px;padding:0 0 18px;border-bottom:1px solid var(--line)}
+.steps3 ol{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px;counter-reset:s}
+.steps3 li{counter-increment:s}
+.steps3 li a{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid var(--line);border-radius:999px;text-decoration:none;color:var(--text);font-weight:600;font-size:.92rem}
+.steps3 li a::before{content:counter(s);width:22px;height:22px;border-radius:50%;background:var(--panel);border:1px solid var(--line-strong);display:inline-grid;place-items:center;font-size:.8rem}
+.steps3 li.done a{border-color:var(--red)}
+.steps3 li.done a::before{content:"✓";background:var(--red);color:var(--red-ink);border-color:var(--red)}
+.pk-toggle{margin:0 0 16px}
+.pk-toggle .btn[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+.pk.pk-hi{outline:3px solid var(--red);outline-offset:4px}
+.guide-chips{margin:0 0 18px}
+.guide-chips .btn[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+.guide-nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:18px;font-weight:600}
+.guide-nav a{text-decoration:none;border-bottom:2px solid var(--red)}
+.mobile-here{margin:12px 0 0}
