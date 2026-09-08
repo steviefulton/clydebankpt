@@ -945,3 +945,11 @@ html.tt-plan .tt-panel li.c,html.tt-plan .tt-panel li.p{cursor:pointer}
 .cols3{columns:3;column-gap:28px}
 .cols3 li{break-inside:avoid;margin:0 0 6px}
 @media(max-width:700px){.cols3{columns:1}}
+.rv-group{margin-top:28px}
+.rv-group h3{margin:0 0 4px}
+.rv-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));margin-top:12px}
+.rv{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.rv blockquote{margin:0;font-size:.98rem;line-height:1.5}
+.rv blockquote::before{content:'\201C';color:var(--red);font-weight:700;margin-right:2px}
+.rv figcaption{font-weight:600;font-size:.9rem}
+.rv figcaption span{font-weight:400;color:var(--muted)}
