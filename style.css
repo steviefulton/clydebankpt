@@ -773,3 +773,29 @@ html.save-data img{image-rendering:auto}
 .tt-card p{margin:0;color:var(--text-2)}
 .tt-card-actions{display:flex;flex-wrap:wrap;gap:8px}
 .tt-card .btn{padding:11px 16px;font-size:1rem}
+.crumbs{max-width:1100px;margin:14px auto 0;padding:0 20px}
+.crumbs ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px;font-size:.88rem;color:var(--muted)}
+.crumbs li+li::before{content:"›";margin-right:6px;color:var(--muted)}
+.crumbs a{color:var(--text-2);text-decoration:none;padding:6px 0;display:inline-block}
+.crumbs a:hover{text-decoration:underline}
+.crumbs li[aria-current]{color:var(--text)}
+.onpage{max-width:1100px;margin:14px auto 0;padding:0 20px}
+.onpage ul{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.onpage a{display:inline-block;padding:9px 12px;border:1px solid var(--line);border-radius:999px;text-decoration:none;color:var(--text-2);font-size:.9rem;background:var(--panel)}
+.onpage a:hover{border-color:var(--text);color:var(--text)}
+.next-step{padding-top:10px;padding-bottom:10px}
+.next-step .lede{margin:0}
+.next-step .muted{color:var(--muted)}
+.looking{padding-top:10px}
+.chips{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.chips a{display:inline-block;padding:10px 14px;border:1px solid var(--line);border-radius:999px;text-decoration:none;color:var(--text);font-weight:600;font-size:.92rem}
+.chips a:hover{border-color:var(--red)}
+.readbar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--red);z-index:60;transition:width .1s linear}
+@media (prefers-reduced-motion: reduce){ .readbar{transition:none} }
+@media print{
+.nav,.callbar,.cta-band,.totop,.readbar,.crumbs,.onpage,.looking,.next-step,video,.clip-band,footer .cols,.prefs,.mobile-menu,.burger{display:none!important}
+body{background:#fff;color:#000}
+main::before{content:attr(data-print);display:block;font:600 12px/1.4 Arial,sans-serif;color:#444;padding:0 0 12px;border-bottom:1px solid #999;margin-bottom:16px}
+a{color:#000;text-decoration:underline}
+.hero{min-height:0}
+}

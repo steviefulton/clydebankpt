@@ -567,3 +567,19 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
     li.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
   });
 })();
+
+// ROADMAP-5 A5: reading progress line on guides (the back-to-top button already exists above)
+(function(){
+  var isGuide = location.pathname.indexOf('/guides/') === 0 && location.pathname !== '/guides/';
+  if (!isGuide) return;
+  var bar = document.createElement('div'); bar.className = 'readbar'; bar.setAttribute('aria-hidden', 'true'); document.body.appendChild(bar);
+  var ticking = false;
+  function onScroll(){
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function(){
+      var y = window.scrollY || document.documentElement.scrollTop; var total = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = (total > 0 ? Math.min(100, Math.round(y / total * 100)) : 0) + '%'; ticking = false;
+    });
+  }
+  window.addEventListener('scroll', onScroll, {passive: true}); onScroll();
+})();
