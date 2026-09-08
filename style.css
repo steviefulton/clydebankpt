@@ -899,3 +899,7 @@ body.print-plan #members > section#plan{display:block!important}
 body.print-plan .plan-tools,body.print-plan .hero,body.print-plan #gate,body.print-plan .mnav{display:none!important}
 body.print-plan .plan-row select{border:0;appearance:none;-webkit-appearance:none}
 }
+.tape-fig{float:right;margin:0 0 8px 12px;color:var(--muted)}
+#status-list li.done{color:var(--text)}
+#status-list li:not(.done){color:var(--muted)}
+#data-box{width:100%;font:inherit;font-size:14px;padding:10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--panel);color:var(--text)}

@@ -286,3 +286,61 @@ function sfMembersPlan(){
   if (window.gtag) gtag('event', 'members_plan_view', {planned: Object.keys(plan).length});
 }
 document.addEventListener('sf:open', sfMembersPlan); sfMembersPlan();
+
+// Round 10: paperwork status, freeze message, wobble, missed week, week eight, data export, report a problem
+function sfMembersAdmin(){
+  var sec = document.getElementById('admin'); if (!sec || sec.dataset.ready) return; sec.dataset.ready = '1';
+  function get(k, d){ try { var v = JSON.parse(localStorage.getItem(k) || 'null'); return v === null ? d : v; } catch (e) { return d; } }
+  function set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function wa(text){ var a = document.querySelector('#dash a[href^="https://wa.me/"]'); var base = a ? a.getAttribute('href').split('?')[0] : 'https://wa.me/'; return base + '?text=' + encodeURIComponent(text); }
+  function weekNo(){ var h = document.querySelector('#thisweek h2'); var m = h && h.textContent.match(/Week (\d) of 8/); return m ? +m[1] : 0; }
+  function fmt(t){ var d = new Date(t); return d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear(); }
+  var wk = weekNo();
+  // C133: sent-status, recorded when the send buttons are tapped
+  function mark(key){ set(key, Date.now()); status(); }
+  var parq = document.getElementById('parq-members'); if (parq) parq.querySelectorAll('a[href^="https://wa.me/"], a[href^="mailto:"]').forEach(function(a){ a.addEventListener('click', function(){ mark('sf_parq_sent'); }); });
+  var cons = document.getElementById('mconsent'); if (cons) cons.querySelectorAll('a[href^="mailto:"], a[href^="https://wa.me/"], button[type="submit"]').forEach(function(a){ a.addEventListener('click', function(){ mark('sf_consent_sent'); }); });
+  function status(){
+    var ul = document.getElementById('status-list'); ul.innerHTML = '';
+    [['Health questionnaire', get('sf_parq_sent', null), '#parq-members'], ['Photo and results consent', get('sf_consent_sent', null), '#measure'], ['Weekly review', (get('sf_review_last', {}) || {}).at, '#review']].forEach(function(x){
+      var li = document.createElement('li'); var a = document.createElement('a'); a.href = x[2]; a.textContent = x[0]; li.appendChild(a); li.appendChild(document.createTextNode(x[1] ? ': sent ' + fmt(x[1]) : ': not sent yet')); li.className = x[1] ? 'done' : ''; ul.appendChild(li);
+    });
+    document.getElementById('status-med').hidden = wk !== 4;
+  }
+  status();
+  // C137 freeze, C147 wobble, C148 missed a week, C143 report
+  document.getElementById('freeze-wa').href = wa('Hi Stevie, I need to freeze my block: from ... to ... because ... (illness, injury or a holiday). Is that OK?');
+  document.getElementById('wobble-wa').href = wa('WOBBLE: Hi Stevie, I am about to skip this week and I know I should not. Talk me back in?');
+  document.getElementById('missed-wa').href = wa('Hi Stevie, I missed a week. I am doing the three-step restart: one session, protein for two days, then booking the rest. Which session should I come to first?');
+  document.getElementById('report-wa').href = wa('Hi Stevie, something on the members page is not working: ... (page: ' + location.pathname + ', phone: ' + (navigator.userAgent.match(/iPhone|Android|iPad/) || ['other'])[0] + ')');
+  // C156-C158 week eight
+  var fin = document.getElementById('finish-card');
+  if (wk >= 8) {
+    fin.hidden = false; var tr = get('sf_tracker_v1', {rows: []}); var done = (tr.rows || []).filter(function(r){ return r.w; }); var first = done[0] || {}, last = done[done.length - 1] || {};
+    var w0 = +tr.w0 || +first.w || 0, c0 = +tr.c0 || +first.c || 0; var line = 'Eight weeks done. ';
+    if (w0 && last.w) line += 'Weight ' + w0 + ' to ' + last.w + 'kg' + (c0 && last.c ? ', waist ' + c0 + ' to ' + last.c + 'cm' : '') + '. '; line += 'Make the certificate, leave a review if you want to, and tell Stevie what comes next.';
+    document.getElementById('finish-line').textContent = line;
+    document.getElementById('cert-btn').addEventListener('click', function(){
+      var cv = document.getElementById('cert'), x = cv.getContext('2d'); x.fillStyle = '#0b0b0d'; x.fillRect(0, 0, 1080, 1080); x.fillStyle = '#b71c22'; x.fillRect(0, 0, 1080, 18);
+      x.fillStyle = '#f4f1ec'; x.font = 'bold 96px Impact, Arial Black, sans-serif'; x.fillText('EIGHT WEEKS.', 80, 300); x.fillText('DONE.', 80, 410);
+      x.font = '40px Arial, sans-serif'; x.fillStyle = '#c9c4bd'; var lines = ['Sanctuary Fitness, Clydebank', new Date().toLocaleDateString('en-GB')]; if (w0 && last.w) lines.push('Weight ' + w0 + ' to ' + last.w + ' kg' + (c0 && last.c ? ' · waist ' + c0 + ' to ' + last.c + ' cm' : '')); var s = get('sf_sessions', []).length; if (s) lines.push(s + ' sessions logged');
+      lines.forEach(function(l, i){ x.fillText(l, 80, 560 + i * 70); }); x.fillStyle = '#b71c22'; x.font = 'bold 34px Arial, sans-serif'; x.fillText('clydebankpt.com', 80, 980);
+      var out = document.getElementById('cert-out'); out.innerHTML = ''; var img = document.createElement('img'); img.src = cv.toDataURL('image/png'); img.alt = 'Your eight weeks certificate'; img.style.maxWidth = '100%'; img.style.borderRadius = '12px'; out.appendChild(img);
+      var p = document.createElement('p'); p.className = 'small muted'; p.textContent = 'Long-press the image to save or share it. It never leaves your phone unless you send it.'; out.appendChild(p);
+      if (window.gtag) gtag('event', 'members_certificate');
+    });
+  }
+  // C140 export and import of this phone's data
+  var box = document.getElementById('data-box'), msg = document.getElementById('data-msg');
+  document.getElementById('data-copy').addEventListener('click', function(){
+    var d = {}; try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k.indexOf('sf_') === 0 && k !== 'sf_members_pw') d[k] = localStorage.getItem(k); } } catch (e) {}
+    var txt = 'SANCTUARY-DATA:' + btoa(unescape(encodeURIComponent(JSON.stringify(d))));
+    try { navigator.clipboard.writeText(txt).then(function(){ msg.textContent = 'Copied. Paste it into a note or a message to yourself, then paste it back in on the new phone.'; }); } catch (e) { box.hidden = false; box.value = txt; msg.textContent = 'Copy the text below.'; }
+  });
+  document.getElementById('data-paste').addEventListener('click', function(){
+    if (box.hidden) { box.hidden = false; box.value = ''; box.focus(); msg.textContent = 'Paste the copied text, then tap Paste data in again.'; return; }
+    var v = box.value.trim(); if (v.indexOf('SANCTUARY-DATA:') !== 0) { msg.textContent = 'That is not a Sanctuary data block.'; return; }
+    try { var d = JSON.parse(decodeURIComponent(escape(atob(v.slice(15))))); var n = 0; Object.keys(d).forEach(function(k){ if (k.indexOf('sf_') === 0 && k !== 'sf_members_pw') { localStorage.setItem(k, d[k]); n++; } }); msg.textContent = n + ' items restored. Reloading.'; setTimeout(function(){ location.reload(); }, 800); } catch (e) { msg.textContent = 'That block could not be read.'; }
+  });
+}
+document.addEventListener('sf:open', sfMembersAdmin); sfMembersAdmin();
