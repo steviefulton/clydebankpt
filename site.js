@@ -227,7 +227,7 @@
     lines.push('Answered YES to questions: '+(yes.length?yes.join(', '):'none'));
     if(d.get('notes')) lines.push('Notes: '+d.get('notes'));
     lines.push('Emergency contact: '+(d.get('ec_name')||'')+' ('+(d.get('ec_rel')||'')+') '+(d.get('ec_phone')||''));
-    lines.push('Photo and results consent: '+(d.get('photo_consent')||'not answered')); lines.push('Terms read and agreed: yes ('+new Date().toLocaleDateString('en-GB')+')');
+    lines.push('Photo and results consent: '+(d.get('photo_consent')||'not answered')); lines.push('Monthly email: '+(d.get('newsletter')?'Yes':'No')); lines.push('Terms read and agreed: yes ('+new Date().toLocaleDateString('en-GB')+')');
     lines.push('Confirmed true by me. (via clydebankpt.com/health-questionnaire)');
     var msg=lines.join(String.fromCharCode(10));
     if(send==='email') location.href='mailto:sanctuary@clydebankpt.com?subject='+encodeURIComponent('Health questionnaire: '+(d.get('name')||''))+'&body='+encodeURIComponent(msg);
