@@ -27,6 +27,48 @@
       var map = {'8week': '8-Week Package (£205)', '1to1': 'One-to-one PT, 5 weeks (£295)', 'classes': 'Group classes'};
       if (p && map[p]) form.elements['package'].value = map[p];
     } catch (e) {}
+    var DRAFT = 'sf_enquiry_draft';
+    var filled = function(){
+      return form.elements['name'].value.trim() || form.elements['goal'].value.trim() || form.elements['package'].value;
+    };
+    // The draft stays on this phone. Nothing is sent anywhere until the person presses a button.
+    var restore = function(){
+      try {
+        var d = JSON.parse(localStorage.getItem(DRAFT) || 'null');
+        if (!d || !d.name && !d.goal && !d.pkg) return;
+        if (d.at && Date.now() - d.at > 1000 * 60 * 60 * 24 * 14) { localStorage.removeItem(DRAFT); return; }
+        var n = document.createElement('p');
+        n.className = 'form-nudge';
+        n.innerHTML = 'You started a message here and did not send it. <button type="button" class="btn btn-ghost" id="draft-restore">Put it back</button> <button type="button" class="btn btn-ghost" id="draft-drop">Start again</button>';
+        form.insertBefore(n, form.firstChild);
+        document.getElementById('draft-restore').addEventListener('click', function(){
+          form.elements['name'].value = d.name || '';
+          form.elements['goal'].value = d.goal || '';
+          if (d.pkg) form.elements['package'].value = d.pkg;
+          n.remove();
+          if (window.gtag) gtag('event', 'enquiry_form_resumed', {page: location.pathname});
+        });
+        document.getElementById('draft-drop').addEventListener('click', function(){ try { localStorage.removeItem(DRAFT); } catch (e) {} n.remove(); });
+      } catch (e) {}
+    };
+    restore();
+    var save = function(){
+      try { localStorage.setItem(DRAFT, JSON.stringify({name: form.elements['name'].value, goal: form.elements['goal'].value, pkg: form.elements['package'].value, at: Date.now()})); } catch (e) {}
+    };
+    var abandonTimer = null, abandonSent = false, sent = false;
+    var touched = function(){
+      save();
+      if (abandonTimer) clearTimeout(abandonTimer);
+      if (abandonSent || sent) return;
+      abandonTimer = setTimeout(function(){
+        if (sent || abandonSent || !filled()) return;
+        abandonSent = true;
+        if (window.gtag) gtag('event', 'enquiry_form_abandoned', {page: location.pathname, filled: filled() ? 1 : 0});
+      }, 30000);
+    };
+    form.addEventListener('input', touched);
+    form.addEventListener('change', touched);
+
     form.addEventListener('submit', function(e){
       e.preventDefault();
       var name = form.elements['name'].value.trim();
@@ -35,10 +77,17 @@
       var msg = 'Hi Stevie, I\'m ' + (name || 'interested') + '. I\'d like to book a free consult.';
       if (pkg) msg += ' I\'m interested in: ' + pkg + '.';
       if (goal) msg += ' My goal: ' + goal;
-      if (e.submitter && e.submitter.dataset && e.submitter.dataset.send === 'email') { location.href = 'mailto:sanctuary@clydebankpt.com?subject=' + encodeURIComponent('Free consult') + '&body=' + encodeURIComponent(msg); if (window.gtag) gtag('event', 'email_click', {form: 1}); return; }
+      msg += ' (via clydebankpt.com' + location.pathname + ')';
+      sent = true;
+      if (abandonTimer) clearTimeout(abandonTimer);
+      try { localStorage.removeItem(DRAFT); sessionStorage.setItem('sf_sent_msg', msg); } catch (e) {}
+      var email = e.submitter && e.submitter.dataset && e.submitter.dataset.send === 'email';
+      if (window.gtag) gtag('event', 'enquiry_form', {package: pkg || 'unspecified', method: email ? 'email' : 'whatsapp', page: location.pathname});
+      if (email) { location.href = 'mailto:sanctuary@clydebankpt.com?subject=' + encodeURIComponent('Free consult (via clydebankpt.com' + location.pathname + ')') + '&body=' + encodeURIComponent(msg); return; }
       window.open('https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
       var done = document.getElementById('wa-done');
       if (done) { done.hidden = false; }
+      setTimeout(function(){ location.href = '/thanks/'; }, 900);
     });
   }
 })();
@@ -842,3 +891,19 @@ function sfMailAlts(root){
   });
 }
 sfMailAlts(); document.addEventListener('sf:open', function(){ sfMailAlts(document.getElementById('members')); });
+
+
+// ROADMAP-6 B98: on /thanks/, offer the message again. A person who thinks they have sent one and has not is
+// the worst outcome on this page, so the button is there whenever there is a message to re-open.
+(function(){
+  if (location.pathname !== '/thanks/') return;
+  var WA_NUMBER = '447376941421';
+  try {
+    var msg = sessionStorage.getItem('sf_sent_msg');
+    var wrap = document.getElementById('thanks-resend'), a = document.getElementById('thanks-wa');
+    if (!wrap || !a) return;
+    if (msg) a.href = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(msg);
+    wrap.hidden = false;
+    if (window.gtag) gtag('event', 'thanks_view', {had_message: msg ? 1 : 0});
+  } catch (e) {}
+})();

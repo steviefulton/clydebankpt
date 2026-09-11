@@ -1,6 +1,8 @@
 User-agent: *
 Allow: /
 Disallow: /members/
+Disallow: /coach/
+Disallow: /thanks/
 Disallow: /tools/8-week-tracker/
 Disallow: /tools/photo-compare/
 Sitemap: https://clydebankpt.com/sitemap.xml
