@@ -181,7 +181,14 @@
     var now = Date.now();
     els.forEach(function(el){
       var t = new Date(el.getAttribute('data-start')).getTime(); var d = t - now;
-      if (d <= 0) { el.textContent = 'Started this week. Message Stevie to join late. '; return; }
+      // ROADMAP-6 E210: a page that is not rebuilt kept saying "this week" however many weeks passed.
+      if (d <= 0) {
+        var since = Math.floor(-d / 86400000);
+        el.textContent = since <= 7 ? 'Started this week. Message Stevie to join late. '
+          : (since < 56 ? 'That block is under way. Message Stevie for the next start date. '
+                        : 'Message Stevie for the next start date. ');
+        return;
+      }
       var days = Math.floor(d / 86400000), hrs = Math.floor((d % 86400000) / 3600000);
       el.textContent = (days > 0 ? days + (days === 1 ? ' day to go. ' : ' days to go. ') : (hrs > 0 ? hrs + (hrs === 1 ? ' hour to go. ' : ' hours to go. ') : 'Starts today. '));
     });
