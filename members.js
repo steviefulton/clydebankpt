@@ -82,6 +82,33 @@
     render();
   }
 
+  // C110 hydration reminder: opt-in, on this phone only. A line on the page while it is open, and the phone's own
+  // notification only after the member taps to allow it. No server, no push, nothing scheduled anywhere else.
+  function hydrate(){
+    var cb = $('dl-remind'); if (!cb) return;
+    var note = $('dl-remind-note'), allow = $('dl-remind-allow'), line = $('dl-nudge'), timer = null;
+    var can = typeof Notification !== 'undefined';
+    function nudge(){
+      line.hidden = false; line.textContent = 'Time for a glass of water. Tap + glass when you have had it.';
+      if (can && Notification.permission === 'granted') { try { new Notification('Sanctuary: have a glass of water'); } catch (e) {} }
+      if (navigator.vibrate) navigator.vibrate(120);
+    }
+    function paint(){
+      var on = !!get('sf_water_remind', false); cb.checked = on;
+      note.textContent = on
+        ? 'On. A line appears here every ninety minutes while this page is open on your phone. Nothing is sent from anywhere else.'
+        : 'Off. Turn it on and a line appears on this page every ninety minutes while it is open.';
+      allow.hidden = !(on && can && Notification.permission === 'default');
+      if (on && can && Notification.permission === 'granted') note.textContent += ' Your phone will buzz too.';
+      if (timer) { clearInterval(timer); timer = null; }
+      if (on) timer = setInterval(nudge, 90 * 60 * 1000);
+      if (!on) { line.hidden = true; }
+    }
+    cb.addEventListener('change', function(){ set('sf_water_remind', cb.checked); paint(); if (window.gtag) gtag('event', 'members_water_remind', {on: cb.checked}); });
+    allow.addEventListener('click', function(){ if (!can) return; Notification.requestPermission().then(function(){ paint(); }); });
+    paint();
+  }
+
   // C93 weekly review, C94 halfway, C95 finish: written from the phone's logs, sent by one tap
   function review(){
     var f = $('rv-form'); if (!f) return;
@@ -99,7 +126,7 @@
     });
   }
 
-  function init(){ if (!document.getElementById('log')) return; if (document.getElementById('log').dataset.ready) return; document.getElementById('log').dataset.ready = '1'; sessions(); lifts(); timers(); daily(); review(); }
+  function init(){ if (!document.getElementById('log')) return; if (document.getElementById('log').dataset.ready) return; document.getElementById('log').dataset.ready = '1'; sessions(); lifts(); timers(); daily(); hydrate(); review(); }
   document.addEventListener('sf:open', init); init();
 })();
 
@@ -229,7 +256,12 @@ function sfMembersPlan(){
   function set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   var DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], SLOTS = ['Breakfast', 'Lunch', 'Dinner'];
   var plan = get('sf_plan', {}), favs = get('sf_nut_favs', []), cooked = get('sf_cooked', []);
-  function all(slot){ var out = []; ['quick', 'cook'].forEach(function(m){ (D.meals[m][slot] || []).forEach(function(x){ out.push({n: x[0], d: x[1], m: m}); }); }); return out.sort(function(a, b){ var fa = favs.indexOf(a.n) >= 0, fb = favs.indexOf(b.n) >= 0; return fa === fb ? 0 : fa ? -1 : 1; }); }
+  // C107: the guide's vegetarian and vegan toggle filters the planner too, on the meal's own words
+  function diet(){ return get('sf_nut_diet', 'all'); }
+  function dietHide(text){ var m = diet(); if (m === 'all' || !D.diet) return false; var ws = m === 'vegan' ? D.diet.vegan : D.diet.veg;
+    var t = ' ' + String(text).toLowerCase().replace(/[^a-z]+/g, ' ') + ' ';
+    for (var i = 0; i < ws.length; i++) { if (t.indexOf(' ' + ws[i]) >= 0) return true; } return false; }
+  function all(slot){ var out = []; ['quick', 'cook'].forEach(function(m){ (D.meals[m][slot] || []).forEach(function(x){ if (!dietHide(x[0] + ' ' + x[1])) out.push({n: x[0], d: x[1], m: m}); }); }); return out.sort(function(a, b){ var fa = favs.indexOf(a.n) >= 0, fb = favs.indexOf(b.n) >= 0; return fa === fb ? 0 : fa ? -1 : 1; }); }
   // C96 the grid
   var grid = document.getElementById('plan-grid');
   function render(){
@@ -251,7 +283,10 @@ function sfMembersPlan(){
       grid.appendChild(col);
     });
     cook();
+    var dn = document.getElementById('plan-diet');
+    if (dn) dn.textContent = diet() === 'all' ? '' : (diet() === 'vegan' ? 'Vegan is on in the guide, so the meals that name meat, fish, eggs or dairy are out of these lists.' : 'Vegetarian is on in the guide, so the meals that name meat or fish are out of these lists.');
   }
+  document.addEventListener('sf:diet', function(){ render(); });
   // C97 what to cook this week, on top of the guide basket
   function cook(){
     var ul = document.getElementById('plan-cook'); ul.innerHTML = ''; var counts = {};
@@ -260,7 +295,7 @@ function sfMembersPlan(){
     if (!names.length) { var li0 = document.createElement('li'); li0.className = 'muted'; li0.textContent = 'Nothing planned yet.'; ul.appendChild(li0); return; }
     names.forEach(function(n){ var li = document.createElement('li'); var meal = null; SLOTS.forEach(function(s){ all(s).forEach(function(x){ if (x.n === n) meal = x; }); }); li.textContent = n + ' × ' + counts[n] + (meal ? ': ' + meal.d : ''); ul.appendChild(li); });
   }
-  document.getElementById('plan-quick').addEventListener('click', function(){ DAYS.forEach(function(day){ SLOTS.forEach(function(slot){ var q = (D.meals.quick[slot] || []); if (q.length) plan[day + ':' + slot] = q[(DAYS.indexOf(day) + SLOTS.indexOf(slot)) % q.length][0]; }); }); set('sf_plan', plan); render(); });
+  document.getElementById('plan-quick').addEventListener('click', function(){ DAYS.forEach(function(day){ SLOTS.forEach(function(slot){ var q = (D.meals.quick[slot] || []).filter(function(x){ return !dietHide(x[0] + ' ' + x[1]); }); if (q.length) plan[day + ':' + slot] = q[(DAYS.indexOf(day) + SLOTS.indexOf(slot)) % q.length][0]; }); }); set('sf_plan', plan); render(); });
   document.getElementById('plan-favs').addEventListener('click', function(){ if (!favs.length) { alertLine('Star a few meals first.'); return; } DAYS.forEach(function(day){ SLOTS.forEach(function(slot){ var f = all(slot).filter(function(x){ return favs.indexOf(x.n) >= 0; }); if (f.length) plan[day + ':' + slot] = f[DAYS.indexOf(day) % f.length].n; }); }); set('sf_plan', plan); render(); });
   document.getElementById('plan-clear').addEventListener('click', function(){ plan = {}; set('sf_plan', plan); render(); });
   document.getElementById('plan-print').addEventListener('click', function(){ document.body.classList.add('print-plan'); setTimeout(function(){ window.print(); document.body.classList.remove('print-plan'); }, 50); });
@@ -395,3 +430,147 @@ function sfMembersStart(){
   if (window.gtag) gtag('event', 'members_start_view', {mode: mode});
 }
 document.addEventListener('sf:open', sfMembersStart); sfMembersStart();
+
+// ROADMAP-5 C119: shrink a photo on the phone before it is sent. Canvas only: the file never leaves the browser and
+// nothing is uploaded. Gives back a JPEG data URL under the size asked for, or a plain error line.
+function sfShrinkPhoto(file, maxKB, maxPx, cb){
+  if (!file || !/^image\//.test(file.type)) { cb('That is not a photo.'); return; }
+  var fr = new FileReader();
+  fr.onerror = function(){ cb('That photo could not be read.'); };
+  fr.onload = function(){
+    var img = new Image();
+    img.onerror = function(){ cb('That photo could not be read.'); };
+    img.onload = function(){
+      var w = img.naturalWidth, h = img.naturalHeight, scale = Math.min(1, maxPx / Math.max(w, h));
+      var c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w * scale)); c.height = Math.max(1, Math.round(h * scale));
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      var q = 0.82, url = c.toDataURL('image/jpeg', q);
+      while (url.length * 0.75 > maxKB * 1024 && q > 0.35) { q -= 0.12; url = c.toDataURL('image/jpeg', q); }
+      while (url.length * 0.75 > maxKB * 1024 && c.width > 320) {
+        var c2 = document.createElement('canvas'); c2.width = Math.round(c.width * 0.75); c2.height = Math.round(c.height * 0.75);
+        c2.getContext('2d').drawImage(c, 0, 0, c2.width, c2.height); c = c2; url = c.toDataURL('image/jpeg', q);
+      }
+      cb(null, {url: url, kb: Math.round(url.length * 0.75 / 1024), w: c.width, h: c.height, wasKB: Math.round(file.size / 1024)});
+    };
+    img.src = fr.result;
+  };
+  fr.readAsDataURL(file);
+}
+
+// C117 wall categories, C118 reactions counted on this phone, C119 the photo shrinker in the wall
+function sfMembersWall(){
+  var sec = document.getElementById('wall'); if (!sec || sec.dataset.ready) return; sec.dataset.ready = '1';
+  function get(k, d){ try { var v = JSON.parse(localStorage.getItem(k) || 'null'); return v === null ? d : v; } catch (e) { return d; } }
+  function set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  // C117: the chips filter the rendered items by their category tag
+  var chips = document.getElementById('wall-chips'), list = document.getElementById('wall-list');
+  if (chips && list) {
+    var items = Array.prototype.slice.call(list.children);
+    var filter = function(cat){
+      items.forEach(function(li){ li.hidden = !(cat === 'all' || li.getAttribute('data-cat') === cat); });
+      Array.prototype.forEach.call(chips.children, function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-cat') === cat)); });
+      set('sf_wall_cat', cat);
+    };
+    Array.prototype.forEach.call(chips.children, function(b){ b.addEventListener('click', function(){ filter(b.getAttribute('data-cat')); }); });
+    var start = get('sf_wall_cat', 'all');
+    filter(chips.querySelector('[data-cat="' + start + '"]') ? start : 'all');
+  }
+  // C118: one tap, three options, kept on this phone only until the wall gets its own account
+  if (list) {
+    var counts = get('sf_wall_react', {});
+    Array.prototype.forEach.call(list.querySelectorAll('.wall-react'), function(box){
+      var id = box.getAttribute('data-id'); var mine = counts[id] || {};
+      Array.prototype.forEach.call(box.querySelectorAll('button[data-r]'), function(b){
+        var r = b.getAttribute('data-r'); var label = b.textContent;
+        var paint = function(){ b.setAttribute('aria-pressed', String(!!mine[r])); b.textContent = mine[r] ? label + ' ✓' : label; };
+        b.addEventListener('click', function(){ mine[r] = !mine[r]; counts[id] = mine; set('sf_wall_react', counts); paint(); if (window.gtag) gtag('event', 'members_wall_react', {kind: r}); });
+        paint();
+      });
+    });
+  }
+  // C119: pick a photo, get a copy under 300KB to save or send
+  var pick = document.getElementById('wall-photo'); if (!pick) return;
+  var out = document.getElementById('wall-photo-out'), img = document.getElementById('wall-photo-img');
+  var save = document.getElementById('wall-photo-save'), share = document.getElementById('wall-photo-share'); var made = null;
+  pick.addEventListener('change', function(){
+    var f = pick.files && pick.files[0]; if (!f) return;
+    out.textContent = 'Shrinking it on your phone.';
+    sfShrinkPhoto(f, 300, 1600, function(err, r){
+      if (err) { out.textContent = err; return; }
+      made = r; img.src = r.url; img.setAttribute('width', r.w); img.setAttribute('height', r.h); img.hidden = false;
+      out.textContent = r.wasKB + 'KB became ' + r.kb + 'KB, ' + r.w + ' by ' + r.h + '. Still on your phone.';
+      save.href = r.url; save.hidden = false; share.hidden = !navigator.share;
+      if (window.gtag) gtag('event', 'members_photo_shrink');
+    });
+  });
+  share.addEventListener('click', function(){
+    if (!made || !navigator.share) return;
+    fetch(made.url).then(function(r){ return r.blob(); }).then(function(b){
+      var file = new File([b], 'sanctuary-photo.jpg', {type: 'image/jpeg'});
+      if (navigator.canShare && navigator.canShare({files: [file]})) return navigator.share({files: [file]});
+      return navigator.share({title: 'Sanctuary', text: 'A photo for the wall'});
+    }).catch(function(){});
+  });
+}
+document.addEventListener('sf:open', sfMembersWall); sfMembersWall();
+
+// C74 members glossary: tap a gym word and the meaning opens in place, in the site glossary's own wording
+function sfMembersGlossary(){
+  var box = document.getElementById('m-terms'); if (!box || box.dataset.ready) return; box.dataset.ready = '1';
+  var defs = {}; try { defs = JSON.parse(box.getAttribute('data-json') || '{}'); } catch (e) { return; }
+  var card = null;
+  var close = function(){ if (card) { card.parentNode.removeChild(card); card = null; } };
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button.m-term') : null;
+    if (!b) { if (card && !card.contains(e.target)) close(); return; }
+    e.preventDefault();
+    var t = b.getAttribute('data-t'); if (!defs[t]) return;
+    if (card && card.getAttribute('data-t') === t) { close(); return; }
+    close();
+    card = document.createElement('div'); card.className = 'm-term-card'; card.setAttribute('data-t', t);
+    var n = document.createElement('b'); n.textContent = t;
+    var d = document.createElement('span'); d.textContent = ' ' + defs[t];
+    var f = document.createElement('a'); f.href = '/glossary/'; f.className = 'small'; f.textContent = 'The rest of the gym words';
+    card.appendChild(n); card.appendChild(d); card.appendChild(document.createElement('br')); card.appendChild(f);
+    var host = b.closest('p, li, dd') || b;  // the card opens under the line, so the sentence is not cut in half
+    host.parentNode.insertBefore(card, host.nextSibling);
+    if (window.gtag) gtag('event', 'members_term', {term: t});
+  });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') close(); });
+}
+document.addEventListener('sf:open', sfMembersGlossary); sfMembersGlossary();
+
+// C103 food log photo: shrunk and kept on this phone. The words are what the check-in message carries; the photo is not.
+function sfMembersFoodPhoto(){
+  var log = document.getElementById('nut-log'); if (!log || log.dataset.ready) return; log.dataset.ready = '1';
+  var key = function(){ var w = null; try { w = JSON.parse(localStorage.getItem('sf_nut_week') || 'null'); } catch (e) {} return (w && w.key) || 'week'; };
+  var load = function(){ try { return JSON.parse(localStorage.getItem('sf_food_photos') || '{}'); } catch (e) { return {}; } };
+  var save = function(o){ try { localStorage.setItem('sf_food_photos', JSON.stringify(o)); return true; } catch (e) { return false; } };
+  var paint = function(){
+    var all = load(), wk = all[key()] || {};
+    Array.prototype.forEach.call(log.querySelectorAll('img[data-phimg]'), function(im){
+      var d = im.getAttribute('data-phimg'); var del = log.querySelector('[data-phdel="' + d + '"]');
+      if (wk[d]) { im.src = wk[d]; im.hidden = false; if (del) del.hidden = false; }
+      else { im.removeAttribute('src'); im.hidden = true; if (del) del.hidden = true; }
+    });
+  };
+  log.addEventListener('change', function(e){
+    var inp = e.target.closest ? e.target.closest('input[data-ph]') : null; if (!inp) return;
+    var d = inp.getAttribute('data-ph'); var f = inp.files && inp.files[0]; if (!f) return;
+    sfShrinkPhoto(f, 90, 720, function(err, r){
+      if (err) return;
+      var wk = load()[key()] || {}; wk[d] = r.url;
+      var all = {}; all[key()] = wk;  // this week only, so the phone never fills up
+      if (!save(all)) { delete wk[d]; save(all); }
+      inp.value = ''; paint();
+      if (window.gtag) gtag('event', 'members_food_photo');
+    });
+  });
+  log.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('[data-phdel]') : null; if (!b) return;
+    var all = load(), wk = all[key()] || {}; delete wk[b.getAttribute('data-phdel')]; all[key()] = wk; save(all); paint();
+  });
+  new MutationObserver(paint).observe(log, {childList: true});
+  paint();
+}
+document.addEventListener('sf:open', sfMembersFoodPhoto); sfMembersFoodPhoto();
