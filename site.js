@@ -211,15 +211,40 @@
     }
   } catch (e) {}
   function send(name, params){ try { params = params || {}; if (heroV) params.variant = heroV; if (window.gtag) gtag('event', name, params); } catch (e) {} }
+  // Named in the order a tap is most likely to come from, so one link only ever reports one spot.
+  function waSpot(a){
+    try {
+      if (a.classList.contains('float-wa') || a.closest('.float-wa')) return 'float';
+      if (a.closest('.callbar')) return 'callbar';
+      if (a.closest('.nav')) return 'nav';
+      if (a.closest('footer')) return 'footer';
+      if (a.closest('#wa-form') || a.closest('form')) return 'form';
+      if (a.closest('.hero')) return 'hero';
+      if (a.closest('.cta-band')) return 'cta-band';
+      if (a.closest('.quicknav-wrap')) return 'start-prefill';
+      var sec = a.closest('section');
+      return sec ? (sec.id || (sec.className || '').split(' ')[0] || 'section') : 'other';
+    } catch (e) { return 'other'; }
+  }
   if (heroV) send('hero_view', {page: location.pathname});
   document.addEventListener('click', function(e){
     var a = e.target.closest('a'); if (!a) return;
     var h = a.getAttribute('href') || '';
-    if (h.indexOf('wa.me') > -1) send('whatsapp_click', {location: a.closest('section') ? (a.closest('section').id || a.closest('section').className) : (a.closest('.callbar') ? 'callbar' : a.closest('.nav') ? 'nav' : 'other'), page: location.pathname});
+    if (h.indexOf('wa.me') > -1) {
+      // ROADMAP-6 J354: whatsapp_click fired for all of them with a 'location' taken from the nearest
+      // <section>, which meant the four buttons that matter most - the float, the sticky call bar, the
+      // footer and the hero - all resolved to 'other', because none of them sits inside a section. One
+      // parameter, named the same way on all 181 pages, says which of the four actually earns the message.
+      send('whatsapp_click', {location: waSpot(a), page: location.pathname});
+      // ROADMAP-6 J355: three kinds of lead came through one undifferentiated count. The six prefill
+      // buttons on /start/ each say a different thing about the person tapping them; the label is the
+      // button's own visible text, so a new button is measured the day it is added.
+      if (a.closest('.quicknav-wrap')) send('start_prefill', {choice: (a.textContent || '').trim().toLowerCase().slice(0, 40), page: location.pathname});
+    }
     else if (h.indexOf('tel:') === 0) send('call_click', {page: location.pathname});
-    else if (h.indexOf('mailto:') === 0) send('email_click', {page: location.pathname});
+    else if (h.indexOf('mailto:') === 0) send('email_click', {page: location.pathname, spot: waSpot(a)});
     else if (h.indexOf('/calendar/') > -1) send('calendar_add', {file: h});
-    else if (h.indexOf('instagram.com') > -1 || h.indexOf('facebook.com') > -1) send('social_click', {url: h});
+    else if (h.indexOf('instagram.com') > -1 || h.indexOf('facebook.com') > -1 || h.indexOf('tiktok.com') > -1) send('social_click', {url: h, network: h.indexOf('tiktok.com') > -1 ? 'tiktok' : h.indexOf('instagram.com') > -1 ? 'instagram' : 'facebook', page: location.pathname});
   }, {passive: true});
   var f = document.getElementById('wa-form');
   if (f) f.addEventListener('submit', function(){ send('enquiry_form', {package: f.elements['package'].value || 'unspecified', page: location.pathname}); });
@@ -894,7 +919,7 @@ function sfMailAlts(root){
   scope.querySelectorAll('main a.btn[href^="https://wa.me/44"], #members a.btn[href^="https://wa.me/44"]').forEach(function(a){
     if (a.dataset.mailAlt || a.dataset.nomail || a.closest('.callbar') || a.closest('.nav')) return; a.dataset.mailAlt = '1';
     var m = document.createElement('a'); m.className = 'mail-alt'; m.href = 'mailto:' + email; m.textContent = 'or email';
-    m.addEventListener('click', function(){ var t = ''; try { t = decodeURIComponent((a.getAttribute('href').split('?text=')[1] || '').replace(/\+/g, ' ')); } catch (e) {} m.href = 'mailto:' + email + '?subject=' + encodeURIComponent('From clydebankpt.com') + '&body=' + encodeURIComponent(t || 'Hi Stevie, '); if (window.gtag) gtag('event', 'email_click', {alt: 1}); });
+    m.addEventListener('click', function(){ var t = ''; try { t = decodeURIComponent((a.getAttribute('href').split('?text=')[1] || '').replace(/\+/g, ' ')); } catch (e) {} m.href = 'mailto:' + email + '?subject=' + encodeURIComponent('From clydebankpt.com') + '&body=' + encodeURIComponent(t || 'Hi Stevie, '); if (window.gtag) gtag('event', 'email_click', {alt: 1, page: location.pathname}); });
     a.parentNode.insertBefore(m, a.nextSibling);
   });
 }
@@ -963,3 +988,77 @@ function sfSmallVideo(){
   } catch (e) {}
 }
 sfSmallVideo();
+
+/* ROADMAP-6 J356: tool_calculator, tool_quiz and tool_score all fire at the RESULT, which is the one
+   moment they were always going to fire at, and nothing counted an opening. A completion event with no
+   denominator cannot tell you a completion rate: 40 calculators finished is a good number or a terrible
+   one depending on whether 60 people or 600 opened it. tool_open is the denominator and tool_start is
+   the middle term, so the honest question - how many people who opened this actually filled it in -
+   has an answer. Nothing here carries what anybody typed. */
+(function(){
+  var m = /^\/tools\/([a-z0-9-]+)\//.exec(location.pathname);
+  if (!m) return;
+  var tool = m[1], started = false;
+  function ev(name, params){ try { if (window.gtag) gtag('event', name, Object.assign({tool: tool, page: location.pathname}, params || {})); } catch (e) {} }
+  ev('tool_open');
+  var main = document.querySelector('main') || document.body;
+  function begin(e){
+    if (started) return;
+    var t = e.target;
+    if (!t || !t.closest) return;
+    if (!t.closest('input, select, textarea, button[data-a], .q button, button[data-goal]')) return;
+    started = true;
+    ev('tool_start');
+  }
+  main.addEventListener('input', begin, true);
+  main.addEventListener('click', begin, true);
+})();
+
+/* ROADMAP-6 J357: forty-three guides, and the whole argument for having written them is that somebody
+   reads one and then goes and looks at the thing it is about. scroll_60 says a guide was read. Nothing
+   said a guide was read AND the reader then tapped through to a page that sells something, which is the
+   single path the guides exist to create. This fires once per page, names the guide and where it went. */
+(function(){
+  var m = /^\/guides\/([a-z0-9-]+)\//.exec(location.pathname);
+  if (!m) return;
+  var guide = m[1], MONEY = ['/8-week-package/', '/one-to-one-personal-training/', '/prices/', '/start/', '/contact/', '/small-group-personal-training-clydebank/', '/nutrition-coaching-clydebank/'], done = false;
+  document.addEventListener('click', function(e){
+    if (done) return;
+    var a = e.target.closest && e.target.closest('a'); if (!a) return;
+    var h = a.getAttribute('href') || '', to = '';
+    if (h.indexOf('wa.me') > -1) to = 'whatsapp';
+    else { for (var i = 0; i < MONEY.length; i++) { if (h.indexOf(MONEY[i]) === 0) { to = MONEY[i]; break; } } }
+    if (!to) return;
+    done = true;
+    try { if (window.gtag) gtag('event', 'guide_to_money', {guide: guide, destination: to}); } catch (err) {}
+  }, {passive: true});
+})();
+
+/* ROADMAP-6 G295: the TikTok and Instagram bios point at /start/, which is the right page, and /start/
+   had no idea anybody had come from there: the same cold opening for a stranger off Google and for
+   somebody who had just watched thirty seconds of a 6am class. One line, only when the visitor really
+   did arrive from a named place, and only saying things that are true. The tags come from the short
+   campaign paths build.py writes (/park/, /clubs/, /poster/ ...) and from the referrer for social. */
+(function(){
+  var el = document.getElementById('st-from'); if (!el) return;
+  var q = new URLSearchParams(location.search), src = (q.get('utm_source') || q.get('src') || '').toLowerCase();
+  var ref = (document.referrer || '').toLowerCase();
+  if (!src) {
+    if (ref.indexOf('tiktok') > -1) src = 'tiktok';
+    else if (ref.indexOf('instagram') > -1) src = 'instagram';
+    else if (ref.indexOf('facebook') > -1) src = 'facebook';
+  }
+  var LINES = {
+    tiktok: 'Came from TikTok: the sessions in the clips are the classes on the <a href="/timetable/">timetable</a>, and this is the way in.',
+    instagram: 'Came from Instagram: the sessions in the posts are the classes on the <a href="/timetable/">timetable</a>, and this is the way in.',
+    facebook: 'Came from Facebook: the sessions in the posts are the classes on the <a href="/timetable/">timetable</a>, and this is the way in.',
+    park: 'You work on Clydebank Business Park. The gym is on it, and there is a <a href="/clydebank-business-park-staff/">park price</a> for people who work there.',
+    clubs: 'Here about squad training? <a href="/sports-specific-training-clydebank/">What a squad session is</a>, then message me and we will find a date.',
+    poster: 'Scanned the poster: this is the free ten-minute consult it points at. The <a href="/timetable/">timetable</a> is here.',
+    leaflet: 'Got the leaflet: this is the free ten-minute consult it points at. The <a href="/timetable/">timetable</a> is here.',
+    gp: 'Sent by a physio or a GP? Tell me what you have been told to avoid and I work round it. <a href="/injury-return-fitness-clydebank/">Coming back from an injury</a>.'
+  };
+  var line = LINES[src]; if (!line) return;
+  el.innerHTML = line; el.hidden = false;
+  try { if (window.gtag) gtag('event', 'arrival_line', {source: src}); } catch (e) {}
+})();
