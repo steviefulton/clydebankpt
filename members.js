@@ -707,3 +707,89 @@ function sfMembersBlock(){
   if (window.gtag) gtag('event', 'members_block', {week: week === null ? 0 : week, streak: run, away: away === null ? -1 : away});
 }
 document.addEventListener('sf:open', sfMembersBlock); sfMembersBlock();
+
+// ROADMAP-6 round 24, items 168, 170, 171 and 175. Same rules as everything else in here: reads the page and
+// this phone's own storage, writes nothing anywhere else, invents no number and makes no offer.
+function sfMembersR24(){
+  var root = document.getElementById('members'); if (!root || root.dataset.r24) return; root.dataset.r24 = '1';
+  function get(k, d){ try { var v = JSON.parse(localStorage.getItem(k) || 'null'); return v === null ? d : v; } catch (e) { return d; } }
+  function wa(text){ var a = document.querySelector('#dash a[href^="https://wa.me/"]'); var base = a ? a.getAttribute('href').split('?')[0] : 'https://wa.me/'; return base + '?text=' + encodeURIComponent(text); }
+
+  // ---- item 171: the portion table follows the appetite column the member already picked in the guide
+  var tbl = document.getElementById('fw-portions');
+  if (tbl) {
+    var NAMES = ['Small', 'Moderate', 'Large'];
+    var paint = function(){
+      var col = get('sf_nut_appetite', 1); if (col < 0 || col > 2) col = 1;
+      Array.prototype.forEach.call(tbl.querySelectorAll('[data-col]'), function(td){
+        td.classList.toggle('fw-on', +td.getAttribute('data-col') === col);
+        td.classList.toggle('fw-off', +td.getAttribute('data-col') !== col);
+      });
+      var note = document.getElementById('fw-col');
+      if (note) note.textContent = 'Your column is ' + NAMES[col] + '. Change it in the guide below and this follows it.';
+    };
+    paint();
+    // the guide writes the column on tap; repaint when the page changes rather than polling forever
+    var box = document.getElementById('nutrition');
+    if (box) new MutationObserver(paint).observe(box, {subtree: true, attributes: true, attributeFilter: ['aria-selected', 'class']});
+  }
+
+  // ---- item 175: the two members-only tools were in a card halfway down and nowhere on the dashboard
+  var dash = document.getElementById('m-dash');
+  if (dash && !dash.querySelector('a[href="/tools/photo-compare/"]')) {
+    [['Photo compare', 'Week 1 beside week 8, on this phone only.', '/tools/photo-compare/'],
+     ['Progress tracker', 'Eight rows, then one tap sends the check-in.', '/tools/8-week-tracker/']].forEach(function(c){
+      if (dash.querySelector('a[href="' + c[2] + '"]')) return;
+      var a = document.createElement('a'); a.className = 'dcard'; a.href = c[2];
+      a.innerHTML = '<span class="eyebrow"></span><b></b>';
+      a.querySelector('.eyebrow').textContent = c[0]; a.querySelector('b').textContent = c[1];
+      dash.appendChild(a);
+    });
+  }
+
+  // ---- item 170: an injury is a reason to stop opening the app. The plan existed; the "and it counted"
+  // did not. Logging the modified session uses the same counter the guide's My week panel already keeps.
+  var illOut = document.getElementById('ill-out');
+  if (illOut && !document.getElementById('ill-log')) {
+    var wrap = document.createElement('p');
+    wrap.innerHTML = '<button type="button" class="nut-btn" id="ill-log">I did the modified session</button> '
+      + '<span class="small" id="ill-log-note">A session you changed is still a session. It counts on your week the same as any other.</span>';
+    illOut.parentNode.insertBefore(wrap, illOut.nextSibling);
+    document.getElementById('ill-log').addEventListener('click', function(){
+      // the SAME store the guide's "I trained today" writes, keyed by the same Monday-start week, so a
+      // modified session lands in the sessions count and the streak instead of a second, private tally.
+      var wd = new Date(); var off = (wd.getDay() + 6) % 7; wd.setDate(wd.getDate() - off);
+      var wk = wd.toISOString().slice(0, 10), all = get('sf_nut_sess', {});
+      all[wk] = all[wk] || []; all[wk].push(new Date().toISOString().slice(0, 10));
+      try { localStorage.setItem('sf_nut_sess', JSON.stringify(all)); } catch (e) {}
+      var out = document.getElementById('nut-sess'); if (out) out.textContent = all[wk].length;
+      document.getElementById('ill-log-note').textContent = 'Logged for today. Tell Stevie what you changed so next week is written round it.';
+      if (window.gtag) gtag('event', 'members_session_log', {kind: 'modified'});
+    });
+  }
+
+  // ---- item 168: the review ask, at the only moment it is honest to ask. Never incentivised, never before
+  // the numbers exist. Shown once: a member who has been asked is not asked again by a script.
+  var tr = get('sf_tracker_v1', {});
+  var start = tr && tr.start ? new Date(tr.start + 'T00:00:00') : null;
+  var today = new Date(); today.setHours(0, 0, 0, 0);
+  var week = (start && !isNaN(start)) ? Math.floor((today - start) / 86400000 / 7) + 1 : null;
+  var asked = get('sf_m_review_asked', false);
+  if (week !== null && week >= 8 && !asked) {
+    var rv = document.createElement('section'); rv.className = 'section'; rv.id = 'review-ask';
+    rv.innerHTML = '<div class="wrap prose"><h2>You are at the end of a block</h2>'
+      + '<p>If it went the way you wanted, two minutes of your words does more for the next nervous person '
+      + 'reading the reviews than anything Stevie can write himself. First name only, honest, good or bad.</p>'
+      + '<p>If it did not go the way you wanted, say that to Stevie instead and he will want to know why.</p>'
+      + '<p><a class="btn btn-red" href="/review/" id="rv-go">Leave a Google review</a> '
+      + '<a class="btn btn-ghost" id="rv-talk" target="_blank" rel="noopener">Tell Stevie instead</a> '
+      + '<button type="button" class="nut-btn" id="rv-no">Not just now</button></p>'
+      + '<p class="small">Never paid for and never incentivised. Nothing changes for you either way.</p></div>';
+    rv.querySelector('#rv-talk').href = wa('Hi Stevie, I have finished the block. Here is what I thought: ');
+    root.insertBefore(rv, root.firstChild ? root.firstChild.nextSibling : null);
+    var done = function(){ try { localStorage.setItem('sf_m_review_asked', 'true'); } catch (e) {} rv.remove(); };
+    rv.querySelector('#rv-no').addEventListener('click', done);
+    rv.querySelector('#rv-go').addEventListener('click', function(){ try { localStorage.setItem('sf_m_review_asked', 'true'); } catch (e) {} if (window.gtag) gtag('event', 'members_review'); });
+  }
+}
+document.addEventListener('sf:open', sfMembersR24); sfMembersR24();

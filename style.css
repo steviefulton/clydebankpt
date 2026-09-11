@@ -976,3 +976,6 @@ body:has(.footer-min){padding-bottom:0}
 .qa .q-anchor{color:inherit;text-decoration:none}
 .qa .q-anchor:hover,.qa .q-anchor:focus{text-decoration:underline;text-decoration-color:var(--red)}
 .qa div:target dt{color:var(--red)}
+#fw-portions .fw-on{font-weight:700}
+#fw-portions th.fw-on{text-decoration:underline;text-underline-offset:3px}
+#fw-portions .fw-off{opacity:.55}
