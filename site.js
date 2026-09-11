@@ -940,3 +940,26 @@ function sfReturnLine(){
   } catch (e) {}
 }
 sfReturnLine();
+
+// ROADMAP-6 A79: reel-6am.mp4 is 3.2MB and things-you-hear.mp4 is 3.0MB. They are poster-first and only
+// play when tapped, so they cost nothing until somebody on a bad signal taps one - and that person is
+// the whole point. Each now has a 360p sibling at about a third of the size. It is used when the visitor
+// has turned on the site's own Save data preference, or when the browser says the connection is metered
+// or slow. Nobody is given a worse picture without asking for it.
+function sfSmallVideo(){
+  try {
+    var small = {'/video/reel-6am.mp4': 1, '/video/things-you-hear.mp4': 1};
+    var c = navigator.connection || {};
+    var lean = document.documentElement.classList.contains('save-data') || c.saveData === true ||
+               /^(slow-2g|2g|3g)$/.test(c.effectiveType || '');
+    if (!lean) return;
+    document.querySelectorAll('video[src]').forEach(function(v){
+      var src = v.getAttribute('src');
+      if (!small[src] || v.dataset.small) return;
+      v.dataset.small = '1';
+      v.setAttribute('src', src.replace('.mp4', '-360.mp4'));
+      if (window.gtag) gtag('event', 'video_small_variant', {src: src});
+    });
+  } catch (e) {}
+}
+sfSmallVideo();
