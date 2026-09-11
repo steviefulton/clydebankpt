@@ -1056,6 +1056,7 @@ sfSmallVideo();
     clubs: 'Here about squad training? <a href="/sports-specific-training-clydebank/">What a squad session is</a>, then message me and we will find a date.',
     poster: 'Scanned the poster: this is the free ten-minute consult it points at. The <a href="/timetable/">timetable</a> is here.',
     leaflet: 'Got the leaflet: this is the free ten-minute consult it points at. The <a href="/timetable/">timetable</a> is here.',
+    gbp: 'Found me on Google. The timetable, the prices and the reviews are all on the site; this is the way in.',
     gp: 'Sent by a physio or a GP? Tell me what you have been told to avoid and I work round it. <a href="/injury-return-fitness-clydebank/">Coming back from an injury</a>.'
   };
   var line = LINES[src]; if (!line) return;
