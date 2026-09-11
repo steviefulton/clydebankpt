@@ -909,7 +909,7 @@ body.print-plan .plan-row select{border:0;appearance:none;-webkit-appearance:non
 .navlinks a .dot,.mobile-menu a .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);margin-left:6px;vertical-align:middle}
 details.local summary{cursor:pointer;font-weight:600}
 details.local p{margin:8px 0 0}
-.sec-count{display:block;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-family:Archivo,Arial,sans-serif;font-weight:600}
+.sec-count{display:block;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-family:Archivo,Arial,sans-serif;font-weight:600}
 .file-tag{margin-left:6px}
 .ring{--p:0;width:120px;height:120px;border-radius:50%;background:conic-gradient(var(--red) calc(var(--p) * 1%),var(--line) 0);display:grid;place-items:center;margin:8px 0 14px}
 .ring span{width:92px;height:92px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-family:"Big Shoulders Display","BSD Fallback Impact","BSD Fallback Arial",Impact,sans-serif;font-size:2.2rem;font-weight:800}
