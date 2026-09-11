@@ -172,14 +172,28 @@
 <h2 id="q-title"></h2>
 <p id="q-why"></p>
 <ul class="plain" id="q-points"></ul>
-<div class="g-cta"><a id="q-wa" class="btn btn-red" target="_blank" rel="noopener">Message Stevie about this</a><a id="q-link" class="btn btn-ghost">Read about it</a></div>
+<div class="g-cta"><a id="q-wa" class="btn btn-red" target="_blank" rel="noopener">Send Stevie my answers</a><a id="q-mail" class="btn btn-ghost">Email them instead</a><a id="q-link" class="btn btn-ghost">Read about it</a></div>
+<details class="faq-item" id="q-note"><summary>What gets sent</summary><p id="q-preview"></p><p class="small">Your five answers and nothing else. Nothing is uploaded from this page; the message is written in your own WhatsApp or email app and you send it, or you do not.</p></details>
 <p class="small">Not sure? The free consult settles it in ten minutes. <button type="button" class="linklike" id="q-reset">Start again</button>.</p>
 </div>
 </div></section>
 <script>
 (function(){
-  var ans={},qs=[].slice.call(document.querySelectorAll('#quiz .q'));
-  qs.forEach(function(q,i){ if(i) q.hidden=true; q.querySelectorAll('button').forEach(function(b){ b.addEventListener('click',function(){ ans[q.dataset.k]=b.dataset.v; q.hidden=true; if(qs[i+1]){qs[i+1].hidden=false;} else finish(); }); }); });
+  var ans={},said={},qs=[].slice.call(document.querySelectorAll('#quiz .q'));
+  // ROADMAP-6 B114: the quiz knew the whole situation and sent two words of it, so Stevie still had to ask
+  // the five questions the person had already answered. The question wording and the answer wording are read
+  // off the page itself, so the message can never drift from what was actually asked.
+  var ASKED={goal:'What you want most',people:'Training with other people',time:'When you can train',freq:'Sessions a week that are realistic',budget:'Over the next couple of months'};
+  qs.forEach(function(q,i){ if(i) q.hidden=true; q.querySelectorAll('button').forEach(function(b){ b.addEventListener('click',function(){ ans[q.dataset.k]=b.dataset.v; said[q.dataset.k]=(b.textContent||'').trim(); q.hidden=true; if(qs[i+1]){qs[i+1].hidden=false;} else finish(); }); }); });
+  function situation(){
+    return ['goal','people','time','freq','budget'].filter(function(k){return said[k];}).map(function(k){return ASKED[k]+': '+said[k]+'.';}).join(' ');
+  }
+  function send(msg, subject){
+    var full = msg+' (via clydebankpt.com'+location.pathname+')';
+    document.getElementById('q-wa').href='https://wa.me/447376941421?text='+encodeURIComponent(full);
+    document.getElementById('q-mail').href='mailto:sanctuary@clydebankpt.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(full);
+    document.getElementById('q-preview').textContent=full;
+  }
   function finish(){
     var one = ans.goal==='injury' || ans.people==='no' || ans.time==='kids' || ans.budget==='private';
     var t=document.getElementById('q-title'),w=document.getElementById('q-why'),p=document.getElementById('q-points');
@@ -189,13 +203,13 @@
       w.textContent=ans.goal==='injury'?'Injuries and health issues need a programme written around them and a coach watching every session. That is one-to-one work.':ans.time==='kids'?'Kids are welcome at one-to-one sessions, so childcare stops being the reason you do not start.':'Two private sessions a week for five weeks, a programme built for you, nutrition included.';
       ['Two sessions a week, five weeks, booked around your rota','Programme written for your goal and anything you are carrying','Nutrition plan included','Free consult first, no contract'].forEach(function(x){var li=document.createElement('li');li.textContent=x;p.appendChild(li);});
       document.getElementById('q-link').href='/one-to-one-personal-training/';
-      document.getElementById('q-wa').href='https://wa.me/447376941421?text='+encodeURIComponent('Hi Stevie, the quiz on clydebankpt.com says one-to-one PT is my fit. Can we book a free consult?'+' (via clydebankpt.com'+location.pathname+')');
+      send('Hi Stevie, the quiz on clydebankpt.com says one-to-one PT is my fit. Here is where I am. '+situation()+' Can we book a free consult?', 'One-to-one PT, from the quiz');
     } else {
       t.textContent='The 8-Week Package. £205, everything included.';
       w.textContent=ans.freq==='5'?'You want to train a lot. Every class on the timetable plus Personal Training slots is the most training you can buy for the money.':ans.time==='early'?'Three 6am classes and Personal Training slots from 7am. Your week has a shape already.':'Coached classes with a good crowd, Personal Training slots, a nutrition plan and a measured start and finish.';
       ['Every coached class, Monday to Saturday','Personal Training slots included','Nutrition plan written for you','Week 1 and week 8 measurements','Next start: Monday the 28th of September'].forEach(function(x){var li=document.createElement('li');li.textContent=x;p.appendChild(li);});
       document.getElementById('q-link').href='/8-week-package/';
-      document.getElementById('q-wa').href='https://wa.me/447376941421?text='+encodeURIComponent('Hi Stevie, the quiz on clydebankpt.com says the 8-Week Package is my fit. Can I get a place on the next block?'+' (via clydebankpt.com'+location.pathname+')');
+      send('Hi Stevie, the quiz on clydebankpt.com says the 8-Week Package is my fit. Here is where I am. '+situation()+' Can I get a place on the next block?', 'The 8-Week Package, from the quiz');
     }
     try{ localStorage.setItem('sf_quiz', JSON.stringify({result:one?'one_to_one':'eight_week', at:Date.now()})); }catch(e){}
     document.getElementById('qout').hidden=false; document.getElementById('qout').scrollIntoView({behavior:'smooth'});
