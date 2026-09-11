@@ -915,3 +915,28 @@ sfMailAlts(); document.addEventListener('sf:open', function(){ sfMailAlts(docume
     if (window.gtag) gtag('event', 'thanks_view', {had_message: msg ? 1 : 0});
   } catch (e) {}
 })();
+
+// ROADMAP-6 A110: somebody who has read the prices or the 8-week page three times is the warmest traffic
+// the site gets and saw exactly what a first-timer sees. One counter in localStorage on their own phone,
+// one extra line on the third visit to a money page, nothing sent anywhere and nothing that needs a cookie
+// banner: localStorage on this origin is not a cookie and is never read by anything but this script.
+function sfReturnLine(){
+  try {
+    var money = ['/prices/', '/8-week-package/', '/one-to-one-personal-training/'];
+    if (money.indexOf(location.pathname) < 0) return;
+    var k = 'sf_visits', n = 0;
+    try { n = parseInt(localStorage.getItem(k) || '0', 10) || 0; } catch (e) { return; }
+    n += 1;
+    try { localStorage.setItem(k, String(n)); } catch (e) {}
+    if (n < 3) return;
+    var main = document.getElementById('main'); if (!main) return;
+    var first = main.querySelector('section'); if (!first) return;
+    var p = document.createElement('p');
+    p.className = 'return-line';
+    p.innerHTML = 'Still thinking about it? The consult is ten minutes, it is free, and nothing is decided in it. ' +
+                  '<a href="/start/">Start here</a>.';
+    first.querySelector('.wrap') ? first.querySelector('.wrap').appendChild(p) : first.appendChild(p);
+    if (window.gtag) gtag('event', 'return_visitor_line', {visits: n, page: location.pathname});
+  } catch (e) {}
+}
+sfReturnLine();

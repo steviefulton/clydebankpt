@@ -972,3 +972,4 @@ html.tt-plan .tt-panel li.c,html.tt-plan .tt-panel li.p{cursor:pointer}
 .footer-min{padding-top:22px}
 .footer-min .fine{display:grid;gap:6px}
 body:has(.footer-min){padding-bottom:0}
+.return-line{margin-top:14px;padding:10px 14px;border-left:3px solid var(--red);background:var(--panel);border-radius:0 8px 8px 0;font-size:.95rem}
