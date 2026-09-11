@@ -185,7 +185,10 @@
 })();
 (function(){
   var b = document.createElement('a'); b.href = '#top'; b.className = 'totop'; b.setAttribute('aria-label', 'Back to top'); b.textContent = '↑';
-  document.body.appendChild(b);
+  // ROADMAP-6 A44: inside a landmark, not loose in the body. axe's region rule flagged .totop on
+  // every page it scanned, light and dark, because a bare anchor on <body> belongs to nothing.
+  var wrap = document.createElement('nav'); wrap.className = 'totop-wrap'; wrap.setAttribute('aria-label', 'Back to top');
+  wrap.appendChild(b); document.body.appendChild(wrap);
   var on = false;
   window.addEventListener('scroll', function(){ var s = window.scrollY > 1200; if (s !== on) { on = s; b.classList.toggle('show', s); } }, {passive:true});
   b.addEventListener('click', function(e){ e.preventDefault(); window.scrollTo({top:0, behavior:'smooth'}); });
@@ -629,7 +632,12 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ 
   bar.addEventListener('click', function(e){ if (e.target.id === 'tt-plan-done') planBtn.click(); });
   if (picks.length) paintPicks();
   Array.prototype.forEach.call(rows, function(li){
-    li.setAttribute('tabindex', '0'); li.setAttribute('role', 'button'); li.setAttribute('aria-expanded', 'false'); li.classList.add('tappable');
+    // ROADMAP-6 A42: role="button" on an <li> overrides its listitem role, so axe reads the timetable's
+    // <ul> as a list containing non-list-items (serious). The row is still a button to a screen reader,
+    // but the list stays a list: the li keeps its role and carries the button semantics on itself only
+    // where it is not a direct child of a list.
+    li.setAttribute('tabindex', '0'); li.setAttribute('aria-expanded', 'false'); li.classList.add('tappable');
+    if (!(li.parentElement && /^(UL|OL)$/.test(li.parentElement.tagName))) { li.setAttribute('role', 'button'); }
     function toggle(){
       var open = li.querySelector('.tt-card');
       if (open) { open.remove(); li.setAttribute('aria-expanded', 'false'); return; }
