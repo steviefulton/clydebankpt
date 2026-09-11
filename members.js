@@ -574,3 +574,136 @@ function sfMembersFoodPhoto(){
   paint();
 }
 document.addEventListener('sf:open', sfMembersFoodPhoto); sfMembersFoodPhoto();
+
+// ROADMAP-6 round 23, items 160, 161, 163, 164, 166 and 172: the block a member is in, and the four moments
+// in it worth saying something at. Everything here reads the phone's own tracker and habit logs and the page
+// it is already inside; nothing is uploaded, nothing is fetched, and no number is invented. The password is
+// shared across the crew (item 165), so this can only ever describe THIS PHONE's block, and it says so.
+function sfMembersBlock(){
+  var root = document.getElementById('members'); if (!root || root.dataset.blk) return; root.dataset.blk = '1';
+  var dash = document.getElementById('m-dash'); if (!dash) return;
+
+  function get(k, d){ try { var v = JSON.parse(localStorage.getItem(k) || 'null'); return v === null ? d : v; } catch (e) { return d; } }
+  function set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function wa(text){ var a = document.querySelector('#dash a[href^="https://wa.me/"]'); var base = a ? a.getAttribute('href').split('?')[0] : 'https://wa.me/'; return base + '?text=' + encodeURIComponent(text); }
+  function days(a, b){ return Math.floor((b - a) / 86400000); }
+  var ORD = function(n){ var s = ['th','st','nd','rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
+  var MON = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  function spoken(d){ return ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()] + ' the ' + ORD(d.getDate()) + ' of ' + MON[d.getMonth()]; }
+
+  // ---- item 160: which block this phone is in, and when it ends
+  var tr = get('sf_tracker_v1', {}), rows = (tr && tr.rows) || [];
+  var start = tr && tr.start ? new Date(tr.start + 'T00:00:00') : null;
+  var today = new Date(); today.setHours(0, 0, 0, 0);
+  var week = null, end = null;
+  if (start && !isNaN(start)) {
+    end = new Date(start.getTime()); end.setDate(end.getDate() + 8 * 7 - 1);
+    week = Math.floor(days(start, today) / 7) + 1;
+  }
+  var panels = [];
+  function card(label, text, href){
+    var a = document.createElement('a'); a.className = 'dcard'; a.href = href || '#dash';
+    a.innerHTML = '<span class="eyebrow"></span><b></b>';
+    a.querySelector('.eyebrow').textContent = label; a.querySelector('b').textContent = text;
+    dash.appendChild(a);
+  }
+  if (week !== null && week >= 1 && week <= 8) {
+    card('Your block', 'Week ' + week + ' of 8. Last day ' + spoken(end) + '.', '/tools/8-week-tracker/');
+  } else if (week !== null && week > 8) {
+    card('Your block', 'Finished ' + spoken(end) + '. Message Stevie about the next one.', '#thisweek');
+  } else if (week !== null) {
+    card('Your block', 'Starts ' + spoken(start) + '.', '/tools/8-week-tracker/');
+  } else {
+    card('Your block', 'Put your start date on the tracker and this says which week you are in.', '/tools/8-week-tracker/');
+  }
+
+  // ---- item 172: one line a week, from the block structure Stevie already published in the week-by-week guide
+  var WEEKLY = [
+    'Week 1 is numbers and nothing else. Get weighed and measured, get the plan written, and train easy.',
+    'Week 2 is where the routine sets. Same sessions, same days, nothing clever.',
+    'Week 3 is the first week it stops being new. Turning up on the dull week is the whole job.',
+    'Week 4 is the halfway check. Weigh in, look at the tape, and change one thing rather than five.',
+    'Week 5 is the other half of the halfway check: the change from last week, held for seven days.',
+    'Week 6 is a drift week. Sessions get skipped here more than anywhere, so book them in now.',
+    'Week 7 is the other drift week, and the one to be stubborn in. Next week is the measure.',
+    'Week 8 is measured again: same tape, same spots, same conditions as week one.'
+  ];
+  if (week !== null && week >= 1 && week <= 8) {
+    var w = document.createElement('section'); w.className = 'section'; w.id = 'blockweek';
+    w.innerHTML = '<div class="wrap prose"><h2>Week ' + week + ' of your block</h2><p></p>'
+      + '<p class="small">From the <a href="/guides/8-week-package-week-by-week/">week-by-week guide</a>. This is worked out on this phone from the start date on your tracker, so it is your week, not the gym’s.</p></div>';
+    w.querySelector('p').textContent = WEEKLY[week - 1];
+    var host = document.getElementById('dash');
+    if (host && host.parentNode) host.parentNode.insertBefore(w, host.nextSibling);
+  }
+
+  // ---- item 161: at week 7, the proof, from this phone's own logged numbers. No price, no offer.
+  function num(x){ var v = parseFloat(x); return isFinite(v) ? v : null; }
+  if (week !== null && week >= 7) {
+    var withW = rows.map(function(r, i){ return {i: i, r: r || {}}; }).filter(function(x){ return num(x.r.w) !== null; });
+    var sessions = rows.reduce(function(a, r){ return a + (num(r && r.s) || 0); }, 0);
+    var lines = [];
+    if (withW.length >= 2) {
+      var first = withW[0], last = withW[withW.length - 1];
+      var base = num(tr.w0) !== null ? num(tr.w0) : num(first.r.w);
+      var dw = num(last.r.w) - base;
+      lines.push((dw <= 0 ? '' : '+') + dw.toFixed(1) + 'kg since week ' + (num(tr.w0) !== null ? '1' : (first.i + 1)));
+      var cBase = num(tr.c0) !== null ? num(tr.c0) : num(first.r.c);
+      var cLast = num(last.r.c);
+      if (cBase !== null && cLast !== null) lines.push((cLast - cBase <= 0 ? '' : '+') + (cLast - cBase).toFixed(1) + 'cm on the waist');
+    }
+    if (sessions) lines.push(sessions + ' sessions logged');
+    var p = document.createElement('section'); p.className = 'section alt'; p.id = 'renewal';
+    p.innerHTML = '<div class="wrap prose"><h2>Week ' + week + ': what has actually changed</h2><p id="ren-l"></p>'
+      + '<p>Renewal is a conversation, not a button. Message Stevie, tell him what you want the next eight weeks to do, and he will tell you what fits.</p>'
+      + '<p><a class="btn btn-red" id="ren-wa" target="_blank" rel="noopener">Message Stevie about the next block</a></p>'
+      + '<p class="small">Read off the tracker on this phone. If the numbers look wrong, they are the ones you typed in; the ones that count are the ones Stevie takes in week eight.</p></div>';
+    p.querySelector('#ren-l').textContent = lines.length
+      ? lines.join(' · ') + '. That is from your own rows, not an estimate.'
+      : 'Nothing logged on this phone yet, so there is no proof to show you. The measurements Stevie took in week one are the ones that count either way.';
+    p.querySelector('#ren-wa').href = wa('Hi Stevie, I am in week ' + week + '. Can we have a chat about the next block?'
+      + (lines.length ? ' My tracker says: ' + lines.join(', ') + '.' : ''));
+    root.appendChild(p);
+  }
+
+  // ---- item 166: eight weeks of logs live on one handset and nothing ever said so
+  if (week !== null && week >= 8) {
+    var ex = document.createElement('section'); ex.className = 'section'; ex.id = 'export-now';
+    ex.innerHTML = '<div class="wrap prose"><h2>Save your block before you change phone</h2>'
+      + '<p>Everything you have logged in here — sessions, lifts, tape, food, habits — is saved on this phone and nowhere else. That is deliberate: none of it is uploaded. It also means a new handset starts empty.</p>'
+      + '<p>You are at the end of a block, which is the moment to take a copy.</p>'
+      + '<p><a class="btn btn-red" href="#feedback">Take a copy now</a> <a class="btn btn-ghost" href="/tools/8-week-tracker/">Open the tracker</a></p></div>';
+    root.appendChild(ex);
+  }
+
+  // ---- item 163: the streak about to break, which is the cheapest save there is
+  var hb = get('sf_habits_v1', {});
+  function iso(d){ return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); }
+  function ticked(d){ var v = hb[iso(d)]; return !!(v && (Array.isArray(v) ? v.some(Boolean) : Object.keys(v).some(function(x){ return v[x]; }))); }
+  var run = 0, cur = new Date(today.getTime());
+  if (!ticked(cur)) cur.setDate(cur.getDate() - 1);
+  while (run < 90 && ticked(cur)) { run++; cur.setDate(cur.getDate() - 1); }
+  if (run >= 3 && !ticked(today)) {
+    var s = document.createElement('section'); s.className = 'section alt'; s.id = 'streak-nudge';
+    s.innerHTML = '<div class="wrap prose"><h2>' + run + ' days in a row, and today is blank</h2>'
+      + '<p>One tick keeps it. It does not have to be a session: the habits are water, steps, protein, sleep and the one you set yourself.</p>'
+      + '<p><a class="btn btn-red" href="/tools/8-week-tracker/#habits">Tick today</a></p></div>';
+    root.insertBefore(s, root.firstChild ? root.firstChild.nextSibling : null);
+  }
+
+  // ---- item 164: the member who stopped opening it. Recorded on this phone, read on the next visit.
+  var lastOpen = get('sf_m_lastopen', null);
+  var away = lastOpen ? days(new Date(lastOpen), today) : null;
+  if (away !== null && away >= 14) {
+    var b = document.createElement('section'); b.className = 'section'; b.id = 'welcome-back';
+    b.innerHTML = '<div class="wrap prose"><h2>That is ' + away + ' days since you last opened this</h2>'
+      + '<p>Nothing has been lost and nothing is being counted against you. Your logs are still here on this phone and the timetable has not moved.</p>'
+      + '<p>The way back in is one session, not a plan. Pick the next class that fits and tell Stevie you are coming.</p>'
+      + '<p><a class="btn btn-red" id="wb-wa" target="_blank" rel="noopener">Tell Stevie you are coming back</a> <a class="btn btn-ghost" href="/timetable/">The timetable</a></p></div>';
+    b.querySelector('#wb-wa').href = wa('Hi Stevie, I have been off it for a bit and want back in. Which session would you put me in this week?');
+    root.insertBefore(b, root.firstChild ? root.firstChild.nextSibling : null);
+  }
+  set('sf_m_lastopen', iso(today));
+  if (window.gtag) gtag('event', 'members_block', {week: week === null ? 0 : week, streak: run, away: away === null ? -1 : away});
+}
+document.addEventListener('sf:open', sfMembersBlock); sfMembersBlock();
