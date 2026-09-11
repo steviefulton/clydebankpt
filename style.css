@@ -967,3 +967,8 @@ html.tt-plan .tt-panel li.c,html.tt-plan .tt-panel li.p{cursor:pointer}
 .ph-pick .ph-input{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
 .ph-pick:focus-within .btn,.ph-pick:focus-within .nut-btn{outline:2px solid var(--red);outline-offset:2px}
 .nudge-line{border:1px solid var(--line);border-left:3px solid var(--red);border-radius:10px;padding:10px 12px;margin:8px 0}
+.nav-min{position:static;border-bottom:1px solid var(--line)}
+.nav-min .wrap{display:flex;align-items:center;min-height:56px}
+.footer-min{padding-top:22px}
+.footer-min .fine{display:grid;gap:6px}
+body:has(.footer-min){padding-bottom:0}
