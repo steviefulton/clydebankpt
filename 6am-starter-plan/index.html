@@ -100,8 +100,17 @@
 <form class="tool-form" id="magnet" autocomplete="on">
 <label>Your first name<input type="text" name="name" required maxlength="40" autocomplete="given-name" placeholder="So I know who I am sending it to"></label>
 <button class="btn btn-red" type="submit"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2m0 1.67c4.55 0 8.24 3.7 8.24 8.24 0 4.55-3.69 8.24-8.24 8.24-1.5 0-2.96-.4-4.24-1.16l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.37c0-4.54 3.7-8.24 8.29-8.24M8.53 7.33c-.16 0-.43.06-.66.31-.22.25-.87.86-.87 2.07 0 1.22.89 2.39 1 2.56.14.17 1.76 2.67 4.25 3.73.59.27 1.05.42 1.41.53.59.19 1.13.16 1.56.1.48-.07 1.46-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.07-.1-.23-.16-.48-.27-.25-.14-1.47-.74-1.69-.82-.23-.08-.37-.12-.56.12-.16.25-.64.81-.78.97-.15.17-.29.19-.53.07-.26-.13-1.06-.39-2-1.23-.74-.66-1.23-1.47-1.38-1.72-.12-.24-.01-.39.11-.5.11-.11.27-.29.37-.44.13-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.11-.56-1.35-.77-1.84-.2-.48-.4-.42-.56-.43-.14 0-.3-.01-.47-.01"/></svg>Send me the PDF on WhatsApp</button> <button class="btn btn-ghost" type="submit" data-send="email">Email instead</button>
-<p class="small">Opens WhatsApp, or your email app, with the message ready. I send the PDF back myself, and that is the only thing I send unless you ask. No mailing list.</p>
+<p class="small">Free, and it does not ask for your email address. Opens WhatsApp, or your email app, with the message ready. I send the PDF back myself, and that is the only thing I send unless you ask. No mailing list.</p>
+<p class="small" id="magnet-now" hidden>Message on its way. <a href="/files/6am-starter-plan.pdf" download>Open the PDF now</a> if you would rather not wait for me to come off the gym floor.</p>
 </form>
+</div></section>
+<section class="section"><div class="wrap prose">
+<h2>Why the 6am is the one that sticks</h2>
+<p>An evening class is the first thing a bad day takes off you. Work runs over, somebody needs collected, and by half five the session is gone. Nothing has happened to a 6am class by the time it comes round: the day has not started yet, so it cannot have gone wrong.</p>
+<p>The early classes are 6am classes Tuesday, Wednesday and Friday, 50 minutes each, finishing at 6:50am. Free parking right outside the door at that hour, and five minutes' walk from Singer station. Stevie coaches every one of them himself.</p>
+<h2>The bit nobody tells you</h2>
+<p>The first week is the hard one and then it is not. Most people find the second Tuesday easier than the first, and the third easier again, because the body stops treating six o'clock as an argument. The plan in this PDF is built round that: two mornings in week one, not four, and a rule for what to do the night before so the morning is decided already.</p>
+<p>If the early start is not the problem and the gym itself is, <a href="/gym-for-people-who-hate-gyms-clydebank/">that is a different page</a>. If your week moves, <a href="/shift-work-gym-clydebank/">the rota one</a>. And the classes themselves are on <a href="/timetable/">the timetable</a>.</p>
 </div></section>
 <script>
 (function(){
@@ -112,6 +121,10 @@
     e.preventDefault(); var n=(f.name.value||'').trim();
     var msg='6AM PLAN please. My name is '+n+' (via clydebankpt.com/6am-starter-plan)';
     try{ if(window.gtag) gtag('event','lead_magnet',{magnet:'6AM PLAN',method:how}); }catch(x){}
+    // ROADMAP-7 items 72/73: the PDF was reachable only by typing its URL, and the request needed a human
+    // before anybody got anything. The message still goes, because starting a conversation is the point;
+    // the file stops waiting on a hand.
+    var now=document.getElementById('magnet-now'); if(now) now.hidden=false;
     if(how==='email'){
       window.location.href='mailto:sanctuary@clydebankpt.com?subject='+encodeURIComponent('6AM PLAN please')+'&body='+encodeURIComponent(msg);
     } else {
