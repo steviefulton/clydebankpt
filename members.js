@@ -592,8 +592,19 @@ function sfMembersBlock(){
   function spoken(d){ return ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()] + ' the ' + ORD(d.getDate()) + ' of ' + MON[d.getMonth()]; }
 
   // ---- item 160: which block this phone is in, and when it ends
+  // ROADMAP-8 items 23 and 97 (12 Sept 2026): fall back to the gym's block when this phone has no tracker.
+  // This card read the tracker's start date and nothing else, so a week-one client opening the members area
+  // on the evening of the 28th - the single most likely moment anybody opens it all block - got a to-do list
+  // item ("put your start date on the tracker") instead of "Week 1 of 8". The gym's own block start is in
+  // data/site.json and is already on the page in data-block-start; the tracker still WINS when it is set,
+  // because somebody who joined mid-block is genuinely in a different week from the gym.
   var tr = get('sf_tracker_v1', {}), rows = (tr && tr.rows) || [];
   var start = tr && tr.start ? new Date(tr.start + 'T00:00:00') : null;
+  var fromTracker = !!(start && !isNaN(start));
+  if (!fromTracker) {
+    var gym = dash.getAttribute('data-block-start');
+    if (gym && /^\d{4}-\d{2}-\d{2}$/.test(gym)) { var g = new Date(gym + 'T00:00:00'); if (!isNaN(g)) start = g; }
+  }
   var today = new Date(); today.setHours(0, 0, 0, 0);
   var week = null, end = null;
   if (start && !isNaN(start)) {
@@ -607,12 +618,13 @@ function sfMembersBlock(){
     a.querySelector('.eyebrow').textContent = label; a.querySelector('b').textContent = text;
     dash.appendChild(a);
   }
+  var whose = fromTracker ? '' : ' Gym block; put your own start date on the tracker if you joined later.';
   if (week !== null && week >= 1 && week <= 8) {
-    card('Your block', 'Week ' + week + ' of 8. Last day ' + spoken(end) + '.', '/tools/8-week-tracker/');
+    card('Your block', 'Week ' + week + ' of 8. Last day ' + spoken(end) + '.' + whose, '/tools/8-week-tracker/');
   } else if (week !== null && week > 8) {
     card('Your block', 'Finished ' + spoken(end) + '. Message Stevie about the next one.', '#thisweek');
   } else if (week !== null) {
-    card('Your block', 'Starts ' + spoken(start) + '.', '/tools/8-week-tracker/');
+    card('Your block', 'Starts ' + spoken(start) + '.' + whose, '/tools/8-week-tracker/');
   } else {
     card('Your block', 'Put your start date on the tracker and this says which week you are in.', '/tools/8-week-tracker/');
   }
@@ -631,10 +643,26 @@ function sfMembersBlock(){
   if (week !== null && week >= 1 && week <= 8) {
     var w = document.createElement('section'); w.className = 'section'; w.id = 'blockweek';
     w.innerHTML = '<div class="wrap prose"><h2>Week ' + week + ' of your block</h2><p></p>'
-      + '<p class="small">From the <a href="/guides/8-week-package-week-by-week/">week-by-week guide</a>. This is worked out on this phone from the start date on your tracker, so it is your week, not the gym’s.</p></div>';
+      + '<p class="small">From the <a href="/guides/8-week-package-week-by-week/">week-by-week guide</a>. ' + (fromTracker ? 'This is worked out on this phone from the start date on your tracker, so it is your week, not the gym’s.' : 'This is the gym’s block. Put your own start date on the <a href="/tools/8-week-tracker/">tracker</a> and it becomes your week instead.') + '</p></div>';
     w.querySelector('p').textContent = WEEKLY[week - 1];
     var host = document.getElementById('dash');
     if (host && host.parentNode) host.parentNode.insertBefore(w, host.nextSibling);
+  }
+
+  // ---- ROADMAP-8 item 17: from week 6, what the last fortnight actually asks of you. Nothing told anybody
+  // this until it arrived: week 7 asked them to pick a morning and week 8 measured them, and a measure that
+  // is a surprise is a measure somebody turns up to in the wrong clothes after breakfast, which makes the
+  // second number worth less than the first. Facts from the check-in messages and /8-weeks-honestly/; no
+  // price, no offer, nothing promised.
+  if (week !== null && week >= 6 && week <= 8) {
+    var lf = document.createElement('section'); lf.className = 'section'; lf.id = 'lastfortnight';
+    lf.innerHTML = '<div class="wrap prose"><h2>The last fortnight, so none of it is a surprise</h2>'
+      + '<p>You get asked to pick a morning for the second measure. Same conditions as week one is the whole point of it: same time of day, same clothes, before food, same spot on the floor. Anything else and the two numbers are not measuring the same thing.</p>'
+      + '<p>On the day it is the tape first and the scales second, and it takes ten minutes. Chest, shoulders, waist, stomach, hips, both arms, both thighs, both calves. The numbers are yours, the photographs are yours, and nobody sees either unless you say so.</p>'
+      + '<p>After it you get three options and there is no fourth one where you get talked into something: another block, one-to-one, or a break with the home programme and this page still open to you.</p>'
+      + '<p class="small">More on what eight weeks does and does not do in <a href="/8-weeks-honestly/">eight weeks, honestly</a>.</p></div>';
+    var lfh = document.getElementById('dash');
+    if (lfh && lfh.parentNode) lfh.parentNode.insertBefore(lf, lfh.nextSibling);
   }
 
   // ---- item 161: at week 7, the proof, from this phone's own logged numbers. No price, no offer.
