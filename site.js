@@ -240,6 +240,11 @@
       // buttons on /start/ each say a different thing about the person tapping them; the label is the
       // button's own visible text, so a new button is measured the day it is added.
       if (a.closest('.quicknav-wrap')) send('start_prefill', {choice: (a.textContent || '').trim().toLowerCase().slice(0, 40), page: location.pathname});
+      // 13 Sept 2026, National Fitness Day: the free-class voucher points at the same wa.me address as
+      // every other button on the site, so whatsapp_click on its own cannot tell a voucher booking from an
+      // ordinary enquiry. The prefilled message is what makes it one, and the message travels with the link
+      // off the site too - the QR on the print, the story, the post - so the marker is the TEXT, not the page.
+      if (h.indexOf('FREE%20CLASS%20voucher') > -1) send('free_class_click', {page: location.pathname, spot: waSpot(a)});
     }
     else if (h.indexOf('tel:') === 0) send('call_click', {page: location.pathname});
     else if (h.indexOf('mailto:') === 0) send('email_click', {page: location.pathname, spot: waSpot(a)});
