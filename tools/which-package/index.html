@@ -89,7 +89,7 @@
 </nav>
 </header>
 <main id="main" data-print="clydebankpt.com/tools/which-package · 07376 941421">
-<section class="hero sub"><div class="wrap"><p class="eyebrow">Free tool</p><h1>Which package fits me?</h1><p class="lede">Five questions, one honest answer. Then message Stevie with it and skip the back-and-forth.</p></div></section>
+<section class="hero sub"><div class="wrap"><p class="eyebrow">Free tool</p><h1>Which package fits me?</h1><p class="lede">Five questions, one answer. Then message Stevie with it and skip the back-and-forth.</p></div></section>
 <nav class="crumbs" aria-label="Where you are"><ol><li><a href="/">Home</a></li><li><a href="/tools/">Tools</a></li><li aria-current="page">Which Package Fits Me?</li></ol></nav>
 <section class="section"><div class="wrap tool">
 <div id="quiz" class="quiz">
@@ -119,7 +119,7 @@
   var ans={},said={},qs=[].slice.call(document.querySelectorAll('#quiz .q'));
   // ROADMAP-6 B114: the quiz knew the whole situation and sent two words of it, so Stevie still had to ask
   // the five questions the person had already answered. The question wording and the answer wording are read
-  // off the page itself, so the message can never drift from what was actually asked.
+  // off the page itself, so the message can never drift from what was asked.
   var ASKED={goal:'What you want most',people:'Training with other people',time:'When you can train',freq:'Sessions a week that are realistic',budget:'Over the next couple of months'};
   qs.forEach(function(q,i){ if(i) q.hidden=true; q.querySelectorAll('button').forEach(function(b){ b.addEventListener('click',function(){ ans[q.dataset.k]=b.dataset.v; said[q.dataset.k]=(b.textContent||'').trim(); q.hidden=true; if(qs[i+1]){qs[i+1].hidden=false;} else finish(); }); }); });
   function situation(){
