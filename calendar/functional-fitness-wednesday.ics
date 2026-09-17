@@ -7,6 +7,7 @@ DTSTAMP:20260902T120000Z
 DTSTART;TZID=Europe/London:20260909T174000
 DTEND;TZID=Europe/London:20260909T183000
 RRULE:FREQ=WEEKLY;BYDAY=WE
+EXDATE;TZID=Europe/London:20260916T174000,20260923T174000
 SUMMARY:Functional Fitness class at Sanctuary Fitness
 LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81 2DR
 DESCRIPTION:50-minute coached class. Included in the 8-Week Package. WhatsApp 07376 941421. https://clydebankpt.com/timetable/
