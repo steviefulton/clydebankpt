@@ -9,8 +9,10 @@ DTEND;TZID=Europe/London:20260908T183000
 RRULE:FREQ=WEEKLY;BYDAY=TU
 EXDATE;TZID=Europe/London:20260915T174000,20260922T174000
 SUMMARY:Barbell & Dumbbell class at Sanctuary Fitness
-LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81 2DR
-DESCRIPTION:50-minute coached class. Included in the 8-Week Package. WhatsApp 07376 941421. https://clydebankpt.com/timetable/
+LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydeban
+ k G81 2DR
+DESCRIPTION:50-minute coached class. Included in the 8-Week Package. WhatsA
+ pp 07376 941421. https://clydebankpt.com/timetable/
 URL:https://clydebankpt.com/timetable/
 END:VEVENT
 END:VCALENDAR

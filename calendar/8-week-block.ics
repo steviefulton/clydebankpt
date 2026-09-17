@@ -8,7 +8,8 @@ DTSTAMP:20260928T060000Z
 DTSTART;VALUE=DATE:20260928
 DTEND;VALUE=DATE:20260929
 SUMMARY:8-Week Package, Week 1 of 8: measure week (tape, photos, weight)
-DESCRIPTION:Sanctuary Fitness. Book your sessions on the timetable. Members area: https://clydebankpt.com/members/
+DESCRIPTION:Sanctuary Fitness. Book your sessions on the timetable. Members
+  area: https://clydebankpt.com/members/
 URL:https://clydebankpt.com/members/
 END:VEVENT
 BEGIN:VEVENT
@@ -17,7 +18,8 @@ DTSTAMP:20260928T060000Z
 DTSTART;VALUE=DATE:20261005
 DTEND;VALUE=DATE:20261006
 SUMMARY:8-Week Package, Week 2 of 8
-DESCRIPTION:Sanctuary Fitness. Book your sessions on the timetable. Members area: https://clydebankpt.com/members/
+DESCRIPTION:Sanctuary Fitness. Book your sessions on the timetable. Members
+  area: https://clydebankpt.com/members/
 URL:https://clydebankpt.com/members/
 END:VEVENT
 BEGIN:VEVENT
@@ -26,7 +28,8 @@ DTSTAMP:20260928T060000Z
 DTSTART;VALUE=DATE:20261012
 DTEND;VALUE=DATE:20261013
 SUMMARY:8-Week Package, Week 3 of 8
-DESCRIPTION:Sanctuary Fitness. Book your sessions on the timetable. Members area: https://clydebankpt.com/members/
+DESCRIPTION:Sanctuary Fitness. Book your sessions on the timetable. Members
+  area: https://clydebankpt.com/members/
 URL:https://clydebankpt.com/members/
 END:VEVENT
 BEGIN:VEVENT
@@ -35,7 +38,8 @@ DTSTAMP:20260928T060000Z
 DTSTART;VALUE=DATE:20261019
 DTEND;VALUE=DATE:20261020
 SUMMARY:8-Week Package, Week 4 of 8
-DESCRIPTION:Sanctuary Fitness. Book your sessions on the timetable. Members area: https://clydebankpt.com/members/
+DESCRIPTION:Sanctuary Fitness. Book your sessions on the timetable. Members
+  area: https://clydebankpt.com/members/
 URL:https://clydebankpt.com/members/
 END:VEVENT
 BEGIN:VEVENT
@@ -44,7 +48,8 @@ DTSTAMP:20260928T060000Z
 DTSTART;VALUE=DATE:20261026
 DTEND;VALUE=DATE:20261027
 SUMMARY:8-Week Package, Week 5 of 8
-DESCRIPTION:Sanctuary Fitness. Book your sessions on the timetable. Members area: https://clydebankpt.com/members/
+DESCRIPTION:Sanctuary Fitness. Book your sessions on the timetable. Members
+  area: https://clydebankpt.com/members/
 URL:https://clydebankpt.com/members/
 END:VEVENT
 BEGIN:VEVENT
@@ -53,7 +58,8 @@ DTSTAMP:20260928T060000Z
 DTSTART;VALUE=DATE:20261102
 DTEND;VALUE=DATE:20261103
 SUMMARY:8-Week Package, Week 6 of 8
-DESCRIPTION:Sanctuary Fitness. Book your sessions on the timetable. Members area: https://clydebankpt.com/members/
+DESCRIPTION:Sanctuary Fitness. Book your sessions on the timetable. Members
+  area: https://clydebankpt.com/members/
 URL:https://clydebankpt.com/members/
 END:VEVENT
 BEGIN:VEVENT
@@ -62,7 +68,8 @@ DTSTAMP:20260928T060000Z
 DTSTART;VALUE=DATE:20261109
 DTEND;VALUE=DATE:20261110
 SUMMARY:8-Week Package, Week 7 of 8
-DESCRIPTION:Sanctuary Fitness. Book your sessions on the timetable. Members area: https://clydebankpt.com/members/
+DESCRIPTION:Sanctuary Fitness. Book your sessions on the timetable. Members
+  area: https://clydebankpt.com/members/
 URL:https://clydebankpt.com/members/
 END:VEVENT
 BEGIN:VEVENT
@@ -71,7 +78,8 @@ DTSTAMP:20260928T060000Z
 DTSTART;VALUE=DATE:20261116
 DTEND;VALUE=DATE:20261117
 SUMMARY:8-Week Package, Week 8 of 8: measure week (tape, photos, weight)
-DESCRIPTION:Sanctuary Fitness. Book your sessions on the timetable. Members area: https://clydebankpt.com/members/
+DESCRIPTION:Sanctuary Fitness. Book your sessions on the timetable. Members
+  area: https://clydebankpt.com/members/
 URL:https://clydebankpt.com/members/
 END:VEVENT
 END:VCALENDAR

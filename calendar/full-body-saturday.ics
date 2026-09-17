@@ -9,8 +9,10 @@ DTEND;TZID=Europe/London:20260912T095000
 RRULE:FREQ=WEEKLY;BYDAY=SA
 EXDATE;TZID=Europe/London:20260919T090000,20260926T090000
 SUMMARY:Full Body Workout class at Sanctuary Fitness
-LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydebank G81 2DR
-DESCRIPTION:50-minute coached class. Included in the 8-Week Package. WhatsApp 07376 941421. https://clydebankpt.com/timetable/
+LOCATION:Spectrum House, 1A North Avenue, Clydebank Business Park, Clydeban
+ k G81 2DR
+DESCRIPTION:50-minute coached class. Included in the 8-Week Package. WhatsA
+ pp 07376 941421. https://clydebankpt.com/timetable/
 URL:https://clydebankpt.com/timetable/
 END:VEVENT
 END:VCALENDAR
